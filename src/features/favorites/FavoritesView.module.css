@@ -1,0 +1,103 @@
+.section {
+  animation: fadeIn var(--motion-med) var(--ease-out);
+}
+
+.section h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: var(--space-4);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: var(--space-4);
+}
+
+.tabs button {
+  min-height: var(--touch-min);
+  padding: 0 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-weight: 700;
+}
+
+.active {
+  background: var(--color-accent) !important;
+  color: var(--color-accent-ink) !important;
+  border-color: transparent !important;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.item {
+  position: relative;
+}
+
+.item a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.unfav {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  display: grid;
+  place-items: center;
+}
+
+.deckList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.deckRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.deckRow a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.deckRow a span {
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
+.deckRow button {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border: none;
+  background: transparent;
+  color: var(--color-accent);
+}

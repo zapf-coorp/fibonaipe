@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "models": {
+    "systemArchitect": "inherit",
+    "systemArchitectFallback": "",
+    "technologyArchitect": "inherit",
+    "technologyArchitectFallback": "",
+    "softwareEngineer": "inherit",
+    "softwareEngineerFallback": "",
+    "qaEngineer": "inherit",
+    "qaEngineerFallback": "",
+    "fallback": ""
+  },
+  "maxTokens": {
+    "systemArchitect": 32000,
+    "technologyArchitect": 32000,
+    "softwareEngineer": 64000,
+    "qaEngineer": 32000
+  }
+}

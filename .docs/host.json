@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "probedAt": "2026-10-26T21:17:26.784Z",
+  "platform": "win32",
+  "arch": "x64",
+  "nodeVersion": "v24.12.0",
+  "nodeMajor": 24,
+  "hasNodeSqlite": true,
+  "nativeCompileLikelyOk": false,
+  "preferredSqliteDriver": "node:sqlite",
+  "notes": [
+    "Node v24.12.0 provides built-in 'node:sqlite' (DatabaseSync). Prefer 'node:sqlite' over native C++ addons like 'better-sqlite3'.",
+    "Windows host without detected Visual C++ Build Tools: avoid 'better-sqlite3' or 'node-gyp' native modules; use 'node:sqlite' (built-in) or pure JS/WASM ('sql.js') instead."
+  ]
+}

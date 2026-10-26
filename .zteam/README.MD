@@ -8,7 +8,7 @@ O valor de cada primary em `models` escolhe o runtime (**família homogénea** �
 
 | Valor no config | Runtime | O que acontece |
 |-----------------|---------|----------------|
-| `inherit` / `auto` / `cursor` / `cursor-auto` | **cursor** | Skill corre SA/TA/SE/QA via Cursor Task (Auto do chat pai). MCP **não** chama 9router. |
+| `inherit` / `auto` / `cursor` / `cursor-auto` | **cursor** | Skill corre SA/TA/UX/SE/QA via Cursor Task. Use `cursorModels` opcional para fixar slugs do Cursor (ex. `composer-2.5`). MCP **não** chama 9router. |
 | Qualquer outro id (`9RSA-…`, `cu/default`, …) | **ninerouter** | MCP `ChatOpenAI` com o id **literal** → 9router. |
 
 Mix (`inherit` + `9RSE-…`) → `failureKind: mixed_runtime` (fail cedo).
@@ -21,20 +21,22 @@ Use estes atalhos no chat Cursor (skill `zteam` / `@zteam`). O agent **sempre** 
 
 | Comando | O que faz | MCP |
 |---------|-----------|-----|
-| **`@zteam/config`** | Setup completo: `.zteam/config.json` (modelos, maxTokens, escopo workspace/app, gitignore). | `get_zteam_config` → perguntas → `write_zteam_config` |
-| **`@zteam/models`** | Só LLMs por papel — perguntas guiadas → atualiza `models` em `.zteam/config.json` neste projeto. | `get_zteam_config` → `modelQuestions` → `write_zteam_config` |
+| **`@zteam/config`** | Setup completo: `.zteam/config.json` (projectType, modelos, cursorModels, maxTokens, escopo workspace/app, gitignore). | `get_zteam_config` → perguntas → `write_zteam_config` |
+| **`@zteam/models`** | Só LLMs por papel — perguntas guiadas → atualiza `models` / `cursorModels` em `.zteam/config.json` neste projeto. | `get_zteam_config` → `modelQuestions` → `write_zteam_config` |
 | **`@zteam/documentation`** | Só documentação / arquitetura (requirements, technologies, todo, specs). Sem SE/QA. | `run_development_pipeline` com `workflow: "docs"` |
-| **`@zteam/tests`** | Analisa o app/specs e cria ou reforça testes (QA + fix loop se falhar). | `run_development_pipeline` com foco em testes (`workflow: "fix"` ou `"feature"` / `"resume"` conforme o estado) |
-| **`@zteam`** / **`/zteam`** | Pipeline completo ou o workflow que pedires (full, feature, punch, resume, …). | `run_development_pipeline` (ou Task playbook se runtime=cursor) |
+| **`@zteam/tests`** | Só testes (TDD red → verify) para um requisito. | `run_development_pipeline` com `workflow: "tests"` + `slug` |
+| **`@zteam`** / **`/zteam`** | Pipeline completo ou o workflow que pedires (`full` \| `docs` \| `feature` \| `punch` \| `fix` \| `resume` \| `tests` \| `analyze`). | `run_development_pipeline` (ou Task playbook em 2 ondas se runtime=cursor) |
+| **`ensure_zteam_setup`** | Stubs skill + `.docs` (+ template config opcional), sem LLM. | MCP `ensure_zteam_setup` |
+| **LangGraph Studio** | Topologia do pipeline (nós/edges). `node .zteam/langgraph/dev.mjs` | Agent Server no pacote MCP |
 
 ### Exemplos
 
 ```text
 @zteam/models
-→ mostra modelos atuais + defaults → pergunta SA/TA/SE/QA/fallback → grava .zteam/config.json
+→ mostra modelos atuais + defaults → pergunta SA/TA/SE/QA/fallback (+ cursorModels) → grava .zteam/config.json
 
 @zteam/config
-→ pergunta modelos / escopo / maxTokens → grava .zteam/config.json (+ .gitignore para config)
+→ pergunta projectType / modelos / escopo / maxTokens → grava .zteam/config.json (+ .gitignore para config)
 
 @zteam/documentation samples/pacman — canvas TS, infinite lives
 → workflow=docs, projectRoot=samples/pacman
@@ -44,27 +46,48 @@ Use estes atalhos no chat Cursor (skill `zteam` / `@zteam`). O agent **sempre** 
 
 @zteam build a todo API in samples/todo-api
 → auto ou full/feature conforme contexto
+
+node .zteam/langgraph/dev.mjs
+→ sobe Agent Server no pacote MCP; abre Studio (topologia SA/TA/SE/QA), não traces ao vivo
 ```
 
 ## Ficheiros
 
 | Path | Papel |
 |------|--------|
-| `.zteam/config.json` | **Verdade absoluta** — modelos e maxTokens por papel |
+| `.zteam/config.json` | **Verdade absoluta** — projectType, modelos, cursorModels e maxTokens por papel |
+| `.zteam/dashboard/index.html` | **Live Canvas Dashboard** (9Router style) — abre direto no browser (`file://`), faz polling de `.docs/zteam-live.js` |
 | `.zteam/README.MD` | Este guia (comandos) |
 | `.zteam/skills/SKILL.md` | Cópia local da skill Cursor zteam (sincronizada ao criar `.zteam/`) |
+| `.zteam/langgraph/` | Launcher LangGraph Studio (topologia; ver README nessa pasta) |
+| `.docs/host.json` | Sonda automática do ambiente (Node, `node:sqlite`, compilação nativa) |
 | `.docs/*` | Artefactos da pipeline (requirements, technologies, specs, progress, …) |
+| `.docs/langgraph.mmd` | Dump Mermaid offline do grafo (copiado do pacote MCP) |
+
+## LangGraph Studio (topologia)
+
+Cada bootstrap de `.zteam/` materializa `.zteam/langgraph/` com um launcher que aponta para o pacote MCP (onde o grafo e as deps vivem).
+
+```text
+node .zteam/langgraph/dev.mjs
+→ https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024
+```
+
+Isto mostra a **topologia** do fluxo (workflowRouter → SA → TA → SE → QA → …). Não espelha runs MCP ao vivo (sem LangSmith tracing). Dump estático: `.docs/langgraph.mmd` ou, no pacote MCP, `npm run graph` / `npm run studio`.
 
 ### Exemplo `config.json` (9router)
 
 ```json
 {
   "version": 1,
+  "projectType": "webgame",
   "models": {
     "systemArchitect": "9RSA-system-architect-free",
     "systemArchitectFallback": "9RSA-system-architect",
     "technologyArchitect": "9RTA-technology-architect-free",
     "technologyArchitectFallback": "",
+    "uiUxDesigner": "9RUX-ui-ux-designer-free",
+    "uiUxDesignerFallback": "",
     "softwareEngineer": "9RSE-software-engineer-free",
     "softwareEngineerFallback": "9RSE-software-engineer",
     "qaEngineer": "9RQA-qa-free",
@@ -74,43 +97,51 @@ Use estes atalhos no chat Cursor (skill `zteam` / `@zteam`). O agent **sempre** 
   "maxTokens": {
     "systemArchitect": 1600,
     "technologyArchitect": 2500,
+    "uiUxDesigner": 2000,
     "softwareEngineer": 8000,
     "qaEngineer": 2000
   }
 }
 ```
 
-### Exemplo Cursor Auto (fora do 9router)
+### Exemplo Cursor (com `cursorModels` por papel, fora do 9router)
 
 ```json
 {
   "version": 1,
+  "projectType": "webgame",
   "models": {
     "systemArchitect": "inherit",
     "systemArchitectFallback": "",
     "technologyArchitect": "inherit",
     "technologyArchitectFallback": "",
+    "uiUxDesigner": "inherit",
+    "uiUxDesignerFallback": "",
     "softwareEngineer": "inherit",
     "softwareEngineerFallback": "",
     "qaEngineer": "inherit",
     "qaEngineerFallback": "",
     "fallback": ""
+  },
+  "cursorModels": {
+    "softwareEngineer": "composer-2.5",
+    "qaEngineer": "composer-2.5"
   }
 }
 ```
 
 Handoff (só runtime **ninerouter**): se o primary esgotar retries, o MCP promove o `*Fallback` do papel. Papéis ativos podem consultar-se nos gates (SE↔SA após VERIFY FAIL; TA↔SA em gaps de arquitetura).
 
-No `@zteam/config` / `@zteam/models`, pergunta primary+fallback por papel e mostra `modelSuggestions` (2 free + 2 paid) **e** aliases Cursor (`inherit`).
+No `@zteam/config` / `@zteam/models`, pergunta primary+fallback por papel e mostra `modelSuggestions` (2 free + 2 paid) **e** aliases Cursor (`inherit` + `cursorModels`).
 
 ## Workspace (pasta raiz)
 
 A pasta raiz **não** fica sticky no `mcp.json`. Em cada chamada o agent passa:
 
-- **`workspaceRoot`** — path absoluto da pasta aberta no Cursor
+- **`workspaceRoot`** — path absoluto da pasta aberta no Cursor (**obrigatório** no MCP; sem arg → `failureKind=needs_workspace_root`; o MCP **ignora** `WORKSPACE_ROOT` no env)
 - **`projectRoot`** — pasta relativa da app (ex. `samples/my-app` ou `.` se a app for a raiz do workspace)
 
-Evita o footgun de pipelines a escrever noutro repo (ex. `pacman-z2`).
+Evita o footgun de pipelines a escrever noutro repo (ex. `pacman-z2` / `mypokecards`).
 
 ## Precedência de modelos
 

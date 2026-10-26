@@ -1,28 +1,14 @@
-# Dependencies
-node_modules
-
-# Build
-dist
-dist-ssr
-*.local
-
-# Editor
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-
-# Logs
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
 *.log
-npm-debug.log*
+.DS_Store
+Thumbs.db
 
-# Test / coverage
-coverage
-
-# Env
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
 
-# TypeScript
-*.tsbuildinfo
+.zteam/config.json

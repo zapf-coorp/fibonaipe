@@ -1,32 +1,564 @@
 {
   "version": 1,
-  "appRoot": "C:\\GIT\\ZAPFCOORP\\mypokecards",
-  "stage": "softwareEngineer",
-  "pendingSpecs": [
-    "deck-builder",
-    "deck-analysis",
-    "deck-personalization",
-    "card-favorites",
-    "data-portability",
-    "responsive-layout"
-  ],
+  "workflow": "docs",
+  "appRoot": "c:\\GIT\\ZAPFCOORP\\fibonaipe",
+  "stage": "pipeline",
+  "pendingSpecs": [],
   "completedSpecs": [],
-  "pendingQaSpecs": [
-    "db-setup",
-    "api-client",
-    "theme-provider",
-    "card-search",
-    "card-detail",
-    "collection-manager",
-    "deck-core",
-    "deck-builder",
-    "deck-analysis",
-    "deck-personalization",
-    "card-favorites",
-    "data-portability",
-    "responsive-layout"
-  ],
+  "pendingQaSpecs": [],
   "filesWritten": [],
+  "stages": {
+    "sa-requirements": {
+      "id": "sa-requirements",
+      "role": "systemArchitect",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/requirements.md"
+      ],
+      "updatedAt": "2026-10-26T20:55:50.311Z"
+    },
+    "ux-juice": {
+      "id": "ux-juice",
+      "role": "uiUxDesigner",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/requirements.md"
+      ],
+      "updatedAt": "2026-10-26T20:57:58.597Z"
+    },
+    "fidelity-critic": {
+      "id": "fidelity-critic",
+      "role": "systemArchitect",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/reviews/fidelity-review.md"
+      ],
+      "updatedAt": "2026-10-26T21:06:09.594Z"
+    },
+    "ta-stack": {
+      "id": "ta-stack",
+      "role": "technologyArchitect",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/technologies.md"
+      ],
+      "updatedAt": "2026-10-26T21:06:12.038Z"
+    },
+    "architecture-critic": {
+      "id": "architecture-critic",
+      "role": "technologyArchitect",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/reviews/architecture-review.md"
+      ],
+      "updatedAt": "2026-10-26T21:13:57.408Z"
+    },
+    "ux-design-system": {
+      "id": "ux-design-system",
+      "role": "uiUxDesigner",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/ui-ux.md"
+      ],
+      "updatedAt": "2026-10-26T21:13:58.372Z"
+    },
+    "sa-todo-and-specs": {
+      "id": "sa-todo-and-specs",
+      "role": "systemArchitect",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:15.485Z"
+    },
+    "sa-spec:monorepo-foundation": {
+      "id": "sa-spec:monorepo-foundation",
+      "role": "systemArchitect",
+      "slug": "monorepo-foundation",
+      "status": "active",
+      "expectedOutputs": [
+        ".docs/specs/monorepo-foundation.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:54.350Z"
+    },
+    "ux-spec:monorepo-foundation": {
+      "id": "ux-spec:monorepo-foundation",
+      "role": "uiUxDesigner",
+      "slug": "monorepo-foundation",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/monorepo-foundation.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:monorepo-foundation": {
+      "id": "ta-spec:monorepo-foundation",
+      "role": "technologyArchitect",
+      "slug": "monorepo-foundation",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/monorepo-foundation.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:ports-and-testing-fakes": {
+      "id": "sa-spec:ports-and-testing-fakes",
+      "role": "systemArchitect",
+      "slug": "ports-and-testing-fakes",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/ports-and-testing-fakes.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:ports-and-testing-fakes": {
+      "id": "ux-spec:ports-and-testing-fakes",
+      "role": "uiUxDesigner",
+      "slug": "ports-and-testing-fakes",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/ports-and-testing-fakes.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:ports-and-testing-fakes": {
+      "id": "ta-spec:ports-and-testing-fakes",
+      "role": "technologyArchitect",
+      "slug": "ports-and-testing-fakes",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/ports-and-testing-fakes.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:web-pwa-shell": {
+      "id": "sa-spec:web-pwa-shell",
+      "role": "systemArchitect",
+      "slug": "web-pwa-shell",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/web-pwa-shell.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:web-pwa-shell": {
+      "id": "ux-spec:web-pwa-shell",
+      "role": "uiUxDesigner",
+      "slug": "web-pwa-shell",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/web-pwa-shell.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:web-pwa-shell": {
+      "id": "ta-spec:web-pwa-shell",
+      "role": "technologyArchitect",
+      "slug": "web-pwa-shell",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/web-pwa-shell.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:domain-scales-and-stats": {
+      "id": "sa-spec:domain-scales-and-stats",
+      "role": "systemArchitect",
+      "slug": "domain-scales-and-stats",
+      "status": "active",
+      "expectedOutputs": [
+        ".docs/specs/domain-scales-and-stats.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:35:50.724Z"
+    },
+    "ux-spec:domain-scales-and-stats": {
+      "id": "ux-spec:domain-scales-and-stats",
+      "role": "uiUxDesigner",
+      "slug": "domain-scales-and-stats",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-scales-and-stats.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:domain-scales-and-stats": {
+      "id": "ta-spec:domain-scales-and-stats",
+      "role": "technologyArchitect",
+      "slug": "domain-scales-and-stats",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-scales-and-stats.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:domain-policy-and-room": {
+      "id": "sa-spec:domain-policy-and-room",
+      "role": "systemArchitect",
+      "slug": "domain-policy-and-room",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-policy-and-room.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:domain-policy-and-room": {
+      "id": "ux-spec:domain-policy-and-room",
+      "role": "uiUxDesigner",
+      "slug": "domain-policy-and-room",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-policy-and-room.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:domain-policy-and-room": {
+      "id": "ta-spec:domain-policy-and-room",
+      "role": "technologyArchitect",
+      "slug": "domain-policy-and-room",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-policy-and-room.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:domain-item-round-vote": {
+      "id": "sa-spec:domain-item-round-vote",
+      "role": "systemArchitect",
+      "slug": "domain-item-round-vote",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-item-round-vote.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:domain-item-round-vote": {
+      "id": "ux-spec:domain-item-round-vote",
+      "role": "uiUxDesigner",
+      "slug": "domain-item-round-vote",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-item-round-vote.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:domain-item-round-vote": {
+      "id": "ta-spec:domain-item-round-vote",
+      "role": "technologyArchitect",
+      "slug": "domain-item-round-vote",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-item-round-vote.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:application-room-and-voting": {
+      "id": "sa-spec:application-room-and-voting",
+      "role": "systemArchitect",
+      "slug": "application-room-and-voting",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/application-room-and-voting.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:application-room-and-voting": {
+      "id": "ux-spec:application-room-and-voting",
+      "role": "uiUxDesigner",
+      "slug": "application-room-and-voting",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/application-room-and-voting.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:application-room-and-voting": {
+      "id": "ta-spec:application-room-and-voting",
+      "role": "technologyArchitect",
+      "slug": "application-room-and-voting",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/application-room-and-voting.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:adapters-r1-infrastructure": {
+      "id": "sa-spec:adapters-r1-infrastructure",
+      "role": "systemArchitect",
+      "slug": "adapters-r1-infrastructure",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-r1-infrastructure.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:adapters-r1-infrastructure": {
+      "id": "ux-spec:adapters-r1-infrastructure",
+      "role": "uiUxDesigner",
+      "slug": "adapters-r1-infrastructure",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-r1-infrastructure.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:adapters-r1-infrastructure": {
+      "id": "ta-spec:adapters-r1-infrastructure",
+      "role": "technologyArchitect",
+      "slug": "adapters-r1-infrastructure",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-r1-infrastructure.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:api-and-room-entry-ui": {
+      "id": "sa-spec:api-and-room-entry-ui",
+      "role": "systemArchitect",
+      "slug": "api-and-room-entry-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/api-and-room-entry-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:api-and-room-entry-ui": {
+      "id": "ux-spec:api-and-room-entry-ui",
+      "role": "uiUxDesigner",
+      "slug": "api-and-room-entry-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/api-and-room-entry-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:api-and-room-entry-ui": {
+      "id": "ta-spec:api-and-room-entry-ui",
+      "role": "technologyArchitect",
+      "slug": "api-and-room-entry-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/api-and-room-entry-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:poker-table-and-projector-ui": {
+      "id": "sa-spec:poker-table-and-projector-ui",
+      "role": "systemArchitect",
+      "slug": "poker-table-and-projector-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/poker-table-and-projector-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:poker-table-and-projector-ui": {
+      "id": "ux-spec:poker-table-and-projector-ui",
+      "role": "uiUxDesigner",
+      "slug": "poker-table-and-projector-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/poker-table-and-projector-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:poker-table-and-projector-ui": {
+      "id": "ta-spec:poker-table-and-projector-ui",
+      "role": "technologyArchitect",
+      "slug": "poker-table-and-projector-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/poker-table-and-projector-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:auth-teams-and-claiming": {
+      "id": "sa-spec:auth-teams-and-claiming",
+      "role": "systemArchitect",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/auth-teams-and-claiming.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:auth-teams-and-claiming": {
+      "id": "ux-spec:auth-teams-and-claiming",
+      "role": "uiUxDesigner",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/auth-teams-and-claiming.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:auth-teams-and-claiming": {
+      "id": "ta-spec:auth-teams-and-claiming",
+      "role": "technologyArchitect",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/auth-teams-and-claiming.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:aggregated-history-and-audit": {
+      "id": "sa-spec:aggregated-history-and-audit",
+      "role": "systemArchitect",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/aggregated-history-and-audit.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:aggregated-history-and-audit": {
+      "id": "ux-spec:aggregated-history-and-audit",
+      "role": "uiUxDesigner",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/aggregated-history-and-audit.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:aggregated-history-and-audit": {
+      "id": "ta-spec:aggregated-history-and-audit",
+      "role": "technologyArchitect",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/aggregated-history-and-audit.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:domain-and-app-sprints": {
+      "id": "sa-spec:domain-and-app-sprints",
+      "role": "systemArchitect",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-and-app-sprints.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:domain-and-app-sprints": {
+      "id": "ux-spec:domain-and-app-sprints",
+      "role": "uiUxDesigner",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-and-app-sprints.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:domain-and-app-sprints": {
+      "id": "ta-spec:domain-and-app-sprints",
+      "role": "technologyArchitect",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/domain-and-app-sprints.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:sprint-and-observability-ui": {
+      "id": "sa-spec:sprint-and-observability-ui",
+      "role": "systemArchitect",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/sprint-and-observability-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:sprint-and-observability-ui": {
+      "id": "ux-spec:sprint-and-observability-ui",
+      "role": "uiUxDesigner",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/sprint-and-observability-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:sprint-and-observability-ui": {
+      "id": "ta-spec:sprint-and-observability-ui",
+      "role": "technologyArchitect",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/sprint-and-observability-ui.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:forecasting-and-accuracy": {
+      "id": "sa-spec:forecasting-and-accuracy",
+      "role": "systemArchitect",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/forecasting-and-accuracy.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:forecasting-and-accuracy": {
+      "id": "ux-spec:forecasting-and-accuracy",
+      "role": "uiUxDesigner",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/forecasting-and-accuracy.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:forecasting-and-accuracy": {
+      "id": "ta-spec:forecasting-and-accuracy",
+      "role": "technologyArchitect",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/forecasting-and-accuracy.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "sa-spec:adapters-clickup-and-jira": {
+      "id": "sa-spec:adapters-clickup-and-jira",
+      "role": "systemArchitect",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-clickup-and-jira.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ux-spec:adapters-clickup-and-jira": {
+      "id": "ux-spec:adapters-clickup-and-jira",
+      "role": "uiUxDesigner",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-clickup-and-jira.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "ta-spec:adapters-clickup-and-jira": {
+      "id": "ta-spec:adapters-clickup-and-jira",
+      "role": "technologyArchitect",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/specs/adapters-clickup-and-jira.spec.md"
+      ],
+      "updatedAt": "2026-10-26T21:17:27.282Z"
+    },
+    "pipeline": {
+      "id": "pipeline",
+      "role": "systemArchitect",
+      "status": "done",
+      "expectedOutputs": [],
+      "updatedAt": "2026-10-26T21:43:04.493Z"
+    }
+  },
   "errorClass": null,
   "gates": {
     "approveReq": "auto",
@@ -39,6 +571,7 @@
     "maxBootstrapFix": 1,
     "maxFeatureFix": 3
   },
-  "updatedAt": "2026-09-26T03:24:28.951Z",
-  "traceId": "48ae13f2-c933-4bbd-9071-e92eb7af5d60"
+  "updatedAt": "2026-10-26T21:43:04.494Z",
+  "recordStatus": "done",
+  "recordRole": "systemArchitect"
 }

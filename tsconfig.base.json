@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "lib": ["ES2023"],
+    "paths": {
+      "@fibonaipe/domain": ["./packages/domain/src/index.ts"],
+      "@fibonaipe/application": ["./packages/application/src/index.ts"],
+      "@fibonaipe/testing": ["./packages/testing/src/index.ts"]
+    }
+  }
+}

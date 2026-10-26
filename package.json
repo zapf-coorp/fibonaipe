@@ -1,0 +1,36 @@
+{
+  "name": "fibonaipe",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc -b",
+    "check:boundaries": "node tools/check-boundaries.mjs",
+    "check:i18n": "node tools/check-i18n.mjs",
+    "check:licenses": "node tools/check-licenses.mjs",
+    "test:unit": "vitest run --coverage",
+    "build": "tsc -b",
+    "check:bundle": "node tools/check-bundle-budget.mjs",
+    "test:e2e": "node tools/check-e2e.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run check:boundaries && npm run check:i18n && npm run check:licenses && npm run test:unit && npm run build && npm run check:bundle && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.1",
+    "fast-check": "^4.3.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vitest": "^4.0.16"
+  }
+}

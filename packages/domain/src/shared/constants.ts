@@ -1,0 +1,59 @@
+export const MAX_PARTICIPANTS = 30;
+export const ANON_ROOM_TTL_MINUTES = 60;
+export const ONLINE_WINDOW_SECONDS = 45;
+export const HEARTBEAT_INTERVAL_SECONDS = 20;
+export const HOST_GRACE_SECONDS = 60;
+export const MAX_ITEMS_PER_ROOM = 500;
+export const MAX_ITEM_TITLE_LENGTH = 200;
+export const MAX_ITEM_DESC_LENGTH = 2000;
+export const MAX_VOTE_COMMENT_LENGTH = 140;
+export const MIN_SPRINTS_FOR_FORECAST = 3;
+export const MAX_SPRINTS_FOR_FORECAST = 6;
+export const MIN_NICKNAME_LENGTH = 1;
+export const MAX_NICKNAME_LENGTH = 30;
+export const ROOM_CODE_LENGTH = 8;
+export const ROOM_CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+
+export const RATE_LIMIT_CREATE_ROOM = Object.freeze({
+  limit: 10,
+  windowSeconds: 3600,
+  scope: "ip" as const,
+});
+
+export const RATE_LIMIT_JOIN_ATTEMPTS = Object.freeze({
+  limit: 20,
+  windowSeconds: 60,
+  scope: "ip" as const,
+});
+
+export const RATE_LIMIT_MUTATIONS = Object.freeze({
+  limit: 60,
+  windowSeconds: 60,
+  scope: "participant" as const,
+});
+
+export const BUNDLE_BUDGET_ROOM_GZIP_KB = 150;
+export const BUNDLE_BUDGET_ROOM_GZIP_BYTES = 150 * 1024;
+
+export const OPERATIONAL_CONSTANTS = Object.freeze({
+  MAX_PARTICIPANTS,
+  ANON_ROOM_TTL_MINUTES,
+  ONLINE_WINDOW_SECONDS,
+  HEARTBEAT_INTERVAL_SECONDS,
+  HOST_GRACE_SECONDS,
+  MAX_ITEMS_PER_ROOM,
+  MAX_ITEM_TITLE_LENGTH,
+  MAX_ITEM_DESC_LENGTH,
+  MAX_VOTE_COMMENT_LENGTH,
+  MIN_SPRINTS_FOR_FORECAST,
+  MAX_SPRINTS_FOR_FORECAST,
+  MIN_NICKNAME_LENGTH,
+  MAX_NICKNAME_LENGTH,
+  ROOM_CODE_LENGTH,
+  ROOM_CODE_ALPHABET,
+  RATE_LIMIT_CREATE_ROOM,
+  RATE_LIMIT_JOIN_ATTEMPTS,
+  RATE_LIMIT_MUTATIONS,
+  BUNDLE_BUDGET_ROOM_GZIP_KB,
+  BUNDLE_BUDGET_ROOM_GZIP_BYTES,
+});

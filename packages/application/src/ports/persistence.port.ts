@@ -88,7 +88,7 @@ export interface RoomRepository {
   findById(id: RoomId): Promise<PersistedRoomRecord | null>;
   findByCode(code: RoomCode): Promise<PersistedRoomRecord | null>;
   save(room: PersistedRoomRecord): Promise<void>;
-  deleteExpiredAnonymous(before: Date): Promise<void>;
+  deleteExpiredAnonymous(before: Date): Promise<number>;
 }
 
 export interface IdempotencyRepository {

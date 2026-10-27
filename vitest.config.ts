@@ -42,6 +42,8 @@ export default defineConfig({
   plugins: [missingShellPlugin()],
   test: {
     include: ["packages/**/*.test.ts", "tools/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx"],
+    pool: "forks",
+    maxWorkers: 1,
     coverage: {
       provider: "v8",
       include: ["packages/domain/src/**/*.ts"],

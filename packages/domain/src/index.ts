@@ -88,4 +88,10 @@ export {
   type TeamRole,
 } from "./policy/can.js";
 export { Room } from "./room/room.js";
-export type { Participant, ParticipantMode } from "./room/participant.js";
+export { Participant, type ParticipantMode, type ParticipantProps } from "./room/participant.js";
+export { RoomBuilder } from "./room/room-builder.js";
+export { RoomSettingsBuilder, defaultRoomSettings, type RoomSettings } from "./room/room-settings-builder.js";
+export { Item, ItemBuilder, type ItemProps, type ItemStatus } from "./planning/item.js";
+export { Round, type RoundProps, type RoundStatus } from "./planning/round.js";
+export { Vote, type VoteProps } from "./planning/vote.js";
+export { PlanningTable, type PlanningEvent, type TableOk } from "./planning/planning-table.js";

@@ -127,14 +127,17 @@ function createRepos(
       if (lockedId !== undefined && copy.id === lockedId) onLockedSave();
     },
     async deleteExpiredAnonymous(before) {
+      let removed = 0;
       for (const [id, room] of [...working.rooms]) {
         if (room.kind !== "guest" || room.expiresAt === null) continue;
         if (room.expiresAt.getTime() <= before.getTime()) {
           working.rooms.delete(id);
           dirty.deletedRooms.add(id);
           dirty.rooms.add(id);
+          removed += 1;
         }
       }
+      return removed;
     },
   };
 

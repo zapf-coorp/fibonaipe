@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/domain" },
     { "path": "packages/application" },
-    { "path": "packages/testing" }
+    { "path": "packages/testing" },
+    { "path": "apps/web" }
   ]
 }

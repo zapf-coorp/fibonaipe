@@ -1,0 +1,72 @@
+{
+  "app": {
+    "title": "Fibonaipe",
+    "subtitle": "Planning Poker and sprint forecasting",
+    "tagline": "Fibonacci effort with suit risk",
+    "skipToMain": "Skip to main content"
+  },
+  "header": {
+    "status": {
+      "connected": "Connected",
+      "syncing": "Syncing",
+      "reconnecting": "Reconnecting"
+    },
+    "theme": {
+      "label": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Match system"
+    },
+    "locale": {
+      "label": "Language",
+      "ptBR": "Português (BR)",
+      "enUS": "English",
+      "esES": "Español"
+    }
+  },
+  "home": {
+    "heroTitle": "Estimates with suits and Fibonacci",
+    "heroSubtitle": "One vote carries effort and risk together.",
+    "createRoomTitle": "Create a room",
+    "createRoomDescription": "Open an anonymous room and estimate with your team.",
+    "createRoomCta": "Create room",
+    "joinRoomTitle": "Join a room",
+    "joinRoomDescription": "Enter the 8-character room code.",
+    "joinRoomCodeLabel": "Room code",
+    "joinRoomCodePlaceholder": "ABCD2345",
+    "joinRoomCta": "Join room",
+    "features": {
+      "suitsTitle": "Risk by suit",
+      "suitsBody": "The suit shows risk beside the effort.",
+      "sprintsTitle": "Sprint forecast",
+      "sprintsBody": "Aggregated history feeds the forecast.",
+      "privacyTitle": "Privacy",
+      "privacyBody": "Anonymous rooms expire and do not keep personal votes."
+    },
+    "suits": {
+      "clubs": "♣ High",
+      "hearts": "♥ Medium",
+      "spades": "♠ Low",
+      "diamonds": "♦ Insignificant"
+    }
+  },
+  "announcements": {
+    "themeChanged": "Theme changed to {theme}",
+    "localeChanged": "Language changed to {locale}"
+  },
+  "errors": {
+    "VALIDATION": "The submitted data is invalid.",
+    "NOT_FOUND": "We could not find what you asked for.",
+    "FORBIDDEN": "You do not have permission for this action.",
+    "ROOM_FULL": "The room is full.",
+    "NICKNAME_TAKEN": "That nickname is already in use.",
+    "ROUND_NOT_VOTING": "The round is not open for voting.",
+    "LIMIT_EXCEEDED": "The limit has been exceeded.",
+    "RATE_LIMITED": "Too many attempts. Wait before trying again.",
+    "INSUFFICIENT_DATA": "There is not enough data yet.",
+    "LAST_ADMIN": "The team needs at least one administrator.",
+    "AUTH_LINK_INVALID": "The sign-in link is invalid or expired.",
+    "ACCOUNT_SUSPENDED": "This account is suspended.",
+    "SERVICE_UNAVAILABLE": "The service is unavailable."
+  }
+}

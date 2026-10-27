@@ -1,0 +1,33 @@
+.header {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+}
+
+.control,
+.group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.control,
+.hit {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 1280px) {
+  .header {
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+}

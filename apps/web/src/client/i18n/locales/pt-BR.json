@@ -1,0 +1,72 @@
+{
+  "app": {
+    "title": "Fibonaipe",
+    "subtitle": "Planning Poker e previsão de sprints",
+    "tagline": "Esforço Fibonacci com risco por naipe",
+    "skipToMain": "Pular para o conteúdo principal"
+  },
+  "header": {
+    "status": {
+      "connected": "Conectado",
+      "syncing": "Sincronizando",
+      "reconnecting": "Reconectando"
+    },
+    "theme": {
+      "label": "Tema",
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Automático do Sistema"
+    },
+    "locale": {
+      "label": "Idioma",
+      "ptBR": "Português (BR)",
+      "enUS": "English",
+      "esES": "Español"
+    }
+  },
+  "home": {
+    "heroTitle": "Estimativas com naipe e Fibonacci",
+    "heroSubtitle": "O voto carrega esforço e risco no mesmo gesto.",
+    "createRoomTitle": "Criar uma sala",
+    "createRoomDescription": "Abra uma sala anônima para estimar com o time.",
+    "createRoomCta": "Criar sala",
+    "joinRoomTitle": "Entrar em uma sala",
+    "joinRoomDescription": "Informe o código de 8 caracteres da sala.",
+    "joinRoomCodeLabel": "Código da sala",
+    "joinRoomCodePlaceholder": "ABCD2345",
+    "joinRoomCta": "Entrar na sala",
+    "features": {
+      "suitsTitle": "Risco por naipe",
+      "suitsBody": "O naipe mostra o risco ao lado do esforço.",
+      "sprintsTitle": "Previsão de sprints",
+      "sprintsBody": "O histórico agregado alimenta a previsão.",
+      "privacyTitle": "Privacidade",
+      "privacyBody": "Salas anônimas expiram e não guardam votos pessoais."
+    },
+    "suits": {
+      "clubs": "♣ Alto",
+      "hearts": "♥ Médio",
+      "spades": "♠ Baixo",
+      "diamonds": "♦ Insignificante"
+    }
+  },
+  "announcements": {
+    "themeChanged": "Tema alterado para {theme}",
+    "localeChanged": "Idioma alterado para {locale}"
+  },
+  "errors": {
+    "VALIDATION": "Os dados enviados são inválidos.",
+    "NOT_FOUND": "Não encontramos o que você pediu.",
+    "FORBIDDEN": "Você não tem permissão para esta ação.",
+    "ROOM_FULL": "A sala está cheia.",
+    "NICKNAME_TAKEN": "Esse apelido já está em uso.",
+    "ROUND_NOT_VOTING": "A rodada não está em votação.",
+    "LIMIT_EXCEEDED": "O limite foi excedido.",
+    "RATE_LIMITED": "Muitas tentativas. Aguarde para tentar de novo.",
+    "INSUFFICIENT_DATA": "Ainda não há dados suficientes.",
+    "LAST_ADMIN": "O time precisa de pelo menos um administrador.",
+    "AUTH_LINK_INVALID": "O link de acesso é inválido ou expirou.",
+    "ACCOUNT_SUSPENDED": "Esta conta está suspensa.",
+    "SERVICE_UNAVAILABLE": "O serviço está indisponível."
+  }
+}

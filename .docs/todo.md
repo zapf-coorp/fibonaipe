@@ -14,7 +14,7 @@
 
 - [ ] monorepo-foundation: Pure npm workspaces, TypeScript strict config, architectural boundary checks (`check-boundaries`), and shared `Result<T, AppError>` + domain primitives
 - [x] ports-and-testing-fakes: Application Ports (`Persistence`, `Realtime`, `Auth`, `IssueTracker`, `Exporter`, `RateLimiter`, `Clock`, `IdGenerator`, `CryptoVault`, `Logger`) + `packages/testing` (`InMemoryPersistence`, `FakeRealtime`, `FakeClock`, `SequentialIdGenerator`, `FakeAuthProvider`, `FakeRateLimiter`, and reusable contract test suites)
-- [ ] web-pwa-shell: React 19 + TanStack Router & Query + Vite mobile-first PWA shell (`360px`), Light/Dark CSS tokens, `pt-BR`/`en-US`/`es-ES` i18n engine (`check-i18n`), Hono server composition root, and `GET /healthz`
+- [x] web-pwa-shell: React 19 + TanStack Router & Query + Vite mobile-first PWA shell (`360px`), Light/Dark CSS tokens, `pt-BR`/`en-US`/`es-ES` i18n engine (`check-i18n`), Hono server composition root, and `GET /healthz`
 
 ### Release R1 — PlanITPoker Parity + Fibonacci & Risk Suits
 

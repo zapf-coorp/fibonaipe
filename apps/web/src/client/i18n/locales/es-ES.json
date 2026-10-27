@@ -1,0 +1,72 @@
+{
+  "app": {
+    "title": "Fibonaipe",
+    "subtitle": "Planning Poker y previsión de sprints",
+    "tagline": "Esfuerzo Fibonacci con riesgo por palo",
+    "skipToMain": "Saltar al contenido principal"
+  },
+  "header": {
+    "status": {
+      "connected": "Conectado",
+      "syncing": "Sincronizando",
+      "reconnecting": "Reconectando"
+    },
+    "theme": {
+      "label": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Automático del sistema"
+    },
+    "locale": {
+      "label": "Idioma",
+      "ptBR": "Português (BR)",
+      "enUS": "English",
+      "esES": "Español"
+    }
+  },
+  "home": {
+    "heroTitle": "Estimaciones con palo y Fibonacci",
+    "heroSubtitle": "El voto lleva esfuerzo y riesgo en el mismo gesto.",
+    "createRoomTitle": "Crear una sala",
+    "createRoomDescription": "Abre una sala anónima para estimar con el equipo.",
+    "createRoomCta": "Crear sala",
+    "joinRoomTitle": "Entrar en una sala",
+    "joinRoomDescription": "Escribe el código de 8 caracteres de la sala.",
+    "joinRoomCodeLabel": "Código de la sala",
+    "joinRoomCodePlaceholder": "ABCD2345",
+    "joinRoomCta": "Entrar en la sala",
+    "features": {
+      "suitsTitle": "Riesgo por palo",
+      "suitsBody": "El palo muestra el riesgo junto al esfuerzo.",
+      "sprintsTitle": "Previsión de sprints",
+      "sprintsBody": "El historial agregado alimenta la previsión.",
+      "privacyTitle": "Privacidad",
+      "privacyBody": "Las salas anónimas caducan y no guardan votos personales."
+    },
+    "suits": {
+      "clubs": "♣ Alto",
+      "hearts": "♥ Medio",
+      "spades": "♠ Bajo",
+      "diamonds": "♦ Insignificante"
+    }
+  },
+  "announcements": {
+    "themeChanged": "Tema cambiado a {theme}",
+    "localeChanged": "Idioma cambiado a {locale}"
+  },
+  "errors": {
+    "VALIDATION": "Los datos enviados no son válidos.",
+    "NOT_FOUND": "No encontramos lo que pediste.",
+    "FORBIDDEN": "No tienes permiso para esta acción.",
+    "ROOM_FULL": "La sala está llena.",
+    "NICKNAME_TAKEN": "Ese apodo ya está en uso.",
+    "ROUND_NOT_VOTING": "La ronda no está en votación.",
+    "LIMIT_EXCEEDED": "Se superó el límite.",
+    "RATE_LIMITED": "Demasiados intentos. Espera para volver a probar.",
+    "INSUFFICIENT_DATA": "Todavía no hay datos suficientes.",
+    "LAST_ADMIN": "El equipo necesita al menos un administrador.",
+    "AUTH_LINK_INVALID": "El enlace de acceso no es válido o caducó.",
+    "ACCOUNT_SUSPENDED": "Esta cuenta está suspendida.",
+    "SERVICE_UNAVAILABLE": "El servicio no está disponible."
+  }
+}

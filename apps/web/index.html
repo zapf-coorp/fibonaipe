@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0F52BA" />
+    <title>Fibonaipe</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var storedTheme = null;
+        var storedLocale = null;
+        try {
+          storedTheme = localStorage.getItem("fibonaipe.theme");
+          storedLocale = localStorage.getItem("fibonaipe.locale");
+        } catch (error) {
+          storedTheme = null;
+          storedLocale = null;
+        }
+        var prefersDark = false;
+        try {
+          prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches === true;
+        } catch (error) {
+          prefersDark = false;
+        }
+        var theme = prefersDark ? "dark" : "light";
+        if (storedTheme === "light" || storedTheme === "dark") theme = storedTheme;
+        var locale = "pt-BR";
+        if (storedLocale === "pt-BR" || storedLocale === "en-US" || storedLocale === "es-ES") locale = storedLocale;
+        document.documentElement.lang = locale;
+        document.documentElement.setAttribute("data-theme", theme);
+        var meta = document.querySelector("meta[name='theme-color']");
+        if (meta) meta.setAttribute("content", theme === "dark" ? "#0B0F17" : "#0F52BA");
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/client/main.tsx"></script>
+  </body>
+</html>

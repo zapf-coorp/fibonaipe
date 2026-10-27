@@ -62,3 +62,17 @@ export {
   type Ok,
   type Result as ResultType,
 } from "./shared/result.js";
+export { AfkCard, DoubtCard, JokerCard, type Card } from "./scales/card.js";
+export { FIGURE_TAGS, parseFigureTag, type FigureTag } from "./scales/figure-tag.js";
+export { ScaleBuilder } from "./scales/scale-builder.js";
+export { type Scale } from "./scales/scale.js";
+export { Suit, isKnownSuit, parseSuit, type SuitKind } from "./scales/suit.js";
+export { isValidVote, type ValidVote } from "./scales/validate-vote.js";
+export {
+  computeRoundStats,
+  type RoundExtremes,
+  type RoundStats,
+  type RoundVote,
+  type SpecialCounts,
+  type SuitDistribution,
+} from "./stats/compute-round-stats.js";

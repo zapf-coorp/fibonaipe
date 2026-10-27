@@ -76,3 +76,16 @@ export {
   type SpecialCounts,
   type SuitDistribution,
 } from "./stats/compute-round-stats.js";
+export {
+  can,
+  type ActorKind,
+  type PolicyAction,
+  type PolicyActor,
+  type PolicyContext,
+  type RoomKind,
+  type RoomMode,
+  type SystemRole,
+  type TeamRole,
+} from "./policy/can.js";
+export { Room } from "./room/room.js";
+export type { Participant, ParticipantMode } from "./room/participant.js";

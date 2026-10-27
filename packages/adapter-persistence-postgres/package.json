@@ -1,0 +1,14 @@
+{
+  "name": "@fibonaipe/adapter-persistence-postgres",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@fibonaipe/application": "*",
+    "@fibonaipe/domain": "*",
+    "postgres": "^3.4.5"
+  }
+}

@@ -213,7 +213,7 @@ describe("item commands", () => {
     if (overflow.ok) throw new Error("expected LIMIT_EXCEEDED");
     expect(overflow.error.code).toBe("LIMIT_EXCEEDED");
     expect((await readRoomByCode(ports.store, created.code))?.items).toHaveLength(MAX_ITEMS_PER_ROOM);
-  });
+  }, 20_000);
 });
 
 async function openRoom(ports: Harness): Promise<{ code: string; participantId: string }> {

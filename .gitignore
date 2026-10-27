@@ -12,4 +12,7 @@ Thumbs.db
 .env.local
 .env.*.local
 
+data/*.sqlite
+data/*.sqlite-*
+
 .zteam/config.json

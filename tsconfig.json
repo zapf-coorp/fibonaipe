@@ -4,6 +4,12 @@
     { "path": "packages/domain" },
     { "path": "packages/application" },
     { "path": "packages/testing" },
+    { "path": "packages/adapter-persistence-postgres" },
+    { "path": "packages/adapter-persistence-sqlite" },
+    { "path": "packages/adapter-realtime-supabase" },
+    { "path": "packages/adapter-issuetracker-manual" },
+    { "path": "packages/adapter-exporter-csvjson" },
+    { "path": "packages/adapter-system" },
     { "path": "apps/web" }
   ]
 }

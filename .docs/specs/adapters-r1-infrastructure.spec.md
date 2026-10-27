@@ -9,23 +9,24 @@
 | **Priority** | `M` |
 | **Dependencies** | `ports-and-testing-fakes`, `application-room-and-voting` (port usage) |
 | **Requirements** | `RF-31`, `RF-63` (base), `RF-64`, `RF-90`, `RNF-01`, `RNF-04`, `RNF-05`, `RNF-12`, `RNF-15`, `RNF-17`, `RNF-19`, `RNF-20`, `RNF-23` |
-| **Packages** | `adapter-persistence-postgres`, `adapter-realtime-supabase`, `adapter-issuetracker-manual`, `adapter-exporter-csvjson`, `adapter-system` |
+| **Packages** | `adapter-persistence-postgres`, `adapter-persistence-sqlite`, `adapter-realtime-supabase`, `adapter-issuetracker-manual`, `adapter-exporter-csvjson`, `adapter-system` |
 
 ### Perspectives
 
 - **SA:** One adapter per port. Adapters do not import each other. They implement the contracts already tested against fakes.
 - **UX:** When the realtime provider is down, the client reports `polling` within 10 seconds and keeps working. CSV downloads open in UTF-8 and do not execute spreadsheet formulas.
-- **TA:** Pure-JS `postgres` driver (no `better-sqlite3`, no `node-gyp`) against Supabase or Neon free Postgres. RLS on, no policies for the anonymous database role. The app connects with a server role only from the backend. Free-tier hosting: Cloudflare Workers/Pages, Vercel, or Fly/Render for the API; managed Postgres free tier; cron on the host's free scheduler hitting the purge endpoint.
+- **TA:** Pure-JS `postgres` driver (no `better-sqlite3`, no `node-gyp`) against Supabase or Neon free Postgres. RLS on, no policies for the anonymous database role. The app connects with a server role only from the backend. Free-tier hosting: Cloudflare Workers/Pages, Vercel, or Fly/Render for the API; managed Postgres free tier; cron on the host's free scheduler hitting the purge endpoint. Local `npm run verify` does not require that Postgres to be running. The same `Persistence` port is implemented by `adapter-persistence-sqlite` on Node's built-in `node:sqlite` (`DatabaseSync`). That package is the local stand-in. It does not import the Postgres adapter, and nothing installs `better-sqlite3` or `sqlite3`.
 
 ---
 
 ## Functionalities & Core Capabilities
 
-1. **`adapter-persistence-postgres`.** SQL migrations, versioned, forward-only, idempotent re-apply. R1 tables: `rooms`, `participants`, `items`, `rounds`, `votes`, `estimate_audits`, `idempotency_keys`. All timestamps `timestamptz` UTC. `transaction({ lockRoomId })` runs `SELECT ... FOR UPDATE` on the room row and increments `rooms.version` on commit. Rollback does not increment version. Tokens stored as SHA-256 hex only. RLS enabled and no `anon` policies, so the browser cannot query tables with the public key.
-2. **`adapter-realtime-supabase`.** Server `RealtimePublisher.publish(roomId, event)`. Browser `RealtimeClient.subscribe` with `onEvent`, `onPresence`, `onStatus`. If the socket fails, status becomes `reconnecting`, then `polling` within 10s. Polling calls `GET /api/rooms/:code/state?since=v` every 2–3s. Heartbeat every 20s while polling. Events with `version > local + 1` or out of order trigger a snapshot fetch. The adapter does not inspect vote secrecy; the application guarantees payloads. A contract test still asserts no fixture event contains a card before reveal.
-3. **`adapter-issuetracker-manual`.** `importItems({ kind: 'text' | 'csv', content })`. Text: one item per line, skip blanks, strip leading `-`, `*`, or `1.`. CSV: RFC 4180 quotes, separator `,` or `;` auto-detected, BOM tolerated, headers `title|titulo|título`, `description|descricao|descrição`, `url|link`, `key|id|chave`. Missing title column → `MISSING_TITLE_COLUMN`. Over 500 lines or 1 MB → `LIMIT_EXCEEDED`. Strip control characters.
-4. **`adapter-exporter-csvjson`.** Formats `csv` and `json`. CSV is UTF-8 with BOM and comma separator. Cells starting with `=`, `+`, `-`, or `@` are prefixed with a single quote. JSON is pretty-stable key order for snapshot tests.
-5. **`adapter-system`.** `Clock` from `Date` (the only place `new Date()` is allowed). `IdGenerator`: ULID for entity ids, CSPRNG room codes from alphabet `23456789ABCDEFGHJKMNPQRSTUVWXYZ` length 8, 256-bit tokens as base64url. SHA-256 for session and host tokens. AES-256-GCM helper for later integration secrets (interface ready, unused by R1 product flows). In-memory or Postgres-backed `RateLimiter` implementing `hit(key, rule)`. JSON logger with `requestId`, `roomId`, `useCase`, `errorCode` and a redaction list: nickname, email, token, card, suit, comment.
+1. **`adapter-persistence-postgres`.** SQL migrations, versioned, forward-only, idempotent re-apply. R1 tables: `rooms`, `participants`, `items`, `rounds`, `votes`, `estimate_audits`, `idempotency_keys`. All timestamps `timestamptz` UTC. `transaction({ lockRoomId })` runs `SELECT ... FOR UPDATE` on the room row and increments `rooms.version` on commit. Rollback does not increment version. Tokens stored as SHA-256 hex only. RLS enabled and no `anon` policies, so the browser cannot query tables with the public key. Live tests that open `DATABASE_URL` run when that variable is set. When it is unset they are skipped, and `npm run verify` stays green.
+2. **`adapter-persistence-sqlite`.** Same `Persistence` port, backed by `node:sqlite`. `createSqlitePersistence()` opens a private `:memory:` database for each test instance. `createSqlitePersistence(localSqlitePath)` opens the gitignored file `data/local.sqlite` for a long-lived local stand-in. `describePersistenceContract` always runs against this adapter, including the 100 concurrent increments and the rollback cases. A missing Postgres server is not a reason to stop the pipeline.
+3. **`adapter-realtime-supabase`.** Server `RealtimePublisher.publish(roomId, event)`. Browser `RealtimeClient.subscribe` with `onEvent`, `onPresence`, `onStatus`. If the socket fails, status becomes `reconnecting`, then `polling` within 10s. Polling calls `GET /api/rooms/:code/state?since=v` every 2–3s. Heartbeat every 20s while polling. Events with `version > local + 1` or out of order trigger a snapshot fetch. The adapter does not inspect vote secrecy; the application guarantees payloads. A contract test still asserts no fixture event contains a card before reveal.
+4. **`adapter-issuetracker-manual`.** `importItems({ kind: 'text' | 'csv', content })`. Text: one item per line, skip blanks, strip leading `-`, `*`, or `1.`. CSV: RFC 4180 quotes, separator `,` or `;` auto-detected, BOM tolerated, headers `title|titulo|título`, `description|descricao|descrição`, `url|link`, `key|id|chave`. Missing title column → `MISSING_TITLE_COLUMN`. Over 500 lines or 1 MB → `LIMIT_EXCEEDED`. Strip control characters.
+5. **`adapter-exporter-csvjson`.** Formats `csv` and `json`. CSV is UTF-8 with BOM and comma separator. Cells starting with `=`, `+`, `-`, or `@` are prefixed with a single quote. JSON is pretty-stable key order for snapshot tests.
+6. **`adapter-system`.** `Clock` from `Date` (the only place `new Date()` is allowed). `IdGenerator`: ULID for entity ids, CSPRNG room codes from alphabet `23456789ABCDEFGHJKMNPQRSTUVWXYZ` length 8, 256-bit tokens as base64url. SHA-256 for session and host tokens. AES-256-GCM helper for later integration secrets (interface ready, unused by R1 product flows). In-memory or Postgres-backed `RateLimiter` implementing `hit(key, rule)`. JSON logger with `requestId`, `roomId`, `useCase`, `errorCode` and a redaction list: nickname, email, token, card, suit, comment.
 
 ---
 
@@ -33,7 +34,11 @@
 
 ### UC-1 — Contract suite against real Postgres
 
-**Given** a disposable Postgres (CI service or local Docker, not a native Node addon), **when** `describePersistenceContract` runs, **then** 100 concurrent increments on one room equal 100, and a thrown error inside the callback leaves version unchanged. Migrating from empty twice does not fail.
+**Given** a disposable Postgres (CI service or local Docker, not a native Node addon) and `DATABASE_URL` set, **when** `describePersistenceContract` runs, **then** 100 concurrent increments on one room equal 100, and a thrown error inside the callback leaves version unchanged. Migrating from empty twice does not fail. **Given** `DATABASE_URL` unset, **when** `npm run verify` runs, **then** those live cases are skipped and the gate does not stop.
+
+### UC-1b — Local SQLite stands in for the same port
+
+**Given** no Postgres process, **when** `describePersistenceContract` runs against `createSqlitePersistence()`, **then** the same lock, version, rollback, purge, and history cases pass on `node:sqlite`. The file stand-in is `data/local.sqlite` and is gitignored. This adapter does not replace Postgres in production.
 
 ### UC-2 — Realtime outage
 
@@ -72,12 +77,12 @@ Rate limiter bucket: key + window start + count. Window expiry resets the count.
 ## Technical design / how-to
 
 1. Add workspace packages with their own `package.json`. Each depends on `@fibonaipe/application` (types only) and its driver. None depends on another adapter.
-2. Use the `postgres` npm package (pure JS). Connection string from env `DATABASE_URL`, read only on the server. Pool size small (free tier: max 5, idle timeout short) to survive Neon/Supabase connection limits.
+2. Use the `postgres` npm package (pure JS). Connection string from env `DATABASE_URL`, read only on the server. Pool size small (free tier: max 5, idle timeout short) to survive Neon/Supabase connection limits. Do not install a database driver to unblock a machine that has no Postgres. The local stand-in is the separate `adapter-persistence-sqlite` package, using the `node:sqlite` already present on Node 24.
 3. RLS: `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` and do not create policies for `anon` or `authenticated`. The server connection uses a role that bypasses RLS or owns the tables. Document this in the migration comment.
 4. Supabase Realtime channel name is `room:{roomId}`. Presence payload is `{ participantId, online }` without votes. If Supabase is not configured, `RealtimeClient` starts in `polling` immediately. That is a valid free-tier mode.
 5. Polling interval 2500 ms with jitter. Backoff on HTTP errors up to 10s.
 6. CSV parser is a small state machine or a zero-native dependency. Do not add `node-gyp` packages.
-7. Wire nothing in React here. Composition root is the next spec's concern, but export factory functions `createPostgresPersistence(env)`, `createRealtime(env)`, etc.
+7. Wire nothing in React here. Composition root is the next spec's concern, but export factory functions `createPostgresPersistence(env)`, `createSqlitePersistence(filename?)`, `createRealtime(env)`, etc. `localSqlitePath` is `data/local.sqlite`.
 8. Free cron: document a scheduled HTTP call to the purge route with header `x-cron-secret`. The secret is compared in constant time. This spec ships the repository method the use case already calls; the route is in `api-and-room-entry-ui`.
 
 ---
@@ -87,6 +92,8 @@ Rate limiter bucket: key + window start + count. Window expiry resets the count.
 - `packages/adapter-persistence-postgres/migrations/001_r1_rooms.sql`
 - `packages/adapter-persistence-postgres/src/postgres-persistence.ts`
 - `packages/adapter-persistence-postgres/src/contract.integration.test.ts`
+- `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
+- `packages/adapter-persistence-sqlite/src/sqlite-persistence.test.ts`
 - `packages/adapter-realtime-supabase/src/publisher.ts`
 - `packages/adapter-realtime-supabase/src/client.ts`
 - `packages/adapter-issuetracker-manual/src/import-items.ts`
@@ -106,8 +113,9 @@ Rate limiter bucket: key + window start + count. Window expiry resets the count.
 
 | Given | When | Then |
 | :--- | :--- | :--- |
-| Contract factory pointing at Postgres | suite | lock, version, rollback pass |
-| Migrations applied twice | second run | success, no duplicate tables |
+| Contract factory pointing at Postgres and `DATABASE_URL` set | suite | lock, version, rollback pass |
+| `DATABASE_URL` unset | `npm run verify` | live Postgres cases skip; the SQLite adapter passes the same persistence contract |
+| Migrations applied twice with `DATABASE_URL` set | second run | success, no duplicate tables |
 | Provider down | subscribe | `polling` within 10s |
 | CSV `;` + accents | import | correct titles |
 | Cell `=1+1` | export CSV | leading `'` |
@@ -115,4 +123,4 @@ Rate limiter bucket: key + window start + count. Window expiry resets the count.
 | Log buffer of a vote flow | scan | no nickname, email, token, or card |
 | `better-sqlite3` in any package.json | `npm run verify` | fail |
 
-**QA-red:** contract tests and parser fixtures. **SE-green:** adapters. **QA-verify:** integration job green on free-compatible Postgres; no native addons.
+**QA-red:** contract tests and parser fixtures. **SE-green:** adapters, including the SQLite stand-in. **QA-verify:** local verify green without a running Postgres; integration job green on free-compatible Postgres when `DATABASE_URL` is set; no native addons.

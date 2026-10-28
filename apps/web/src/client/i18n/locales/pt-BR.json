@@ -8,8 +8,8 @@
   "header": {
     "status": {
       "connected": "Conectado",
-      "syncing": "Sincronizando",
-      "reconnecting": "Reconectando"
+      "syncing": "Sincronizando voto...",
+      "reconnecting": "Reconectando / Acordando servidor..."
     },
     "theme": {
       "label": "Tema",
@@ -35,6 +35,7 @@
     "joinRoomCodeLabel": "Código da sala",
     "joinRoomCodePlaceholder": "ABCD2345",
     "joinRoomCta": "Entrar na sala",
+    "enterWithCode": "Entrar com código",
     "features": {
       "suitsTitle": "Risco por naipe",
       "suitsBody": "O naipe mostra o risco ao lado do esforço.",
@@ -49,6 +50,77 @@
       "spades": "♠ Baixo",
       "diamonds": "♦ Insignificante"
     }
+  },
+  "create": {
+    "roomName": "Nome da sala",
+    "cards": "Cartas Fibonacci",
+    "suit": "Naipe",
+    "autoReveal": "Revelação automática",
+    "timer": "Tempo",
+    "average": "Média"
+  },
+  "share": {
+    "copy": "Copiar",
+    "showQr": "Mostrar QR",
+    "qrTitle": "QR da sala"
+  },
+  "join": {
+    "code": "Código da sala",
+    "nickname": "Apelido",
+    "role": "Papel",
+    "voter": "Votante",
+    "observer": "Observador",
+    "submit": "Entrar",
+    "home": "Início"
+  },
+  "planning": {
+    "table": "Mesa",
+    "deck": "Baralho",
+    "result": "Resultado",
+    "projector": "Projetor",
+    "you": "Você",
+    "online": "Online",
+    "offline": "Offline",
+    "voted": "Votou",
+    "waitingVote": "Aguardando",
+    "observer": "Observador",
+    "voter": "Votante",
+    "afk": "AFK",
+    "away": "Você está ausente",
+    "return": "Voltar a votar",
+    "reveal": "Revelar",
+    "revealed": "Rodada revelada",
+    "queue": "Fila",
+    "import": "Importar",
+    "settings": "Configurações",
+    "estimate": "Estimativa final",
+    "confirm": "Confirmar",
+    "add": "Adicionar",
+    "itemTitle": "Título",
+    "link": "Link",
+    "paste": "Colar texto ou CSV",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "moved": "{title} agora está na posição {position}",
+    "startTimer": "Iniciar tempo",
+    "mute": "Silenciar",
+    "unmute": "Ativar som",
+    "last10": "Últimos 10 segundos",
+    "suit": "Naipe",
+    "joker": "Coringa",
+    "clubs": "Paus Alto",
+    "hearts": "Copas Médio",
+    "spades": "Espadas Baixo",
+    "diamonds": "Ouros Insignificante",
+    "high": "Alto",
+    "medium": "Médio",
+    "low": "Baixo",
+    "trivial": "Insignificante",
+    "median": "Mediana",
+    "mean": "Média",
+    "divergence": "Divergência de naipe",
+    "whoVotes": "Quem vota muda na próxima rodada.",
+    "invalidLink": "Link inválido: somente http(s)."
   },
   "announcements": {
     "themeChanged": "Tema alterado para {theme}",

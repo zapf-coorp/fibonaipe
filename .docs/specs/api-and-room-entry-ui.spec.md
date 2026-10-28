@@ -98,7 +98,7 @@ Overlays: QR dialog and join form are mutually exclusive. Opening one closes the
 1. TanStack Router routes: `/`, `/r/$code`, `/r/$code/join`. Data loading via TanStack Query `queryKey: ['room', code, version]`.
 2. Mutations use `fetch` to same-origin `/api`. Credentials `include` so the cookie is sent.
 3. Hono app exported from `apps/web/src/server/app.ts`. Node listener for local dev; a fetch handler export for Workers/Vercel.
-4. Env schema: `DATABASE_URL`, `PUBLIC_ORIGIN`, `CRON_SECRET`, optional `SUPABASE_REALTIME_URL` and key. Missing realtime URL forces polling mode. Never expose service keys to the client bundle. Vite `import.meta.env` only for `VITE_` public flags.
+4. Env schema: `DATABASE_URL`, `PUBLIC_APP_URL`, `CRON_SECRET`, optional `SUPABASE_REALTIME_URL` and key. Missing realtime URL forces polling mode. Never expose service keys to the client bundle. Vite `import.meta.env` only for `VITE_` public flags.
 5. QR: small library or a tiny SVG encoder that stays inside the room-entry chunk. Do not call an external image API.
 6. i18n keys for every label and error `errors.ROOM_FULL`, etc. No hardcoded Portuguese in components; catalogs live in `pt-BR`.
 7. Playwright: 360 and 1280, axe on home and join, two-context join, offline simulation, and the HTTP leak test.

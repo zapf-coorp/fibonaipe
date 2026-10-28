@@ -8,8 +8,8 @@
   "header": {
     "status": {
       "connected": "Connected",
-      "syncing": "Syncing",
-      "reconnecting": "Reconnecting"
+      "syncing": "Syncing vote...",
+      "reconnecting": "Reconnecting / Waking server..."
     },
     "theme": {
       "label": "Theme",
@@ -35,6 +35,7 @@
     "joinRoomCodeLabel": "Room code",
     "joinRoomCodePlaceholder": "ABCD2345",
     "joinRoomCta": "Join room",
+    "enterWithCode": "Enter with code",
     "features": {
       "suitsTitle": "Risk by suit",
       "suitsBody": "The suit shows risk beside the effort.",
@@ -49,6 +50,77 @@
       "spades": "♠ Low",
       "diamonds": "♦ Insignificant"
     }
+  },
+  "create": {
+    "roomName": "Room name",
+    "cards": "Fibonacci cards",
+    "suit": "Suit",
+    "autoReveal": "Automatic reveal",
+    "timer": "Timer",
+    "average": "Average"
+  },
+  "share": {
+    "copy": "Copy",
+    "showQr": "Show QR",
+    "qrTitle": "Room QR"
+  },
+  "join": {
+    "code": "Room code",
+    "nickname": "Nickname",
+    "role": "Role",
+    "voter": "Voter",
+    "observer": "Observer",
+    "submit": "Enter",
+    "home": "Home"
+  },
+  "planning": {
+    "table": "Table",
+    "deck": "Deck",
+    "result": "Result",
+    "projector": "Projector",
+    "you": "You",
+    "online": "Online",
+    "offline": "Offline",
+    "voted": "Voted",
+    "waitingVote": "Waiting",
+    "observer": "Observer",
+    "voter": "Voter",
+    "afk": "AFK",
+    "away": "You are away",
+    "return": "Return to voting",
+    "reveal": "Reveal",
+    "revealed": "Round revealed",
+    "queue": "Queue",
+    "import": "Import",
+    "settings": "Settings",
+    "estimate": "Final estimate",
+    "confirm": "Confirm",
+    "add": "Add",
+    "itemTitle": "Title",
+    "link": "Link",
+    "paste": "Paste text or CSV",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "moved": "{title} is now in position {position}",
+    "startTimer": "Start timer",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "last10": "Last 10 seconds",
+    "suit": "Suit",
+    "joker": "Joker",
+    "clubs": "Clubs High",
+    "hearts": "Hearts Medium",
+    "spades": "Spades Low",
+    "diamonds": "Diamonds Trivial",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "trivial": "Trivial",
+    "median": "Median",
+    "mean": "Mean",
+    "divergence": "Suit divergence",
+    "whoVotes": "Who votes changes on the next round.",
+    "invalidLink": "Invalid link: http(s) only."
   },
   "announcements": {
     "themeChanged": "Theme changed to {theme}",

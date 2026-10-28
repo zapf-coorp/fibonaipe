@@ -5,6 +5,7 @@ const locales = ["pt-BR", "en-US", "es-ES"];
 const localeDir = join(process.cwd(), "apps/web/src/client/i18n/locales");
 const scanRoots = [
   join(process.cwd(), "apps/web/src/client"),
+  join(process.cwd(), "apps/web/src/features"),
   join(process.cwd(), "packages/domain/src"),
   join(process.cwd(), "packages/application/src"),
 ];

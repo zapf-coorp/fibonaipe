@@ -9,6 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fibonaipe/adapter-exporter-csvjson": "*",
+    "@fibonaipe/adapter-issuetracker-manual": "*",
+    "@fibonaipe/adapter-persistence-postgres": "*",
+    "@fibonaipe/adapter-persistence-sqlite": "*",
+    "@fibonaipe/adapter-system": "*",
     "@fibonaipe/application": "*",
     "@fibonaipe/domain": "*",
     "@fibonaipe/testing": "*",

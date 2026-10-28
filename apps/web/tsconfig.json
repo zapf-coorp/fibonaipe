@@ -13,6 +13,11 @@
   "references": [
     { "path": "../../packages/domain" },
     { "path": "../../packages/application" },
-    { "path": "../../packages/testing" }
+    { "path": "../../packages/testing" },
+    { "path": "../../packages/adapter-persistence-postgres" },
+    { "path": "../../packages/adapter-persistence-sqlite" },
+    { "path": "../../packages/adapter-issuetracker-manual" },
+    { "path": "../../packages/adapter-exporter-csvjson" },
+    { "path": "../../packages/adapter-system" }
   ]
 }

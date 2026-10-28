@@ -1,6 +1,17 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
 
+async function readRequestBody(req: NodeJS.ReadableStream & { method?: string }): Promise<Uint8Array | null> {
+  const method = req.method?.toUpperCase() ?? "GET";
+  if (method === "GET" || method === "HEAD") return null;
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  if (chunks.length === 0) return null;
+  return Buffer.concat(chunks);
+}
+
 function honoDevApi(): Plugin {
   return {
     name: "fibonaipe-hono-api",
@@ -12,20 +23,31 @@ function honoDevApi(): Plugin {
           next();
           return;
         }
-        void import("./src/server/dev-gateway.ts")
-          .then(async ({ createDevGateway }) => {
+        void server
+          .ssrLoadModule("/src/server/dev-gateway.ts")
+          .then(async (loaded: { createDevGateway: () => { fetch: (request: Request) => Promise<Response> } }) => {
+            const { createDevGateway } = loaded;
             const headers = new Headers();
             for (const [key, value] of Object.entries(req.headers)) {
               if (typeof value === "string") headers.set(key, value);
               else if (Array.isArray(value)) headers.set(key, value.join(", "));
             }
+            headers.delete("content-length");
             const host = headers.get("host") ?? "localhost:5173";
-            const request = new Request(`http://${host}${url}`, { method: req.method, headers });
+            const body = await readRequestBody(req);
+            const request = new Request(`http://${host}${url}`, {
+              method: req.method,
+              headers,
+              body: body ?? undefined,
+            });
             const response = await createDevGateway().fetch(request);
             res.statusCode = response.status;
             response.headers.forEach((value, key) => {
+              if (key.toLowerCase() === "set-cookie") return;
               res.setHeader(key, value);
             });
+            const cookies = typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : [];
+            if (cookies.length > 0) res.setHeader("set-cookie", cookies);
             res.end(new Uint8Array(await response.arrayBuffer()));
           })
           .catch((error: unknown) => {
@@ -59,5 +81,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+  },
+  ssr: {
+    noExternal: [/^@fibonaipe\//],
   },
 });

@@ -28,6 +28,10 @@ const catalogs: Record<SupportedLocale, Catalog> = {
 
 let currentLocale: SupportedLocale = "pt-BR";
 
+export function setCurrentLocale(locale: SupportedLocale): void {
+  currentLocale = locale;
+}
+
 function isSupportedLocale(value: string | null): value is SupportedLocale {
   return value === "pt-BR" || value === "en-US" || value === "es-ES";
 }

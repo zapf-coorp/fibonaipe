@@ -8,8 +8,8 @@
   "header": {
     "status": {
       "connected": "Conectado",
-      "syncing": "Sincronizando",
-      "reconnecting": "Reconectando"
+      "syncing": "Sincronizando voto...",
+      "reconnecting": "Reconectando / Despertando servidor..."
     },
     "theme": {
       "label": "Tema",
@@ -35,6 +35,7 @@
     "joinRoomCodeLabel": "Código de la sala",
     "joinRoomCodePlaceholder": "ABCD2345",
     "joinRoomCta": "Entrar en la sala",
+    "enterWithCode": "Entrar con código",
     "features": {
       "suitsTitle": "Riesgo por palo",
       "suitsBody": "El palo muestra el riesgo junto al esfuerzo.",
@@ -49,6 +50,77 @@
       "spades": "♠ Bajo",
       "diamonds": "♦ Insignificante"
     }
+  },
+  "create": {
+    "roomName": "Nombre de la sala",
+    "cards": "Cartas Fibonacci",
+    "suit": "Palo",
+    "autoReveal": "Revelación automática",
+    "timer": "Tiempo",
+    "average": "Media"
+  },
+  "share": {
+    "copy": "Copiar",
+    "showQr": "Mostrar QR",
+    "qrTitle": "QR de la sala"
+  },
+  "join": {
+    "code": "Código de la sala",
+    "nickname": "Apodo",
+    "role": "Papel",
+    "voter": "Votante",
+    "observer": "Observador",
+    "submit": "Entrar",
+    "home": "Inicio"
+  },
+  "planning": {
+    "table": "Mesa",
+    "deck": "Baraja",
+    "result": "Resultado",
+    "projector": "Proyector",
+    "you": "Tú",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "voted": "Votó",
+    "waitingVote": "En espera",
+    "observer": "Observador",
+    "voter": "Votante",
+    "afk": "AFK",
+    "away": "Estás ausente",
+    "return": "Volver a votar",
+    "reveal": "Revelar",
+    "revealed": "Ronda revelada",
+    "queue": "Fila",
+    "import": "Importar",
+    "settings": "Configuración",
+    "estimate": "Estimación final",
+    "confirm": "Confirmar",
+    "add": "Agregar",
+    "itemTitle": "Título",
+    "link": "Enlace",
+    "paste": "Pegar texto o CSV",
+    "moveUp": "Mover hacia arriba",
+    "moveDown": "Mover hacia abajo",
+    "moved": "{title} ahora está en la posición {position}",
+    "startTimer": "Iniciar tiempo",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "last10": "Últimos 10 segundos",
+    "suit": "Palo",
+    "joker": "Comodín",
+    "clubs": "Tréboles Alto",
+    "hearts": "Corazones Medio",
+    "spades": "Espadas Bajo",
+    "diamonds": "Diamantes Insignificante",
+    "high": "Alto",
+    "medium": "Medio",
+    "low": "Bajo",
+    "trivial": "Insignificante",
+    "median": "Mediana",
+    "mean": "Media",
+    "divergence": "Divergencia de palo",
+    "whoVotes": "Quién vota cambia en la próxima ronda.",
+    "invalidLink": "Enlace inválido: solo http(s)."
   },
   "announcements": {
     "themeChanged": "Tema cambiado a {theme}",

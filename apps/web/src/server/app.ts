@@ -2,6 +2,8 @@ import { Hono, type Context } from "hono";
 import { createAppContainer, type AppContainer } from "./composition.js";
 import { httpErrorBody, jsonResponse } from "./http-error.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerAuthTeamRoutes } from "./routes/auth-teams.js";
+import { registerRoomRoutes } from "./routes/rooms.js";
 
 const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const ORIGIN_HEADER = "x-fibonaipe-origin";
@@ -14,6 +16,8 @@ export function createApp(container: AppContainer = createAppContainer()): Hono 
     await next();
   });
   registerHealthRoutes(app, container);
+  registerRoomRoutes(app, container);
+  registerAuthTeamRoutes(app, container);
   app.on(["POST", "PUT", "PATCH", "DELETE"], "*", (c) => {
     const denied = crossOriginDenied(c, container);
     if (denied) return denied;

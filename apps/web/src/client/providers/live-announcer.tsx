@@ -42,10 +42,22 @@ export function LiveAnnouncerProvider({ children }: { readonly children: ReactNo
   return (
     <LiveAnnouncerContext.Provider value={value}>
       {children}
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-hidden={polite[0] ? undefined : true}
+        className="sr-only"
+      >
         {polite[0]}
       </div>
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-hidden={polite[1] ? undefined : true}
+        className="sr-only"
+      >
         {polite[1]}
       </div>
       <div role="alert" aria-live="assertive" aria-atomic="true" className="sr-only">

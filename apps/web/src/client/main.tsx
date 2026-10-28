@@ -1,3 +1,4 @@
+import "./connection/loopback-guard.js";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
@@ -28,12 +29,19 @@ function App() {
   );
 }
 
+const bootGeneration = Symbol.for("fibonaipe.client-boot");
+const bootScope = globalThis as typeof globalThis & { [bootGeneration]?: number };
+const bootToken = (bootScope[bootGeneration] ?? 0) + 1;
+bootScope[bootGeneration] = bootToken;
+
 const rootElement = document.getElementById("root");
 if (rootElement) {
   await router.load();
-  flushSync(() => {
-    createRoot(rootElement).render(<App />);
-  });
+  if (bootScope[bootGeneration] === bootToken && rootElement.isConnected !== false) {
+    flushSync(() => {
+      createRoot(rootElement).render(<App />);
+    });
+  }
 }
 
 registerServiceWorker();

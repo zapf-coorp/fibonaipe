@@ -1,0 +1,15 @@
+.screen {
+  --text-display: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 100%;
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-display);
+  line-height: 1.1;
+}

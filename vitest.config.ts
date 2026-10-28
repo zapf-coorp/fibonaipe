@@ -42,6 +42,7 @@ export default defineConfig({
   plugins: [missingShellPlugin()],
   test: {
     include: ["packages/**/*.test.ts", "tools/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx"],
+    setupFiles: ["apps/web/test/support/dom-matchers.ts"],
     pool: "forks",
     maxWorkers: 1,
     coverage: {

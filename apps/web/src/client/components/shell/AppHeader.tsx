@@ -2,6 +2,7 @@ import { useI18n, type SupportedLocale, type TranslationKey } from "../../i18n/i
 import { useLiveAnnouncer } from "../../providers/live-announcer.js";
 import { useTheme, type ThemeMode } from "../../providers/theme-provider.js";
 import { touchTargetStyle } from "../../touch-target.js";
+import { useConnectionStatus } from "../../connection/status.js";
 import { ConnectionStatusPill } from "../status/ConnectionStatusPill.js";
 import styles from "./AppHeader.module.css";
 
@@ -15,13 +16,14 @@ const THEME_CHOICES: readonly ThemeMode[] = ["light", "dark", "system"];
 
 export function AppHeader() {
   const { t } = useI18n();
+  const connection = useConnectionStatus();
   return (
     <header role="banner" className={styles.header}>
       <a href="/" className={styles.control} style={touchTargetStyle} aria-label={t("app.title")}>
         <span aria-hidden="true">♠♣♥♦</span>
         {t("app.title")}
       </a>
-      <ConnectionStatusPill />
+      <ConnectionStatusPill status={connection} />
       <LocaleSelector />
       <ThemeToggle />
     </header>

@@ -87,6 +87,12 @@ export {
   type SystemRole,
   type TeamRole,
 } from "./policy/can.js";
+export { Invite, InviteBuilder, type InviteAcceptance } from "./identity/invite.js";
+export { Membership, MembershipBuilder, changeMemberRole, isTeamRole, removeMember } from "./identity/membership.js";
+export { Team, TeamBuilder, type TeamProps } from "./identity/team.js";
+export { User, UserBuilder, normalizeUserEmail, type UserProps, type UserStatus, type UserTheme } from "./identity/user.js";
+export { HistoryEntry, type HistoryEntryProps } from "./history/history-entry.js";
+export { HistoryEntryBuilder } from "./history/history-entry-builder.js";
 export { Room } from "./room/room.js";
 export { Participant, type ParticipantMode, type ParticipantProps } from "./room/participant.js";
 export { RoomBuilder } from "./room/room-builder.js";

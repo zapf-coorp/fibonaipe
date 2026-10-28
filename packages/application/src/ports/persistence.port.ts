@@ -3,7 +3,9 @@ import type {
   ClientOpId,
   EstimateAuditId,
   HistoryEntryId,
+  InviteId,
   ItemId,
+  OrganizationId,
   ParticipantId,
   Result,
   RoomCode,
@@ -11,6 +13,7 @@ import type {
   RoundId,
   SprintId,
   TeamId,
+  TeamRole,
   UserId,
 } from "@fibonaipe/domain";
 
@@ -50,13 +53,42 @@ export interface AggregatedHistoryRecord {
   readonly roundId: RoundId;
   readonly dominantSuit: string;
   readonly stats: AggregatedRoundStats;
+  readonly teamId?: TeamId | null;
+  readonly title?: string;
+  readonly externalKey?: string | null;
+  readonly figureTag?: string | null;
+  readonly roundNumber?: number;
+  readonly mean?: number | null;
+  readonly median?: number | null;
+  readonly modes?: readonly number[];
+  readonly min?: number | null;
+  readonly max?: number | null;
+  readonly consensus?: boolean;
+  readonly nearConsensus?: boolean;
+  readonly suitDistribution?: {
+    readonly clubs: number;
+    readonly hearts: number;
+    readonly spades: number;
+    readonly diamonds: number;
+  };
+  readonly suitDivergence?: boolean;
+  readonly specialCounts?: {
+    readonly "?": number;
+    readonly Coringa: number;
+    readonly AFK: number;
+  };
+  readonly finalEstimate?: string;
+  readonly finalSuit?: string | null;
+  readonly estimatedAt?: Date;
+  readonly sprintId?: SprintId | null;
+  readonly suit?: string;
 }
 
 export interface EstimateAuditRecord {
   readonly id: EstimateAuditId;
   readonly roomId: RoomId;
   readonly itemId: ItemId;
-  readonly changedBy: ParticipantId;
+  readonly changedBy: string;
   readonly at: Date;
   readonly from: string | null;
   readonly to: string;
@@ -65,6 +97,23 @@ export interface EstimateAuditRecord {
 export interface PersistedTeamRecord {
   readonly id: TeamId;
   readonly name: string;
+  readonly organizationId?: OrganizationId;
+}
+
+export interface PersistedMembershipRecord {
+  readonly userId: UserId;
+  readonly teamId: TeamId;
+  readonly role: TeamRole;
+}
+
+export interface PersistedInviteRecord {
+  readonly id: InviteId;
+  readonly teamId: TeamId;
+  readonly role: TeamRole;
+  readonly tokenHash: string;
+  readonly expiresAt: Date;
+  readonly revokedAt: Date | null;
+  readonly acceptedBy: UserId | null;
 }
 
 export interface PersistedSprintRecord {
@@ -77,11 +126,16 @@ export interface PersistedUserRecord {
   readonly id: UserId;
   readonly email: string;
   readonly displayName: string;
+  readonly status?: "active" | "suspended";
+  readonly isSuperAdmin?: boolean;
+  readonly locale?: string;
+  readonly theme?: string;
 }
 
 export interface HistoryQuery {
-  readonly roomId: RoomId;
+  readonly roomId?: RoomId;
   readonly itemId?: ItemId;
+  readonly teamId?: TeamId;
 }
 
 export interface RoomRepository {
@@ -106,6 +160,19 @@ export interface HistoryRepository {
 export interface TeamRepository {
   findById(id: TeamId): Promise<PersistedTeamRecord | null>;
   save(team: PersistedTeamRecord): Promise<void>;
+  delete(id: TeamId): Promise<void>;
+}
+
+export interface MembershipRepository {
+  listByTeam(teamId: TeamId): Promise<readonly PersistedMembershipRecord[]>;
+  listByUser(userId: UserId): Promise<readonly PersistedMembershipRecord[]>;
+  save(membership: PersistedMembershipRecord): Promise<void>;
+  delete(userId: UserId, teamId: TeamId): Promise<void>;
+}
+
+export interface InviteRepository {
+  save(invite: PersistedInviteRecord): Promise<void>;
+  findByTokenHash(tokenHash: string): Promise<PersistedInviteRecord | null>;
 }
 
 export interface SprintRepository {
@@ -115,13 +182,17 @@ export interface SprintRepository {
 
 export interface UserRepository {
   findById(id: UserId): Promise<PersistedUserRecord | null>;
+  findByEmail(email: string): Promise<PersistedUserRecord | null>;
   save(user: PersistedUserRecord): Promise<void>;
+  delete(id: UserId): Promise<void>;
 }
 
 export interface TransactionRepos {
   readonly rooms: RoomRepository;
   readonly idempotency: IdempotencyRepository;
   readonly teams: TeamRepository;
+  readonly memberships: MembershipRepository;
+  readonly invites: InviteRepository;
   readonly history: HistoryRepository;
   readonly sprints: SprintRepository;
   readonly users: UserRepository;

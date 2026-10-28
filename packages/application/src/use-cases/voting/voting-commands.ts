@@ -1,4 +1,5 @@
 import { type AppError, type PlanningEvent, type Result } from "@fibonaipe/domain";
+import { RecordAggregatedHistory } from "../history/record-aggregated-history.js";
 import {
   beginOp,
   commitPlanning,
@@ -130,15 +131,32 @@ export class SetFinalEstimate {
   constructor(private readonly deps: UseCaseDependencies) {}
 
   async execute(input: FinalEstimateInput): Promise<Result<CommandResult, AppError>> {
-    return runVote(this.deps, "SetFinalEstimate", input.code, input.actorParticipantId, input.clientOpId, (ctx) =>
-      ctx.loaded.table.setFinalEstimate({
+    const allowed = await limitParticipant(this.deps, input.actorParticipantId, "SetFinalEstimate");
+    if (!allowed.ok) return allowed;
+    return mutate(this.deps, input.code, "SetFinalEstimate", async (ctx) => {
+      const op = await beginOp(ctx, input.actorParticipantId, input.clientOpId);
+      if (!op.ok) return op;
+      if (op.value === "replay") return replay();
+      const changed = ctx.loaded.table.setFinalEstimate({
         actorParticipantId: input.actorParticipantId,
         itemId: input.itemId,
         label: input.label,
         suit: input.suit,
         now: ctx.now,
-      }),
-    );
+      });
+      if (!changed.ok) return changed;
+      if (changed.value.events.length > 0 && changed.value.table.room.kind === "team") {
+        const recorded = await new RecordAggregatedHistory(this.deps).append(
+          ctx.repos,
+          changed.value.table,
+          input.itemId,
+          input.label,
+          ctx.now,
+        );
+        if (!recorded.ok) return recorded;
+      }
+      return commitPlanning(ctx, input.actorParticipantId, input.clientOpId, changed.value.table, changed.value.events, {});
+    });
   }
 }
 

@@ -6,6 +6,7 @@ import {
   ok,
   type AppError,
   type HistoryEntryId,
+  type InviteId,
   type ItemId,
   type Result,
   type RoomCode,
@@ -13,6 +14,7 @@ import {
   type RoundId,
   type SprintId,
   type TeamId,
+  type TeamRole,
   type UserId,
 } from "@fibonaipe/domain";
 import type {
@@ -20,6 +22,8 @@ import type {
   EstimateAuditRecord,
   HistoryQuery,
   Persistence,
+  PersistedInviteRecord,
+  PersistedMembershipRecord,
   PersistedRoomRecord,
   PersistedSprintRecord,
   PersistedTeamRecord,
@@ -55,6 +59,8 @@ interface HistoryRow {
   dominant_suit: string;
   vote_count: number | string;
   consensus: boolean;
+  team_id: string | null;
+  detail_json: string | null;
 }
 
 const pools = new Map<string, postgres.Sql>();
@@ -204,9 +210,10 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
     },
     history: {
       async appendAggregated(entry) {
+        const detail = historyDetail(entry);
         await tx`
           insert into aggregated_history (
-            id, room_id, item_id, round_id, dominant_suit, vote_count, consensus
+            id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
           ) values (
             ${entry.id},
             ${entry.roomId},
@@ -214,7 +221,9 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
             ${entry.roundId},
             ${entry.dominantSuit},
             ${entry.stats.voteCount},
-            ${entry.stats.consensus}
+            ${entry.stats.consensus},
+            ${entry.teamId ?? null},
+            ${detail}
           )
           on conflict (id) do update set
             room_id = excluded.room_id,
@@ -222,7 +231,9 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
             round_id = excluded.round_id,
             dominant_suit = excluded.dominant_suit,
             vote_count = excluded.vote_count,
-            consensus = excluded.consensus
+            consensus = excluded.consensus,
+            team_id = excluded.team_id,
+            detail_json = excluded.detail_json
         `;
       },
       async query(filter) {
@@ -230,7 +241,7 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
       },
       async findById(id) {
         const rows = await tx<HistoryRow[]>`
-          select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus
+          select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
           from aggregated_history where id = ${id}
         `;
         const row = rows[0];
@@ -242,13 +253,59 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
     },
     teams: {
       async findById(id) {
-        const rows = await tx<{ id: string; name: string }[]>`select id, name from teams where id = ${id}`;
+        const rows = await tx<{ id: string; name: string; organization_id: string | null }[]>`
+          select id, name, organization_id from teams where id = ${id}
+        `;
         const row = rows[0];
         if (!row) return null;
-        return { id: row.id as TeamId, name: row.name };
+        return {
+          id: row.id as TeamId,
+          name: row.name,
+          organizationId: (row.organization_id ?? "org-mvp") as PersistedTeamRecord["organizationId"],
+        };
       },
       async save(team) {
         await saveTeam(tx, team);
+      },
+      async delete(id) {
+        await tx`delete from teams where id = ${id}`;
+      },
+    },
+    memberships: {
+      async listByTeam(teamId) {
+        const rows = await tx<MembershipRow[]>`
+          select user_id, team_id, role from memberships where team_id = ${teamId}
+        `;
+        return rows.map((row) => mapMembership(row));
+      },
+      async listByUser(userId) {
+        const rows = await tx<MembershipRow[]>`
+          select user_id, team_id, role from memberships where user_id = ${userId}
+        `;
+        return rows.map((row) => mapMembership(row));
+      },
+      async save(membership) {
+        await tx`
+          insert into memberships (user_id, team_id, role)
+          values (${membership.userId}, ${membership.teamId}, ${membership.role})
+          on conflict (user_id, team_id) do update set role = excluded.role
+        `;
+      },
+      async delete(userId, teamId) {
+        await tx`delete from memberships where user_id = ${userId} and team_id = ${teamId}`;
+      },
+    },
+    invites: {
+      async save(invite) {
+        await saveInvite(tx, invite);
+      },
+      async findByTokenHash(tokenHash) {
+        const rows = await tx<InviteRow[]>`
+          select id, team_id, role, token_hash, expires_at, revoked_at, accepted_by
+          from invites where token_hash = ${tokenHash}
+        `;
+        const row = rows[0];
+        return row ? mapInvite(row) : null;
       },
     },
     sprints: {
@@ -266,15 +323,26 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
     },
     users: {
       async findById(id) {
-        const rows = await tx<{ id: string; email: string; display_name: string }[]>`
-          select id, email, display_name from users where id = ${id}
+        const rows = await tx<UserRow[]>`
+          select id, email, display_name, status, is_super_admin, locale, theme
+          from users where id = ${id}
         `;
         const row = rows[0];
-        if (!row) return null;
-        return { id: row.id as UserId, email: row.email, displayName: row.display_name };
+        return row ? mapUser(row) : null;
+      },
+      async findByEmail(email) {
+        const rows = await tx<UserRow[]>`
+          select id, email, display_name, status, is_super_admin, locale, theme
+          from users where lower(email) = ${email.trim().toLowerCase()}
+        `;
+        const row = rows[0];
+        return row ? mapUser(row) : null;
       },
       async save(user) {
         await saveUser(tx, user);
+      },
+      async delete(id) {
+        await tx`delete from users where id = ${id}`;
       },
     },
   };
@@ -376,18 +444,42 @@ async function deleteExpiredAnonymous(tx: Sql, before: Date): Promise<number> {
 }
 
 async function queryHistory(tx: Sql, filter: HistoryQuery): Promise<readonly AggregatedHistoryRecord[]> {
-  const rows =
-    filter.itemId === undefined
-      ? await tx<HistoryRow[]>`
-          select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus
-          from aggregated_history where room_id = ${filter.roomId}
-        `
-      : await tx<HistoryRow[]>`
-          select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus
-          from aggregated_history
-          where room_id = ${filter.roomId} and item_id = ${filter.itemId}
-        `;
+  const rows = await selectHistory(tx, filter);
   return rows.map((row) => mapHistory(row));
+}
+
+async function selectHistory(tx: Sql, filter: HistoryQuery): Promise<HistoryRow[]> {
+  if (filter.teamId !== undefined && filter.itemId !== undefined) {
+    return tx<HistoryRow[]>`
+      select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
+      from aggregated_history where team_id = ${filter.teamId} and item_id = ${filter.itemId}
+    `;
+  }
+  if (filter.teamId !== undefined) {
+    return tx<HistoryRow[]>`
+      select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
+      from aggregated_history where team_id = ${filter.teamId}
+    `;
+  }
+  if (filter.roomId !== undefined && filter.itemId !== undefined) {
+    return tx<HistoryRow[]>`
+      select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
+      from aggregated_history where room_id = ${filter.roomId} and item_id = ${filter.itemId}
+    `;
+  }
+  if (filter.roomId !== undefined) {
+    return tx<HistoryRow[]>`
+      select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
+      from aggregated_history where room_id = ${filter.roomId}
+    `;
+  }
+  if (filter.itemId !== undefined) {
+    return tx<HistoryRow[]>`
+      select id, room_id, item_id, round_id, dominant_suit, vote_count, consensus, team_id, detail_json
+      from aggregated_history where item_id = ${filter.itemId}
+    `;
+  }
+  return [];
 }
 
 async function saveAudit(tx: Sql, audit: EstimateAuditRecord): Promise<void> {
@@ -407,9 +499,10 @@ async function saveAudit(tx: Sql, audit: EstimateAuditRecord): Promise<void> {
 }
 
 async function saveTeam(tx: Sql, team: PersistedTeamRecord): Promise<void> {
+  const organizationId = team.organizationId ?? "org-mvp";
   await tx`
-    insert into teams (id, name) values (${team.id}, ${team.name})
-    on conflict (id) do update set name = excluded.name
+    insert into teams (id, name, organization_id) values (${team.id}, ${team.name}, ${organizationId})
+    on conflict (id) do update set name = excluded.name, organization_id = excluded.organization_id
   `;
 }
 
@@ -422,8 +515,99 @@ async function saveSprint(tx: Sql, sprint: PersistedSprintRecord): Promise<void>
 
 async function saveUser(tx: Sql, user: PersistedUserRecord): Promise<void> {
   await tx`
-    insert into users (id, email, display_name) values (${user.id}, ${user.email}, ${user.displayName})
-    on conflict (id) do update set email = excluded.email, display_name = excluded.display_name
+    insert into users (id, email, display_name, status, is_super_admin, locale, theme)
+    values (
+      ${user.id},
+      ${user.email},
+      ${user.displayName},
+      ${user.status ?? "active"},
+      ${user.isSuperAdmin === true},
+      ${user.locale ?? "pt-BR"},
+      ${user.theme ?? "system"}
+    )
+    on conflict (id) do update set
+      email = excluded.email,
+      display_name = excluded.display_name,
+      status = excluded.status,
+      is_super_admin = excluded.is_super_admin,
+      locale = excluded.locale,
+      theme = excluded.theme
+  `;
+}
+
+interface MembershipRow {
+  user_id: string;
+  team_id: string;
+  role: string;
+}
+
+interface InviteRow {
+  id: string;
+  team_id: string;
+  role: string;
+  token_hash: string;
+  expires_at: Date | string;
+  revoked_at: Date | string | null;
+  accepted_by: string | null;
+}
+
+interface UserRow {
+  id: string;
+  email: string;
+  display_name: string;
+  status: string;
+  is_super_admin: boolean;
+  locale: string;
+  theme: string;
+}
+
+function mapMembership(row: MembershipRow): PersistedMembershipRecord {
+  return { userId: row.user_id as UserId, teamId: row.team_id as TeamId, role: row.role as TeamRole };
+}
+
+function mapInvite(row: InviteRow): PersistedInviteRecord {
+  return {
+    id: row.id as InviteId,
+    teamId: row.team_id as TeamId,
+    role: row.role as TeamRole,
+    tokenHash: row.token_hash,
+    expiresAt: asDate(row.expires_at),
+    revokedAt: row.revoked_at === null ? null : asDate(row.revoked_at),
+    acceptedBy: row.accepted_by === null ? null : (row.accepted_by as UserId),
+  };
+}
+
+function mapUser(row: UserRow): PersistedUserRecord {
+  return {
+    id: row.id as UserId,
+    email: row.email,
+    displayName: row.display_name,
+    status: row.status === "suspended" ? "suspended" : "active",
+    isSuperAdmin: row.is_super_admin === true,
+    locale: row.locale,
+    theme: row.theme,
+  };
+}
+
+async function saveInvite(tx: Sql, invite: PersistedInviteRecord): Promise<void> {
+  await tx`
+    insert into invites (id, team_id, role, token_hash, expires_at, revoked_at, accepted_by)
+    values (
+      ${invite.id},
+      ${invite.teamId},
+      ${invite.role},
+      ${invite.tokenHash},
+      ${invite.expiresAt},
+      ${invite.revokedAt},
+      ${invite.acceptedBy}
+    )
+    on conflict (id) do update set
+      team_id = excluded.team_id,
+      role = excluded.role,
+      token_hash = excluded.token_hash,
+      expires_at = excluded.expires_at,
+      revoked_at = excluded.revoked_at,
+      accepted_by = excluded.accepted_by
   `;
 }
 
@@ -443,17 +627,55 @@ function mapRoom(row: RoomRow, items: readonly ItemRow[]): PersistedRoomRecord {
 }
 
 function mapHistory(row: HistoryRow): AggregatedHistoryRecord {
-  return {
-    id: row.id as HistoryEntryId,
-    roomId: row.room_id as RoomId,
-    itemId: row.item_id as ItemId,
-    roundId: row.round_id as RoundId,
-    dominantSuit: row.dominant_suit,
-    stats: {
-      voteCount: asNumber(row.vote_count),
-      consensus: row.consensus,
+  return applyHistoryDetail(
+    {
+      id: row.id as HistoryEntryId,
+      roomId: row.room_id as RoomId,
+      itemId: row.item_id as ItemId,
+      roundId: row.round_id as RoundId,
+      dominantSuit: row.dominant_suit,
+      stats: {
+        voteCount: asNumber(row.vote_count),
+        consensus: row.consensus,
+      },
     },
-  };
+    row.detail_json,
+    row.team_id,
+  );
+}
+
+const HISTORY_BASE_KEYS = new Set(["id", "roomId", "itemId", "roundId", "dominantSuit", "stats"]);
+
+function historyDetail(entry: AggregatedHistoryRecord): string | null {
+  const extra: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(entry)) {
+    if (HISTORY_BASE_KEYS.has(key) || value === undefined) continue;
+    extra[key] = value;
+  }
+  return Object.keys(extra).length === 0 ? null : JSON.stringify(extra);
+}
+
+function applyHistoryDetail(base: AggregatedHistoryRecord, detail: string | null, teamId: string | null): AggregatedHistoryRecord {
+  const extra = parseHistoryDetail(detail);
+  const merged = extra ? { ...base, ...extra } : base;
+  if (teamId !== null && merged.teamId === undefined) {
+    return { ...merged, teamId: teamId as AggregatedHistoryRecord["teamId"] };
+  }
+  return merged;
+}
+
+function parseHistoryDetail(detail: string | null): Record<string, unknown> | null {
+  if (detail === null || detail.length === 0) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(detail);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+  const record = parsed as Record<string, unknown>;
+  if (typeof record.estimatedAt === "string") record.estimatedAt = new Date(record.estimatedAt);
+  return record;
 }
 
 function asDate(value: Date | string): Date {

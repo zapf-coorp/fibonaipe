@@ -1,10 +1,14 @@
-import { ok, type AppError, type ClientOpId, type ParticipantId, type Result, type RoomId } from "@fibonaipe/domain";
+import { ok, type AppError, type ClientOpId, type ParticipantId, type Result, type RoomId, type TeamId, type UserId } from "@fibonaipe/domain";
 import type {
   AggregatedHistoryRecord,
   EstimateAuditRecord,
   HistoryQuery,
   IdempotencyRecord,
+  InviteRepository,
+  MembershipRepository,
   Persistence,
+  PersistedInviteRecord,
+  PersistedMembershipRecord,
   PersistedRoomRecord,
   PersistedSprintRecord,
   PersistedTeamRecord,
@@ -18,6 +22,8 @@ interface MemoryStore {
   rooms: Map<string, PersistedRoomRecord>;
   idempotency: Map<string, IdempotencyRecord>;
   teams: Map<string, PersistedTeamRecord>;
+  memberships: Map<string, PersistedMembershipRecord>;
+  invites: Map<string, PersistedInviteRecord>;
   history: Map<string, AggregatedHistoryRecord>;
   audits: Map<string, EstimateAuditRecord>;
   sprints: Map<string, PersistedSprintRecord>;
@@ -29,6 +35,8 @@ interface DirtySet {
   deletedRooms: Set<string>;
   idempotency: Set<string>;
   teams: Set<string>;
+  memberships: Set<string>;
+  invites: Set<string>;
   history: Set<string>;
   audits: Set<string>;
   sprints: Set<string>;
@@ -96,6 +104,8 @@ export class InMemoryPersistence implements Persistence {
     }
     patch(this.store.idempotency, working.idempotency, dirty.idempotency);
     patch(this.store.teams, working.teams, dirty.teams);
+    patch(this.store.memberships, working.memberships, dirty.memberships);
+    patch(this.store.invites, working.invites, dirty.invites);
     patch(this.store.history, working.history, dirty.history);
     patch(this.store.audits, working.audits, dirty.audits);
     patch(this.store.sprints, working.sprints, dirty.sprints);
@@ -163,7 +173,13 @@ function createRepos(
         working.teams.set(copy.id, copy);
         dirty.teams.add(copy.id);
       },
+      async delete(id) {
+        working.teams.delete(id);
+        dirty.teams.add(id);
+      },
     },
+    memberships: membershipRepos(working, dirty),
+    invites: inviteRepos(working, dirty),
     history: {
       async appendAggregated(entry) {
         const copy = cloneData(entry);
@@ -198,18 +214,30 @@ function createRepos(
       async findById(id) {
         return cloneOptional(working.users.get(id));
       },
+      async findByEmail(email) {
+        const normalized = email.trim().toLowerCase();
+        for (const user of working.users.values()) {
+          if (user.email.trim().toLowerCase() === normalized) return cloneData(user);
+        }
+        return null;
+      },
       async save(user) {
         const copy = cloneData(user);
         working.users.set(copy.id, copy);
         dirty.users.add(copy.id);
+      },
+      async delete(id) {
+        working.users.delete(id);
+        dirty.users.add(id);
       },
     },
   };
 }
 
 function matchesHistory(record: AggregatedHistoryRecord, filter: HistoryQuery): boolean {
-  if (record.roomId !== filter.roomId) return false;
+  if (filter.roomId !== undefined && record.roomId !== filter.roomId) return false;
   if (filter.itemId !== undefined && record.itemId !== filter.itemId) return false;
+  if (filter.teamId !== undefined && record.teamId !== filter.teamId) return false;
   return true;
 }
 
@@ -220,8 +248,51 @@ function idempotencyKey(actorId: ParticipantId, clientOpId: ClientOpId): string 
 function patch<T>(target: Map<string, T>, source: Map<string, T>, dirty: Set<string>): void {
   for (const key of dirty) {
     const value = source.get(key);
-    if (value !== undefined) target.set(key, value);
+    if (value === undefined) target.delete(key);
+    else target.set(key, value);
   }
+}
+
+function membershipKey(userId: UserId, teamId: TeamId): string {
+  return `${userId}\u0000${teamId}`;
+}
+
+function membershipRepos(working: MemoryStore, dirty: DirtySet): MembershipRepository {
+  return {
+    async listByTeam(teamId) {
+      return [...working.memberships.values()].filter((record) => record.teamId === teamId).map((record) => cloneData(record));
+    },
+    async listByUser(userId) {
+      return [...working.memberships.values()].filter((record) => record.userId === userId).map((record) => cloneData(record));
+    },
+    async save(membership) {
+      const copy = cloneData(membership);
+      const key = membershipKey(copy.userId, copy.teamId);
+      working.memberships.set(key, copy);
+      dirty.memberships.add(key);
+    },
+    async delete(userId, teamId) {
+      const key = membershipKey(userId, teamId);
+      working.memberships.delete(key);
+      dirty.memberships.add(key);
+    },
+  };
+}
+
+function inviteRepos(working: MemoryStore, dirty: DirtySet): InviteRepository {
+  return {
+    async save(invite) {
+      const copy = cloneData(invite);
+      working.invites.set(copy.id, copy);
+      dirty.invites.add(copy.id);
+    },
+    async findByTokenHash(tokenHash) {
+      for (const invite of working.invites.values()) {
+        if (invite.tokenHash === tokenHash) return cloneData(invite);
+      }
+      return null;
+    },
+  };
 }
 
 function emptyStore(): MemoryStore {
@@ -229,6 +300,8 @@ function emptyStore(): MemoryStore {
     rooms: new Map(),
     idempotency: new Map(),
     teams: new Map(),
+    memberships: new Map(),
+    invites: new Map(),
     history: new Map(),
     audits: new Map(),
     sprints: new Map(),
@@ -242,6 +315,8 @@ function emptyDirty(): DirtySet {
     deletedRooms: new Set(),
     idempotency: new Set(),
     teams: new Set(),
+    memberships: new Set(),
+    invites: new Set(),
     history: new Set(),
     audits: new Set(),
     sprints: new Set(),
@@ -254,6 +329,8 @@ function cloneStore(store: MemoryStore): MemoryStore {
     rooms: cloneMap(store.rooms),
     idempotency: cloneMap(store.idempotency),
     teams: cloneMap(store.teams),
+    memberships: cloneMap(store.memberships),
+    invites: cloneMap(store.invites),
     history: cloneMap(store.history),
     audits: cloneMap(store.audits),
     sprints: cloneMap(store.sprints),

@@ -808,13 +808,23 @@ describe("Item, Round, and Vote", () => {
       expectEnvelope(revealedEvent, revealed.table.room, "round.revealed", NOW, { roundId: ROUND_A1 });
       expect(roundOf(revealed.table, ROUND_A1).status).toBe("revealed");
       expect(roundOf(revealed.table, ROUND_A1).stats).toEqual(computeRoundStats(scale, []));
-      const before = snapshot(revealed.table);
-      expect(code(revealed.table.castVote({ participantId: VOTER_A, card: "5", suit: "clubs", now: NOW }))).toBe(
-        "ROUND_NOT_VOTING",
+      const revised = apply(revealed.table.castVote({ participantId: VOTER_A, card: "5", suit: "clubs", now: NOW }));
+      expect(votesFor(revised.table, ROUND_A1)).toHaveLength(1);
+      expect(roundOf(revised.table, ROUND_A1).status).toBe("revealed");
+      expect(roundOf(revised.table, ROUND_A1).stats).toEqual(computeRoundStats(scale, votesFor(revised.table, ROUND_A1)));
+      const cleared = apply(revised.table.retractVote({ participantId: VOTER_A, now: NOW }));
+      expect(votesFor(cleared.table, ROUND_A1)).toEqual([]);
+      expect(roundOf(cleared.table, ROUND_A1).stats).toEqual(computeRoundStats(scale, []));
+      const before = snapshot(cleared.table);
+      expect(code(cleared.table.reveal({ actorParticipantId: HOST, now: NOW }))).toBe("VALIDATION");
+      expectUnchanged(cleared.table, before);
+      const estimated = apply(
+        cleared.table.setFinalEstimate({ actorParticipantId: HOST, itemId: ITEM_A, label: "5", now: NOW }),
       );
-      expect(code(revealed.table.retractVote({ participantId: VOTER_A, now: NOW }))).toBe("ROUND_NOT_VOTING");
-      expect(code(revealed.table.reveal({ actorParticipantId: HOST, now: NOW }))).toBe("VALIDATION");
-      expectUnchanged(revealed.table, before);
+      const recast = apply(estimated.table.castVote({ participantId: VOTER_A, card: "8", suit: "hearts", now: NOW }));
+      expect(itemOf(recast.table, ITEM_A).status).toBe("estimated");
+      expect(votesFor(recast.table, ROUND_A1)[0]?.card.label).toBe("8");
+      expect(roundOf(recast.table, ROUND_A1).status).toBe("revealed");
     });
 
     it("keeps one vote per participant and a null suit as joker", () => {

@@ -100,9 +100,9 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
           </button>
         </div>
       ) : null}
-      {showDeck ? <Deck code={code} cards={activeCards(view)} selected={ownCard(view)} locked={locked} suit={suit} /> : null}
+      {showDeck ? <Deck code={code} cards={activeCards(view)} selected={ownCard(view)} suit={suit} /> : null}
       {showDeck && suitAxisOn(view) ? <SuitToggle suit={suit} onChange={setSuit} /> : null}
-      {locked ? <p>{t("planning.revealed")}</p> : null}
+      {revealed ? <p>{t("planning.revealed")}</p> : null}
       {estimate ? (
         <p>
           {t("planning.estimate")} {estimate}

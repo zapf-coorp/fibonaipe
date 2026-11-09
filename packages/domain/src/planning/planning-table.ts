@@ -295,11 +295,8 @@ export class PlanningTable {
     comment?: string | null;
     now: Date;
   }): Result<TableOk, AppError> {
-    const current = this.currentItem();
-    if (!current) return err(createAppError("VALIDATION"));
-    const round = this.latestRound(current.id);
-    if (!round) return err(createAppError("VALIDATION"));
-    if (round.status !== "voting") return err(createAppError("ROUND_NOT_VOTING"));
+    const round = this.openRound();
+    if (!round.ok) return round;
     const participant = seatOf(this.room, input.participantId);
     if (!participant) return err(createAppError("NOT_FOUND"));
     if (!participant.canVote) return err(createAppError("FORBIDDEN"));
@@ -311,7 +308,7 @@ export class PlanningTable {
       return err(createAppError("VALIDATION"));
     }
     const stored = Vote.create({
-      roundId: round.id,
+      roundId: round.value.id,
       participantId: input.participantId,
       card,
       suit,
@@ -320,7 +317,7 @@ export class PlanningTable {
     let replaced = false;
     const votes: Vote[] = [];
     for (const existing of this.votes) {
-      if (existing.roundId === round.id && existing.participantId === input.participantId) {
+      if (existing.roundId === round.value.id && existing.participantId === input.participantId) {
         votes.push(stored);
         replaced = true;
       } else {
@@ -328,23 +325,17 @@ export class PlanningTable {
       }
     }
     if (!replaced) votes.push(stored);
-    const table = this.spawn({ votes });
-    return this.done(table, [
-      planningEvent(this.room, "vote.changed", input.now, { participantId: input.participantId, hasVoted: true }),
-    ]);
+    return this.commitVotes(round.value, votes, input.participantId, true, input.now);
   }
 
   retractVote(input: { participantId: string; now: Date }): Result<TableOk, AppError> {
-    const round = this.votingTarget();
+    const round = this.openRound();
     if (!round.ok) return round;
     const votes = this.votes.filter(
       (vote) => !(vote.roundId === round.value.id && vote.participantId === input.participantId),
     );
     if (votes.length === this.votes.length) return err(createAppError("NOT_FOUND"));
-    const table = this.spawn({ votes });
-    return this.done(table, [
-      planningEvent(this.room, "vote.changed", input.now, { participantId: input.participantId, hasVoted: false }),
-    ]);
+    return this.commitVotes(round.value, votes, input.participantId, false, input.now);
   }
 
   reveal(input: { actorParticipantId: string; now: Date }): Result<TableOk, AppError> {
@@ -483,17 +474,48 @@ export class PlanningTable {
     return ok(participant);
   }
 
-  private votingTarget(): Result<Round, AppError> {
-    const current = this.currentItem();
+  private openRound(): Result<Round, AppError> {
+    const current = this.activeItem();
     if (!current) return err(createAppError("VALIDATION"));
     const latest = this.latestRound(current.id);
     if (!latest) return err(createAppError("VALIDATION"));
-    if (latest.status !== "voting") return err(createAppError("ROUND_NOT_VOTING"));
+    if (latest.status !== "voting" && latest.status !== "revealed") return err(createAppError("ROUND_NOT_VOTING"));
     return ok(latest);
+  }
+
+  private commitVotes(
+    round: Round,
+    votes: Vote[],
+    participantId: string,
+    hasVoted: boolean,
+    now: Date,
+  ): Result<TableOk, AppError> {
+    const rounds =
+      round.status === "revealed"
+        ? this.rounds.map((entry) =>
+            entry.id === round.id ? entry.reveal(computeRoundStats(this.room.scale, votes.filter((vote) => vote.roundId === round.id))) : entry,
+          )
+        : this.rounds;
+    const table = this.spawn({ votes, rounds });
+    return this.done(table, [
+      planningEvent(this.room, "vote.changed", now, { participantId, hasVoted }),
+    ]);
   }
 
   private currentItem(): Item | undefined {
     return this.items.find((item) => item.status === "current");
+  }
+
+  private activeItem(): Item | undefined {
+    const current = this.currentItem();
+    if (current) return current;
+    for (let index = this.rounds.length - 1; index >= 0; index -= 1) {
+      const round = this.rounds[index];
+      if (!round || round.status !== "revealed") continue;
+      const item = this.itemById(round.itemId);
+      if (item?.status === "estimated") return item;
+    }
+    return undefined;
   }
 
   private currentVotingRound(): Round | undefined {

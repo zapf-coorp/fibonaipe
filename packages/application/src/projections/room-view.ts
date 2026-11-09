@@ -226,6 +226,22 @@ function queueOf(items: readonly ProjectedItem[]): RoomView["queue"] {
   return queue;
 }
 
+function estimatedItemOf(items: readonly ProjectedItem[], rounds: readonly ProjectedRound[]): RoomView["currentItem"] {
+  for (let index = rounds.length - 1; index >= 0; index -= 1) {
+    const round = rounds[index];
+    if (!round || round.status !== "revealed") continue;
+    const item = items.find((entry) => entry.id === round.itemId && entry.status === "estimated");
+    if (!item) continue;
+    return Object.freeze({
+      id: item.id,
+      status: item.status,
+      title: item.title ?? "",
+      link: typeof item.externalUrl === "string" ? item.externalUrl : null,
+    });
+  }
+  return null;
+}
+
 function currentItemOf(items: readonly ProjectedItem[]): RoomView["currentItem"] {
   if (currentItemCache.has(items)) return currentItemCache.get(items) ?? null;
   let current: ProjectedItem | null = null;
@@ -287,7 +303,7 @@ export function projectRoomForViewer(
   viewer: Viewer,
   now: Date,
 ): RoomView {
-  const currentItem = currentItemOf(items);
+  const currentItem = currentItemOf(items) ?? estimatedItemOf(items, rounds);
   const currentRound = currentItem ? currentRoundOf(rounds, currentItem.id) : null;
   const roundVotes = currentRound === null ? [] : votes.filter((vote) => vote.roundId === currentRound.id);
   const revealed = currentRound?.status === "revealed";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
-import { addQueueItem, queueSnapshot, removeQueueItem, reorderQueue } from "./commands.js";
+import { addQueueItem, addQueueItems, queueSnapshot, removeQueueItem, reorderQueue } from "./commands.js";
 import { isHttp, type ItemRow, type RoomView } from "./model.js";
 import { setRoomError } from "./room-store.js";
 import styles from "./QueueDrawer.module.css";
@@ -137,14 +137,16 @@ export function QueueDrawer({
                 flushSync(() => setBusy(true));
                 void readTasks(file)
                   .then((rows) => {
+                    const valid: { title: string; link: string }[] = [];
                     let invalid = false;
                     for (const row of rows) {
                       if (row.link && !isHttp(row.link)) {
                         invalid = true;
                         continue;
                       }
-                      addQueueItem(code, row.title, row.link);
+                      valid.push(row);
                     }
+                    addQueueItems(code, valid);
                     if (invalid) setRoomError(t("planning.invalidLink"));
                   })
                   .catch(() => setRoomError(t("errors.VALIDATION")))

@@ -1,5 +1,5 @@
 import { gzipSync } from "node:zlib";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { URL, fileURLToPath, pathToFileURL } from "node:url";
 
 export function initialBytes(files) {
   const chunks = new Map(files.filter((file) => file.type === "chunk").map((file) => [file.fileName, file]));

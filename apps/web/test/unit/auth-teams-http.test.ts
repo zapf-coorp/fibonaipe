@@ -124,9 +124,15 @@ describe("auth teams HTTP", () => {
     expect(created.status).toBe(201);
     const id = isRecord(created.json) ? created.json.sprintId : undefined;
     expect(typeof id).toBe("string");
+    const teams = await send(app, "GET", "/api/teams", { ip: "203.0.113.8", cookie });
+    expect(teams.status).toBe(200);
+    expect(teams.json).toMatchObject({ teams: [{ teamId: teamIdOf(team.json), name: "Team", role: "teamAdmin" }] });
     const list = await send(app, "GET", base, { ip: "203.0.113.8", cookie });
     expect(list.status).toBe(200);
     expect(list.json).toMatchObject({ sprints: [{ id, name: "Sprint", status: "planned" }] });
+    const detail = await send(app, "GET", `${base}/${id}`, { ip: "203.0.113.8", cookie });
+    expect(detail.status).toBe(200);
+    expect(detail.json).toMatchObject({ sprint: { id, name: "Sprint", status: "planned" } });
     const indicators = await send(app, "GET", `/api/teams/${teamIdOf(team.json)}/indicators`, { ip: "203.0.113.8", cookie });
     expect(indicators.json).toMatchObject({ firstRoundConsensusRate: 1, frequency: { "5": 1 } });
     const holiday = await send(app, "POST", `/api/teams/${teamIdOf(team.json)}/holidays`, { ip: "203.0.113.8", cookie, body: { date: "2026-11-02", name: "Holiday" } });
@@ -162,6 +168,8 @@ describe("auth teams HTTP", () => {
     const otherCookie = sessionCookie(otherSigned.response).split(";")[0];
     const crossTeam = await send(app, "POST", `${base}/${id}/items/${itemId}/done`, { ip: "203.0.113.9", cookie: otherCookie, body: {} });
     expect(crossTeam.code).toBe("FORBIDDEN");
+    expect((await send(app, "GET", `/api/teams/${teamIdOf(team.json)}/sprints/${id}`, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
+    expect((await send(app, "GET", "/api/teams", { ip: "203.0.113.9", cookie: otherCookie })).json).toEqual({ teams: [] });
     expect((await send(app, "GET", base, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
     expect((await send(app, "GET", membersPath, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
     expect((await send(app, "POST", `${base}/${id}/activate`, { ip: "203.0.113.8", cookie })).status).toBe(200);

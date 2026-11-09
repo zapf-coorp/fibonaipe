@@ -68,6 +68,7 @@ function ProfileMenu() {
       </button>
       {open ? (
         <div id="profile-menu" className={styles.menu}>
+          <a href="/teams" style={touchTargetStyle}>{t("teams.title")}</a>
           <LocaleSelector />
           <ThemeToggle />
           {view && can(view, "updateRoomSettings") ? (

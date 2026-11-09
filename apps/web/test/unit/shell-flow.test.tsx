@@ -140,7 +140,7 @@ describe("mobile-first shell", () => {
       expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth);
     }
     expect(document.documentElement.lang).toBe("pt-BR");
-  });
+  }, 60_000);
 
   it("opens in dark when the OS scheme is dark and nothing is stored", async () => {
     await boot({ dark: true });

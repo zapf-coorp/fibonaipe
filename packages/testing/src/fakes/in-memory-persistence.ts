@@ -340,24 +340,21 @@ function emptyDirty(): DirtySet {
 }
 
 function cloneStore(store: MemoryStore): MemoryStore {
+  // Repositories always clone values on read and write, so transaction maps can
+  // share immutable record references with the committed store. Copying only
+  // the maps keeps each transaction O(records) instead of O(records * fields).
   return {
-    holidays: cloneMap(store.holidays),
-    rooms: cloneMap(store.rooms),
-    idempotency: cloneMap(store.idempotency),
-    teams: cloneMap(store.teams),
-    memberships: cloneMap(store.memberships),
-    invites: cloneMap(store.invites),
-    history: cloneMap(store.history),
-    audits: cloneMap(store.audits),
-    sprints: cloneMap(store.sprints),
-    users: cloneMap(store.users),
+    holidays: new Map(store.holidays),
+    rooms: new Map(store.rooms),
+    idempotency: new Map(store.idempotency),
+    teams: new Map(store.teams),
+    memberships: new Map(store.memberships),
+    invites: new Map(store.invites),
+    history: new Map(store.history),
+    audits: new Map(store.audits),
+    sprints: new Map(store.sprints),
+    users: new Map(store.users),
   };
-}
-
-function cloneMap<T>(source: Map<string, T>): Map<string, T> {
-  const copy = new Map<string, T>();
-  for (const [key, value] of source) copy.set(key, cloneData(value));
-  return copy;
 }
 
 function cloneOptional<T>(value: T | undefined): T | null {

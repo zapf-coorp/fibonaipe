@@ -3,11 +3,13 @@ import {
   ActivateSprint,
   CloseSprint,
   CreateSprint,
+  GetSprint,
   GetSprintReport,
   GetSprintForecast,
   GetForecastAccuracy,
   GetEstimationIndicators,
   ListSprints,
+  ListTeams,
   ListHistory,
   ListTeamMembers,
   ListHolidays,
@@ -78,6 +80,13 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
     return okJson(container, { users: [] });
   });
 
+  app.get("/api/teams", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new ListTeams(deps).execute({ actorUserId: user.id });
+    return result.ok ? okJson(container, { teams: result.value }) : fail(container, result.error);
+  });
+
   app.post("/api/teams", async (c) => {
     const parsed = await parseBody(c, teamSchema);
     if (!parsed.ok) return fail(container, parsed.error);
@@ -101,6 +110,12 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
     if (!user) return fail(container, createAppError("FORBIDDEN"));
     const result = await new ListSprints(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id });
     return result.ok ? okJson(container, { sprints: result.value }) : fail(container, result.error);
+  });
+  app.get("/api/teams/:id/sprints/:sprintId", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new GetSprint(deps).execute({ teamId: c.req.param("id"), sprintId: c.req.param("sprintId"), actorUserId: user.id });
+    return result.ok ? okJson(container, { sprint: result.value }) : fail(container, result.error);
   });
   app.get("/api/teams/:id/forecast", async (c) => {
     const user = await sessionUser(c, container);

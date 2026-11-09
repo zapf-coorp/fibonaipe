@@ -79,14 +79,52 @@ export function confirmEstimate(code: string, label: string): void {
   void send(code, `/api/rooms/${code}/items/${itemId}/estimate`, { label, clientOpId: nextClientOpId() }, false);
 }
 
+let localItemSerial = 0;
+
+function localItemId(): string {
+  localItemSerial += 1;
+  return `local-${Date.now().toString(36)}-${localItemSerial}`;
+}
+
 export function addQueueItem(code: string, title: string, link: string): void {
   const current = readRoomView(code) ?? {};
   const queue = Array.isArray(current.queue) ? current.queue : [];
   commitRoomView(code, {
     ...current,
-    queue: [...queue, { id: `local-${queue.length + 1}`, title, status: "pending", link: link.length > 0 ? link : null, finalEstimate: null }],
+    queue: [...queue, { id: localItemId(), title, status: "pending", link: link.length > 0 ? link : null, finalEstimate: null }],
   });
   void send(code, `/api/rooms/${code}/items`, { title, link, clientOpId: nextClientOpId() }, false);
+}
+
+export function addQueueItems(code: string, rows: readonly { readonly title: string; readonly link: string }[]): void {
+  if (rows.length === 0) return;
+  const current = readRoomView(code) ?? {};
+  const queue = Array.isArray(current.queue) ? current.queue : [];
+  const added = rows.map((row) => ({
+    id: localItemId(),
+    title: row.title,
+    status: "pending",
+    link: row.link.length > 0 ? row.link : null,
+    finalEstimate: null,
+  }));
+  commitRoomView(code, { ...current, queue: [...queue, ...added] });
+  void send(
+    code,
+    `/api/rooms/${code}/items/import`,
+    {
+      clientOpId: nextClientOpId(),
+      source: { kind: "csv", csvContent: rowsToCsv(rows) },
+    },
+    false,
+  );
+}
+
+function rowsToCsv(rows: readonly { readonly title: string; readonly link: string }[]): string {
+  return ["title,link", ...rows.map((row) => `${csvCell(row.title)},${csvCell(row.link)}`)].join("\n");
+}
+
+function csvCell(value: string): string {
+  return /[",\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
 }
 
 export function removeQueueItem(code: string, itemId: string): void {

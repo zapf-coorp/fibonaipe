@@ -19,32 +19,41 @@ export function SprintDetail({ teamId, sprintId }: { readonly teamId: string; re
   const endpoint = `${base}/${encodeURIComponent(sprintId)}`;
   const load = useCallback(async () => {
     try {
-      const response = await fetch(base);
+      const response = await fetch(endpoint, { credentials: "include" });
       if (!response.ok) throw new Error("load failed");
-      const data = await response.json() as { sprints: Sprint[] };
-      const found = data.sprints.find((item) => item.id === sprintId);
+      const data = await response.json() as { sprint?: Sprint; sprints?: Sprint[] };
+      const found = data.sprint ?? data.sprints?.find((item) => item.id === sprintId);
       if (!found) throw new Error("sprint missing");
       setSprint(found);
       if (found.status === "closed") {
-        const reportResponse = await fetch(`${endpoint}/report`);
+        const reportResponse = await fetch(`${endpoint}/report`, { credentials: "include" });
         if (!reportResponse.ok) throw new Error("report failed");
         setReport(await reportResponse.json() as Report);
+      } else {
+        setReport(null);
       }
       setError(false);
     } catch { setError(true); }
-  }, [base, endpoint, sprintId]);
+  }, [endpoint, sprintId]);
   useEffect(() => { void load(); }, [load]);
   async function command(action: "activate" | "close") {
     setBusy(true);
     try {
-      const response = await fetch(`${endpoint}/${action}`, { method: "POST" });
+      const response = await fetch(`${endpoint}/${action}`, { method: "POST", credentials: "include" });
       if (!response.ok) throw new Error("command failed");
       setConfirming(false);
       await load();
     } catch { setError(true); } finally { setBusy(false); }
   }
   const delivered = sprint?.items.filter((item) => item.doneAt !== null).reduce((sum, item) => sum + (item.estimate ?? 0), 0) ?? 0;
-  return <section aria-labelledby="sprint-detail-title">
+  return <section aria-labelledby="sprint-detail-title" aria-busy={sprint === null && !error}>
+    <nav aria-label={t("sprints.title")}>
+      <a href="/teams">{t("sprints.backToTeams")}</a>
+      {" · "}
+      <a href={`/teams/${encodeURIComponent(teamId)}/sprints`}>{t("sprints.title")}</a>
+      {" · "}
+      <a href={`/teams/${encodeURIComponent(teamId)}/dashboard`}>{t("forecast.title")}</a>
+    </nav>
     {error && <p role="alert">{t("sprints.error")}</p>}
     {!sprint && !error && <p role="status">{t("sprints.loading")}</p>}
     {sprint && <>

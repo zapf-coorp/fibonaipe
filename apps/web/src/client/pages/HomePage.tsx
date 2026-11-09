@@ -197,16 +197,21 @@ export function HomePage() {
           </span>
         </h1>
         <p className={styles.ribbon + " surface"}>{t("home.heroSubtitle")}</p>
-        <p className={styles.lede}>{t("app.subtitle")}</p>
-        <p className={styles.lede}>{t("app.tagline")}</p>
+        <div className={styles.pitch}>
+          <p className={styles.lede}>
+            {t("app.subtitle")}
+            <br />
+            {t("app.tagline")}
+          </p>
+          <ul className={styles.suits}>
+            {SUITS.map((item) => (
+              <li key={item.key} className={styles.suitCard + " surface"} data-suit={item.suit}>
+                {t(item.key)}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <ul className={styles.suits}>
-        {SUITS.map((item) => (
-          <li key={item.key} className={styles.suitCard + " surface"} data-suit={item.suit}>
-            {t(item.key)}
-          </li>
-        ))}
-      </ul>
       <div className={styles.grid}>
         <section className={styles.panel + " surface"}>
           <h2>{t("home.createRoomTitle")}</h2>

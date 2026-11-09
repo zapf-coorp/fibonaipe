@@ -45,7 +45,7 @@ describe("index.html shell", () => {
     expect(html).not.toMatch(/user-scalable\s*=\s*no/i);
     expect(html).toMatch(/<link[^>]*rel=["']manifest["'][^>]*>/i);
     expect(html).toMatch(/manifest\.webmanifest/);
-    expect(html).toMatch(/name=["']theme-color["'][^>]*content=["']#0[Ff]52[Bb][Aa]["']/);
+    expect(html).toMatch(/name=["']theme-color["'][^>]*content=["']#f3ead2["']/i);
     expect(html).toContain("fibonaipe.theme");
     expect(html).toContain("fibonaipe.locale");
     expect(html).toContain("prefers-color-scheme");

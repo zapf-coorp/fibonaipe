@@ -630,7 +630,7 @@ describe("poker table and projector screens", () => {
         items: [item("item-1", "Pagamento do boleto", "current"), item("item-2", "Alpha", "pending")],
       }),
     );
-    const mesa = await screen.findByRole("region", { name: "Mesa" });
+    await screen.findByRole("region", { name: "Mesa" });
     clickHostAction("Tarefas");
     const tasks = screen.getByRole("dialog", { name: "Tarefas" });
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
@@ -706,7 +706,7 @@ describe("poker table and projector screens", () => {
         items: [item("alpha", "Alpha", "current"), item("bravo", "Bravo"), item("charlie", "Charlie")],
       }),
     );
-    const mesa = await screen.findByRole("region", { name: "Mesa" });
+    await screen.findByRole("region", { name: "Mesa" });
     clickHostAction("Tarefas");
     const queue = screen.getByRole("dialog", { name: "Tarefas" });
     const charlie = within(queue).getByRole("listitem", { name: /Charlie/ });
@@ -750,8 +750,11 @@ describe("poker table and projector screens", () => {
     expect(mesa).toHaveAttribute("data-round-state", "voting-empty");
     vi.setSystemTime(new Date("2025-10-27T15:01:00.000Z"));
     await vi.advanceTimersByTimeAsync(9_000);
-    expect(screen.getByRole("timer")).toHaveAttribute("data-timer-state", "elapsed");
-    expect(screen.getByRole("timer").textContent).toContain("00:00");
+    await waitFor(() => {
+      const timer = screen.getByRole("timer");
+      expect(timer).toHaveAttribute("data-timer-state", "elapsed");
+      expect(timer.textContent).toContain("00:00");
+    });
     await waitFor(() => expect(readPolite()).toMatch(/00:00/));
     expect(mesa).toHaveAttribute("data-round-state", "voting-empty");
     expect(screen.queryByRole("region", { name: "Resultado" })).toBeNull();

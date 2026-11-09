@@ -1,4 +1,4 @@
-import { RoomId, Sprint, SprintId, TeamId, UserId, can, computeAccuracy, computeForecast, createAppError, err, ok, type AppError, type Result, type SprintCapacityEntry, type SprintReport } from "@fibonaipe/domain";
+import { RoomId, Sprint, SprintId, TeamId, UserId, can, computeAccuracy, computeForecast, createAppError, err, ok, type AppError, type Result, type SprintCapacityEntry, type SprintProps, type SprintReport } from "@fibonaipe/domain";
 import type { TransactionRepos } from "../../ports/persistence.port.js";
 import { hydrate, type UseCaseDependencies } from "../room-session.js";
 
@@ -135,9 +135,29 @@ export class GetSprintReport {
     });
   }
 }
+export class GetSprint {
+  constructor(private readonly deps: UseCaseDependencies) {}
+  async execute(input: SprintCommandInput): Promise<Result<SprintProps, AppError>> {
+    const teamId = TeamId.create(input.teamId);
+    if (!teamId.ok) return teamId;
+    const sprintId = SprintId.create(input.sprintId);
+    if (!sprintId.ok) return sprintId;
+    const actorId = UserId.create(input.actorUserId);
+    if (!actorId.ok) return actorId;
+    return this.deps.persistence.transaction({}, async (repos) => {
+      const user = await repos.users.findById(actorId.value);
+      const member = (await repos.memberships.listByTeam(teamId.value)).find((entry) => entry.userId === actorId.value);
+      if (!member && !user?.isSuperAdmin) return err(createAppError("FORBIDDEN"));
+      const record = await repos.sprints.findById(sprintId.value);
+      if (!record || record.teamId !== teamId.value || !record.state) return err(createAppError("NOT_FOUND"));
+      return ok(Sprint.create(record.state).props);
+    });
+  }
+}
+
 export class ListSprints {
   constructor(private readonly deps: UseCaseDependencies) {}
-  async execute(input: Omit<SprintCommandInput, "sprintId">): Promise<Result<readonly import("@fibonaipe/domain").SprintProps[], AppError>> {
+  async execute(input: Omit<SprintCommandInput, "sprintId">): Promise<Result<readonly SprintProps[], AppError>> {
     const teamId = TeamId.create(input.teamId);
     if (!teamId.ok) return teamId;
     const actorId = UserId.create(input.actorUserId);

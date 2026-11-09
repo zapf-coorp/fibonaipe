@@ -16,7 +16,7 @@ export function SprintList({ teamId }: { readonly teamId: string }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, { credentials: "include" });
       if (!response.ok) throw new Error("load failed");
       const data = await response.json() as { sprints: SprintRow[] };
       setRows(data.sprints);
@@ -28,13 +28,18 @@ export function SprintList({ teamId }: { readonly teamId: string }) {
     event.preventDefault();
     setSaving(true);
     try {
-      const response = await fetch(endpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, startDate, endDate, goal }) });
+      const response = await fetch(endpoint, { method: "POST", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, startDate, endDate, goal }) });
       if (!response.ok) throw new Error("save failed");
       setName(""); setStartDate(""); setEndDate(""); setGoal("");
       await load();
     } catch { setError(true); } finally { setSaving(false); }
   }
-  return <section aria-labelledby="sprints-title">
+  return <section aria-labelledby="sprints-title" aria-busy={loading}>
+    <nav aria-label={t("sprints.title")}>
+      <a href="/teams">{t("sprints.backToTeams")}</a>
+      {" · "}
+      <a href={`/teams/${encodeURIComponent(teamId)}/dashboard`}>{t("forecast.title")}</a>
+    </nav>
     <h1 id="sprints-title">{t("sprints.title")}</h1>
     {loading && <p role="status">{t("sprints.loading")}</p>}
     {error && <p role="alert">{t("sprints.error")}</p>}

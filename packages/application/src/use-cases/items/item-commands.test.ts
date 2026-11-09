@@ -58,7 +58,7 @@ describe("item commands", () => {
       clientOpId: "current-beta",
     });
     expect(focused.ok).toBe(true);
-    expect((await viewOf(ports, created.code, created.participantId)).currentItem).toEqual({ id: beta.id, status: "current" });
+    expect((await viewOf(ports, created.code, created.participantId)).currentItem).toMatchObject({ id: beta.id, status: "current", title: "Beta" });
 
     const skipped = await new SkipItem(ports.deps).execute({
       code: created.code,

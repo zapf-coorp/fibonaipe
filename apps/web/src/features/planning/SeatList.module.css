@@ -1,0 +1,92 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list .seat {
+  display: flex;
+  flex: 0 0 8.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  max-width: 8.5rem;
+  min-height: 0;
+  padding: 0.35rem 0.45rem;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--card-face) 90%, transparent);
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.name,
+.role {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role {
+  color: var(--title-red);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.light,
+.check {
+  display: inline-grid;
+  place-items: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid var(--ink);
+  background: #3a3358;
+}
+
+.light {
+  border-radius: 999px;
+}
+
+.light[data-on="true"] {
+  background: #3ddc97;
+  box-shadow: 0 0 0 2px #3ddc97;
+}
+
+.check {
+  border-radius: 2px;
+}
+
+.check svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.check[data-on="true"] {
+  background: #3ddc97;
+}
+
+.afk {
+  display: inline-grid;
+  width: 1rem;
+  height: 0.7rem;
+}
+
+.afk svg {
+  width: 1rem;
+  height: 0.7rem;
+  fill: currentColor;
+}

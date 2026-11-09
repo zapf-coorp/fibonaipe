@@ -6,6 +6,7 @@ import type {
   AggregatedHistoryRecord,
   EstimateAuditRecord,
   HistoryQuery,
+  HolidayRepository,
   IdempotencyRecord,
   InviteRepository,
   MembershipRepository,
@@ -70,8 +71,10 @@ CREATE TABLE IF NOT EXISTS teams (
 CREATE TABLE IF NOT EXISTS sprints (
   id TEXT PRIMARY KEY,
   team_id TEXT NOT NULL,
-  name TEXT NOT NULL
+  name TEXT NOT NULL,
+  state_json TEXT
 );
+CREATE TABLE IF NOT EXISTS holidays (id TEXT PRIMARY KEY, team_id TEXT NOT NULL, date TEXT NOT NULL, name TEXT NOT NULL, UNIQUE(team_id, date));
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL,
@@ -80,6 +83,7 @@ CREATE TABLE IF NOT EXISTS users (
 `;
 
 interface MemoryStore {
+  holidays: Map<string, Parameters<HolidayRepository["save"]>[0]>;
   rooms: Map<string, PersistedRoomRecord>;
   idempotency: Map<string, IdempotencyRecord>;
   teams: Map<string, PersistedTeamRecord>;
@@ -92,6 +96,7 @@ interface MemoryStore {
 }
 
 interface DirtySet {
+  holidays: Set<string>;
   rooms: Set<string>;
   deletedRooms: Set<string>;
   idempotency: Set<string>;
@@ -112,6 +117,7 @@ export function createSqlitePersistence(filename: string = ":memory:"): SqlitePe
   db.exec("PRAGMA busy_timeout = 5000");
   db.exec(SCHEMA);
   ensurePlanningColumn(db);
+  ensureSprintStateColumn(db);
   ensureIdentitySchema(db);
   ensureHistorySchema(db);
   return new SqlitePersistenceStore(db);
@@ -138,7 +144,8 @@ class SqlitePersistenceStore implements Persistence {
     options: TransactionOptions,
     work: (repos: TransactionRepos) => Promise<Result<T, AppError>>,
   ): Promise<Result<T, AppError>> {
-    const release = options.lockRoomId ? await this.acquireLock(options.lockRoomId) : undefined;
+    const lockKey = options.lockTeamId ? `team:${options.lockTeamId}` : options.lockRoomId ? `room:${options.lockRoomId}` : undefined;
+    const release = lockKey ? await this.acquireLock(lockKey) : undefined;
     const working = this.loadStore();
     const dirty = emptyDirty();
     const lockedId = options.lockRoomId;
@@ -204,6 +211,10 @@ class SqlitePersistenceStore implements Persistence {
     for (const row of asRecords(this.statements.invitesAll.all())) {
       const record = inviteFromRow(row);
       store.invites.set(record.id, record);
+    }
+    for (const row of asRecords(this.statements.holidaysAll.all())) {
+      const holiday = { id: text(row, "id") as import("@fibonaipe/domain").HolidayId, teamId: text(row, "team_id") as TeamId, date: text(row, "date"), name: text(row, "name") };
+      store.holidays.set(holiday.id, holiday);
     }
     for (const row of asRecords(this.statements.sprintsAll.all())) {
       const record = sprintFromRow(row);
@@ -285,9 +296,14 @@ class SqlitePersistenceStore implements Persistence {
           );
         }
       }
+      for (const id of dirty.holidays) {
+        const holiday = working.holidays.get(id);
+        if (holiday) this.statements.upsertHoliday.run(holiday.id, holiday.teamId, holiday.date, holiday.name);
+        else this.statements.deleteHoliday.run(id);
+      }
       for (const id of dirty.sprints) {
         const sprint = working.sprints.get(id);
-        if (sprint) this.statements.upsertSprint.run(sprint.id, sprint.teamId, sprint.name);
+        if (sprint) this.statements.upsertSprint.run(sprint.id, sprint.teamId, sprint.name, sprint.state === undefined ? null : JSON.stringify(sprint.state));
       }
       for (const id of dirty.users) {
         const user = working.users.get(id);
@@ -312,6 +328,9 @@ class SqlitePersistenceStore implements Persistence {
 }
 
 interface Statements {
+  holidaysAll: SqliteStatement;
+  upsertHoliday: SqliteStatement;
+  deleteHoliday: SqliteStatement;
   ping: SqliteStatement;
   roomsAll: SqliteStatement;
   deleteRoom: SqliteStatement;
@@ -339,6 +358,9 @@ interface Statements {
 
 function prepare(db: DatabaseSync): Statements {
   return {
+    holidaysAll: db.prepare("SELECT id, team_id, date, name FROM holidays"),
+    upsertHoliday: db.prepare("INSERT INTO holidays (id, team_id, date, name) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, date = excluded.date, name = excluded.name"),
+    deleteHoliday: db.prepare("DELETE FROM holidays WHERE id = ?"),
     ping: db.prepare("SELECT 1 AS ok"),
     roomsAll: db.prepare("SELECT * FROM rooms"),
     deleteRoom: db.prepare("DELETE FROM rooms WHERE id = ?"),
@@ -414,10 +436,10 @@ function prepare(db: DatabaseSync): Statements {
          revoked_at = excluded.revoked_at,
          accepted_by = excluded.accepted_by`,
     ),
-    sprintsAll: db.prepare("SELECT id, team_id, name FROM sprints"),
+    sprintsAll: db.prepare("SELECT id, team_id, name, state_json FROM sprints"),
     upsertSprint: db.prepare(
-      `INSERT INTO sprints (id, team_id, name) VALUES (?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, name = excluded.name`,
+      `INSERT INTO sprints (id, team_id, name, state_json) VALUES (?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, name = excluded.name, state_json = excluded.state_json`,
     ),
     usersAll: db.prepare("SELECT id, email, display_name, status, is_super_admin, locale, theme FROM users"),
     upsertUser: db.prepare(
@@ -535,9 +557,17 @@ function createRepos(
         dirty.audits.add(copy.id);
       },
     },
+    holidays: {
+      async listByTeam(teamId) { return [...working.holidays.values()].filter((holiday) => holiday.teamId === teamId).map(cloneData); },
+      async save(holiday) { working.holidays.set(holiday.id, cloneData(holiday)); dirty.holidays.add(holiday.id); },
+      async delete(id) { working.holidays.delete(id); dirty.holidays.add(id); },
+    },
     sprints: {
       async findById(id) {
         return cloneOptional(working.sprints.get(id));
+      },
+      async listByTeam(teamId) {
+        return [...working.sprints.values()].filter((sprint) => sprint.teamId === teamId).map(cloneData);
       },
       async save(sprint) {
         const copy = cloneData(sprint);
@@ -633,7 +663,13 @@ function sprintFromRow(row: Record<string, unknown>): PersistedSprintRecord {
     id: text(row, "id") as PersistedSprintRecord["id"],
     teamId: text(row, "team_id") as PersistedSprintRecord["teamId"],
     name: text(row, "name"),
+    ...(typeof row.state_json === "string" ? { state: reviveDates(JSON.parse(row.state_json) as unknown) as NonNullable<PersistedSprintRecord["state"]> } : {}),
   };
+}
+
+function ensureSprintStateColumn(db: DatabaseSync): void {
+  const columns = db.prepare("PRAGMA table_info(sprints)").all();
+  if (!columns.some((column) => isRecord(column) && column.name === "state_json")) db.exec("ALTER TABLE sprints ADD COLUMN state_json TEXT");
 }
 
 function userFromRow(row: Record<string, unknown>): PersistedUserRecord {
@@ -865,6 +901,7 @@ function idempotencyKey(actorId: ParticipantId, clientOpId: ClientOpId): string 
 
 function emptyStore(): MemoryStore {
   return {
+    holidays: new Map(),
     rooms: new Map(),
     idempotency: new Map(),
     teams: new Map(),
@@ -879,6 +916,7 @@ function emptyStore(): MemoryStore {
 
 function emptyDirty(): DirtySet {
   return {
+    holidays: new Set(),
     rooms: new Set(),
     deletedRooms: new Set(),
     idempotency: new Set(),

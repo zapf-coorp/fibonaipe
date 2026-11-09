@@ -1,4 +1,9 @@
 export const applicationPackage = "@fibonaipe/application" as const;
+export { CreateSprint, type CreateSprintInput } from "./use-cases/sprints/create-sprint.js";
+export { DeleteHoliday, ListHolidays, SaveHoliday } from "./use-cases/sprints/holidays.js";
+export { GetEstimationIndicators, type EstimationIndicatorsInput } from "./use-cases/sprints/estimation-indicators.js";
+export { ListHistory, ExportHistory, type HistoryQueryInput, type HistoryListPage, type HistoryListRow } from "./use-cases/history/list-history.js";
+export { ActivateSprint, CloseSprint, GetSprintReport, GetSprintForecast, GetForecastAccuracy, LinkSprintItem, ListSprints, MarkSprintItemDone, SetSprintCapacity, SetSprintCapacityEntries, UnlinkSprintItem, type SprintCommandInput } from "./use-cases/sprints/sprint-commands.js";
 
 export type { Clock } from "./ports/clock.port.js";
 export type { IdGenerator } from "./ports/id-generator.port.js";
@@ -8,6 +13,7 @@ export type {
   EstimateAuditRecord,
   HistoryQuery,
   HistoryRepository,
+  HolidayRepository,
   IdempotencyRecord,
   IdempotencyRepository,
   Persistence,
@@ -122,5 +128,6 @@ export { ChangeMemberRole, type ChangeMemberRoleInput } from "./use-cases/teams/
 export { ClaimRoom, type ClaimRoomInput, type ClaimRoomResult } from "./use-cases/teams/claim-room.js";
 export { CreateInvite, type CreateInviteInput, type CreateInviteResult } from "./use-cases/teams/create-invite.js";
 export { CreateTeam, type CreateTeamInput, type CreateTeamResult } from "./use-cases/teams/create-team.js";
+export { ListTeamMembers, type TeamMemberSummary } from "./use-cases/teams/list-team-members.js";
 export { CreateTeamRoom, type CreateTeamRoomInput, type CreateTeamRoomResult } from "./use-cases/teams/create-team-room.js";
 export { RemoveMember, type RemoveMemberInput } from "./use-cases/teams/remove-member.js";

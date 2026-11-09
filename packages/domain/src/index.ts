@@ -101,3 +101,12 @@ export { Item, ItemBuilder, type ItemProps, type ItemStatus } from "./planning/i
 export { Round, type RoundProps, type RoundStatus } from "./planning/round.js";
 export { Vote, type VoteProps } from "./planning/vote.js";
 export { PlanningTable, type PlanningEvent, type TableOk } from "./planning/planning-table.js";
+export { computeCapacity, computeWorkingDays, type CapacityEntry } from "./sprints/capacity.js";
+export { computeEstimationIndicators, type EstimationIndicators, type IndicatorRound } from "./stats/estimation-indicators.js";
+export { Sprint, type SprintCapacityEntry, type SprintItem, type SprintProps, type SprintStatus, type SprintReport, type SprintForecastRecord } from "./sprints/sprint.js";
+export { SprintBuilder, hasSprintOverlap } from "./sprints/sprint-builder.js";
+export { createHoliday, type Holiday } from "./sprints/holiday.js";
+export { ForecastReportBuilder, computeForecast, type ClosedSprintForecastInput, type ForecastOk, type ForecastInsufficient, type ForecastResult, type ForecastRiskInput } from "./forecast/compute-forecast.js";
+export { computeAccuracy, type ForecastAccuracy, type ForecastAccuracyPoint, type ForecastAccuracyRecord } from "./forecast/accuracy.js";
+export { median } from "./forecast/median.js";
+export { percentile } from "./forecast/percentile.js";

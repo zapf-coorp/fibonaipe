@@ -145,6 +145,9 @@ async function runTransaction<T>(
   try {
     return await sql.begin(isolation, async (tx) => {
       let lockedVersion: number | null = null;
+      if (options.lockTeamId !== undefined) {
+        await tx`select id from teams where id = ${options.lockTeamId} for update`;
+      }
       if (options.lockRoomId !== undefined) {
         const locked = await tx<{ version: number | string }[]>`
           select version from rooms where id = ${options.lockRoomId} for update
@@ -308,14 +311,30 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
         return row ? mapInvite(row) : null;
       },
     },
+    holidays: {
+      async listByTeam(teamId) {
+        const rows = await tx<{ id: string; team_id: string; date: string; name: string }[]>`select id, team_id, date::text, name from holidays where team_id = ${teamId} order by date`;
+        return rows.map((row) => ({ id: row.id as import("@fibonaipe/domain").HolidayId, teamId: row.team_id as TeamId, date: row.date, name: row.name }));
+      },
+      async save(holiday) {
+        await tx`insert into holidays (id, team_id, date, name) values (${holiday.id}, ${holiday.teamId}, ${holiday.date}, ${holiday.name}) on conflict (id) do update set team_id = excluded.team_id, date = excluded.date, name = excluded.name`;
+      },
+      async delete(id) { await tx`delete from holidays where id = ${id}`; },
+    },
     sprints: {
+      async listByTeam(teamId) {
+        const rows = await tx<{ id: string; team_id: string; name: string; state_json: string | null }[]>`
+          select id, team_id, name, state_json::text from sprints where team_id = ${teamId}
+        `;
+        return rows.map(mapSprint);
+      },
       async findById(id) {
-        const rows = await tx<{ id: string; team_id: string; name: string }[]>`
-          select id, team_id, name from sprints where id = ${id}
+        const rows = await tx<{ id: string; team_id: string; name: string; state_json: string | null }[]>`
+          select id, team_id, name, state_json::text from sprints where id = ${id}
         `;
         const row = rows[0];
         if (!row) return null;
-        return { id: row.id as SprintId, teamId: row.team_id as TeamId, name: row.name };
+        return mapSprint(row);
       },
       async save(sprint) {
         await saveSprint(tx, sprint);
@@ -508,9 +527,25 @@ async function saveTeam(tx: Sql, team: PersistedTeamRecord): Promise<void> {
 
 async function saveSprint(tx: Sql, sprint: PersistedSprintRecord): Promise<void> {
   await tx`
-    insert into sprints (id, team_id, name) values (${sprint.id}, ${sprint.teamId}, ${sprint.name})
-    on conflict (id) do update set team_id = excluded.team_id, name = excluded.name
+    insert into sprints (id, team_id, name, state_json) values (${sprint.id}, ${sprint.teamId}, ${sprint.name}, ${sprint.state === undefined ? null : JSON.stringify(sprint.state)}::jsonb)
+    on conflict (id) do update set team_id = excluded.team_id, name = excluded.name, state_json = excluded.state_json
   `;
+  const forecast = sprint.state?.forecastRecord;
+  if (forecast) {
+    await tx`
+      insert into forecast_records (id, sprint_id, predicted_points, actual_points, created_at)
+      values (${sprint.id}, ${sprint.id}, ${forecast.predicted}, ${forecast.delivered}, now())
+      on conflict (id) do update set
+        predicted_points = excluded.predicted_points,
+        actual_points = excluded.actual_points
+    `;
+  }
+}
+
+function mapSprint(row: { id: string; team_id: string; name: string; state_json: string | null }): PersistedSprintRecord {
+  const state = row.state_json === null ? undefined : JSON.parse(row.state_json, (key: string, value: unknown) =>
+    key === "doneAt" && typeof value === "string" ? new Date(value) : value) as PersistedSprintRecord["state"];
+  return { id: row.id as SprintId, teamId: row.team_id as TeamId, name: row.name, ...(state === undefined ? {} : { state }) };
 }
 
 async function saveUser(tx: Sql, user: PersistedUserRecord): Promise<void> {

@@ -23,6 +23,7 @@ interface ActorInput {
 export interface AddItemInput extends ActorInput {
   readonly title: string;
   readonly description?: string;
+  readonly externalUrl?: string | null;
 }
 
 export interface ImportItemsInput extends ActorInput {
@@ -46,12 +47,14 @@ export class AddItem {
 
   async execute(input: AddItemInput): Promise<Result<CommandResult, AppError>> {
     return runItem(this.deps, "AddItem", input, (ctx) => {
+      const link = input.externalUrl?.trim() ?? "";
       const props = freshItem(
         ctx.loaded.room,
         input.title,
         input.description ?? "",
         ctx.loaded.table.items.length,
         this.deps.ids.newId(),
+        link.length > 0 ? link : null,
       );
       if (!props.ok) return props;
       return ctx.loaded.table.addItem({
@@ -84,6 +87,7 @@ export class ImportItems {
           candidate.description ?? "",
           table.items.length,
           this.deps.ids.newId(),
+          candidate.externalUrl ?? null,
         );
         if (!props.ok) return props;
         const added = table.addItem({

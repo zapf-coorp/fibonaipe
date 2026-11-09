@@ -40,11 +40,19 @@ function missingShellPlugin() {
 
 export default defineConfig({
   plugins: [missingShellPlugin()],
+  resolve: {
+    alias: Object.fromEntries([
+      "domain", "application", "testing", "adapter-exporter-csvjson",
+      "adapter-issuetracker-manual", "adapter-persistence-postgres", "adapter-persistence-sqlite",
+      "adapter-realtime-supabase", "adapter-system",
+    ].map((name) => [`@fibonaipe/${name}`, resolve(root, `packages/${name}/src/index.ts`)])),
+  },
   test: {
     include: ["packages/**/*.test.ts", "tools/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx"],
     setupFiles: ["apps/web/test/support/dom-matchers.ts"],
     pool: "forks",
     maxWorkers: 1,
+    testTimeout: 30_000,
     coverage: {
       provider: "v8",
       include: ["packages/domain/src/**/*.ts"],

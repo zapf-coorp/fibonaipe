@@ -1,4 +1,4 @@
-import { TeamBuilder, TeamId, UserId, err, ok, type AppError, type Result } from "@fibonaipe/domain";
+import { TeamBuilder, TeamId, UserId, ok, type AppError, type Result } from "@fibonaipe/domain";
 import type { UseCaseDependencies } from "../room-session.js";
 import { organizationId } from "./access.js";
 

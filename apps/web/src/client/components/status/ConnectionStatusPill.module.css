@@ -1,11 +1,36 @@
 .pill {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-width: var(--touch-min);
   min-height: var(--touch-min);
   padding-inline: var(--space-2);
-  border: 1px solid var(--border-subtle);
+  color: var(--ink);
+  background: var(--card-face);
+  border: 3px solid var(--ink);
   border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.pill[data-status="connected"] {
+  color: var(--status-success-fg);
+  background: var(--status-success-bg);
+  border-color: var(--status-success-border);
+}
+
+.pill[data-status="syncing"] {
+  color: var(--status-warning-fg);
+  background: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+}
+
+.pill[data-status="reconnecting"] {
+  color: var(--status-danger-fg);
+  background: var(--status-danger-bg);
+  border-color: var(--status-danger-border);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<ConnectionStatus, TranslationKey> = {
 export function ConnectionStatusPill({ status = "connected" }: { readonly status?: ConnectionStatus }) {
   const { t } = useI18n();
   return (
-    <span role="status" className={styles.pill} style={touchTargetStyle}>
+    <span role="status" className={styles.pill} data-status={status} style={touchTargetStyle}>
       <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
         <circle cx="8" cy="8" r="4" fill="currentColor" />
       </svg>

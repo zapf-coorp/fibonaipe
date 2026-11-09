@@ -37,6 +37,7 @@ const opSchema = z.object({ clientOpId });
 const addItemSchema = opSchema.extend({
   title: z.string().trim().min(1).max(MAX_ITEM_TITLE_LENGTH),
   description: z.string().max(2000).optional(),
+  link: z.string().trim().max(2000).optional(),
 });
 
 const voteSchema = opSchema.extend({
@@ -204,6 +205,7 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
         actorParticipantId: actor,
         title: body.title,
         description: body.description,
+        externalUrl: body.link && body.link.length > 0 ? body.link : null,
         clientOpId: body.clientOpId,
       }),
     ),
@@ -231,6 +233,7 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
     ),
   );
 
+  app.post("/api/rooms/:code/items/:id/remove", (c) => itemAction(c, container, useCases, "remove"));
   app.post("/api/rooms/:code/items/:id/current", (c) => itemAction(c, container, useCases, "current"));
   app.post("/api/rooms/:code/items/:id/skip", (c) => itemAction(c, container, useCases, "skip"));
   app.post("/api/rooms/:code/items/:id/defer", (c) => itemAction(c, container, useCases, "defer"));
@@ -297,7 +300,7 @@ async function itemAction(
   c: Context,
   container: AppContainer,
   useCases: RoomUseCases,
-  action: "current" | "skip" | "defer",
+  action: "current" | "skip" | "defer" | "remove",
 ): Promise<Response> {
   return runActor(c, container, useCases, opSchema, (actor, body) => {
     const code = c.req.param("code");
@@ -311,6 +314,7 @@ async function itemAction(
     };
     if (action === "current") return useCases.setCurrentItem.execute(input);
     if (action === "skip") return useCases.skipItem.execute(input);
+    if (action === "remove") return useCases.removeItem.execute(input);
     return useCases.deferItem.execute(input);
   });
 }

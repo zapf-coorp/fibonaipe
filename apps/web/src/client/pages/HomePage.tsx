@@ -6,14 +6,16 @@ import { useI18n, type TranslationKey } from "../i18n/index.js";
 import { touchTargetStyle } from "../touch-target.js";
 import styles from "./HomePage.module.css";
 
-const SUITS: readonly TranslationKey[] = [
-  "home.suits.clubs",
-  "home.suits.hearts",
-  "home.suits.spades",
-  "home.suits.diamonds",
+const SUITS: readonly { readonly key: TranslationKey; readonly suit: string }[] = [
+  { key: "home.suits.clubs", suit: "clubs" },
+  { key: "home.suits.hearts", suit: "hearts" },
+  { key: "home.suits.spades", suit: "spades" },
+  { key: "home.suits.diamonds", suit: "diamonds" },
 ];
 
-const FIBONACCI = ["1", "2", "3", "5", "8", "13"] as const;
+const FAN = ["heart", "spade", "queen", "back", "mystery"] as const;
+
+const FIBONACCI = ["1", "2", "3", "5", "8", "13", "21", "34", "55"] as const;
 
 type Phase = "landing" | "create" | "share";
 
@@ -23,6 +25,7 @@ export function HomePage() {
   const [phase, setPhase] = useState<Phase>("landing");
   const [roomCode, setRoomCode] = useState("");
   const [name, setName] = useState("");
+  const [hostName, setHostName] = useState("");
   const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set(FIBONACCI));
   const [suit, setSuit] = useState(true);
   const [autoReveal, setAutoReveal] = useState(false);
@@ -35,8 +38,9 @@ export function HomePage() {
     const href = `/r/${createdCode}`;
     return (
       <div className={styles.stage}>
+        <div className={styles.sheet + " surface"}>
         <a href={href}>{createdCode}</a>
-        <p className="tabular-nums">{createdCode}</p>
+        <p className={styles.code + " surface tabular-nums"}>{createdCode}</p>
         <button
           type="button"
           style={touchTargetStyle}
@@ -65,6 +69,7 @@ export function HomePage() {
         >
           {t("home.enterWithCode")}
         </button>
+        </div>
       </div>
     );
   }
@@ -72,7 +77,15 @@ export function HomePage() {
   if (phase === "create") {
     return (
       <div className={styles.stage}>
-        <div className={styles.form}>
+        <div className={styles.form + " surface"}>
+          <label htmlFor="host-name">{t("create.hostName")}</label>
+          <input
+            id="host-name"
+            aria-label={t("create.hostName")}
+            value={hostName}
+            onChange={(event) => setHostName(event.target.value)}
+            style={touchTargetStyle}
+          />
           <label htmlFor="room-name">{t("create.roomName")}</label>
           <input
             id="room-name"
@@ -144,6 +157,7 @@ export function HomePage() {
             onClick={() => {
               void createRoom({
                 name,
+                hostName,
                 suitAxisEnabled: suit,
                 autoReveal,
                 timerSeconds: timer,
@@ -163,26 +177,45 @@ export function HomePage() {
     );
   }
 
+  const titleWords = t("home.heroTitle").split(" ");
   return (
     <div className={styles.stage}>
-      <h1>{t("home.heroTitle")}</h1>
-      <p>{t("home.heroSubtitle")}</p>
-      <p>{t("app.subtitle")}</p>
-      <p>{t("app.tagline")}</p>
+      <div className={styles.hero}>
+        <div className={styles.fan} aria-hidden="true">
+          {FAN.map((face) => (
+            <span key={face} className={styles.fanCard} data-face={face} />
+          ))}
+        </div>
+        <h1 className="surface">
+          <span className="sr-only">{t("home.heroTitle")}</span>
+          <span className={styles.tiles} aria-hidden="true">
+            {titleWords.map((word, index) => (
+              <span key={`${word}-${index}`} className={styles.tile}>
+                {word}
+              </span>
+            ))}
+          </span>
+        </h1>
+        <p className={styles.ribbon + " surface"}>{t("home.heroSubtitle")}</p>
+        <p className={styles.lede}>{t("app.subtitle")}</p>
+        <p className={styles.lede}>{t("app.tagline")}</p>
+      </div>
       <ul className={styles.suits}>
-        {SUITS.map((key) => (
-          <li key={key}>{t(key)}</li>
+        {SUITS.map((item) => (
+          <li key={item.key} className={styles.suitCard + " surface"} data-suit={item.suit}>
+            {t(item.key)}
+          </li>
         ))}
       </ul>
       <div className={styles.grid}>
-        <section>
+        <section className={styles.panel + " surface"}>
           <h2>{t("home.createRoomTitle")}</h2>
           <p>{t("home.createRoomDescription")}</p>
           <button type="button" style={touchTargetStyle} onClick={() => setPhase("create")}>
             {t("home.createRoomCta")}
           </button>
         </section>
-        <section>
+        <section className={styles.panel + " surface"}>
           <h2>{t("home.joinRoomTitle")}</h2>
           <p>{t("home.joinRoomDescription")}</p>
           <button type="button" style={touchTargetStyle} onClick={() => setPhase("landing")}>
@@ -210,13 +243,19 @@ export function HomePage() {
           </button>
         </section>
       </div>
-      <section>
-        <h2>{t("home.features.suitsTitle")}</h2>
-        <p>{t("home.features.suitsBody")}</p>
-        <h2>{t("home.features.sprintsTitle")}</h2>
-        <p>{t("home.features.sprintsBody")}</p>
-        <h2>{t("home.features.privacyTitle")}</h2>
-        <p>{t("home.features.privacyBody")}</p>
+      <section className={styles.features}>
+        <article className={styles.feature + " surface"}>
+          <h2>{t("home.features.suitsTitle")}</h2>
+          <p>{t("home.features.suitsBody")}</p>
+        </article>
+        <article className={styles.feature + " surface"}>
+          <h2>{t("home.features.sprintsTitle")}</h2>
+          <p>{t("home.features.sprintsBody")}</p>
+        </article>
+        <article className={styles.feature + " surface"}>
+          <h2>{t("home.features.privacyTitle")}</h2>
+          <p>{t("home.features.privacyBody")}</p>
+        </article>
       </section>
     </div>
   );
@@ -224,6 +263,7 @@ export function HomePage() {
 
 async function createRoom(input: {
   readonly name: string;
+  readonly hostName: string;
   readonly suitAxisEnabled: boolean;
   readonly autoReveal: boolean;
   readonly timerSeconds: number;
@@ -233,7 +273,7 @@ async function createRoom(input: {
     method: "POST",
     credentials: "include",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name: input.name, hostNickname: "Host" }),
+    body: JSON.stringify({ name: input.name, hostNickname: input.hostName.trim() || "Convidado" }),
   });
   if (!response.ok) return null;
   const body = (await response.json()) as { code?: string };

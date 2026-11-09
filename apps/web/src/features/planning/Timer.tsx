@@ -13,7 +13,13 @@ interface TimerBridge {
 
 function timerBridge(): TimerBridge {
   const scope = globalThis as typeof globalThis & { [bridgeKey]?: TimerBridge };
-  scope[bridgeKey] ??= { listeners: new Set(), clear: clearInterval };
+  const clear = (handle: Parameters<typeof clearInterval>[0]) => window.clearInterval(handle);
+  const existing = scope[bridgeKey];
+  if (existing) {
+    existing.clear = clear;
+    return existing;
+  }
+  scope[bridgeKey] = { listeners: new Set(), clear };
   return scope[bridgeKey];
 }
 
@@ -54,22 +60,22 @@ export function Timer({ code, view, canStart }: { readonly code: string; readonl
   const remaining = remainingMs(endsAt, serverTime(view), elapsed);
   const phase = phaseOf(remaining);
   const [muted, setMuted] = useState(true);
+  if (phase === "off") return null;
   return (
     <div>
       <div role="timer" aria-live="polite" data-timer-state={phase}>
+        <span className="sr-only">{t("planning.timerLabel")}</span>
         {phase === "last10" ? t("planning.last10") : null}
-        {phase === "off" ? null : <span className="tabular-nums">{formatClock(remaining ?? 0)}</span>}
+        <span className="tabular-nums">{formatClock(remaining ?? 0)}</span>
       </div>
-      {canStart && phase === "off" ? (
+      {canStart ? (
         <button type="button" style={touchTargetStyle} onClick={() => startRoundTimer(code)}>
           {t("planning.startTimer")}
         </button>
       ) : null}
-      {phase === "off" ? null : (
-        <button type="button" style={touchTargetStyle} aria-pressed={muted} onClick={() => setMuted((current) => !current)}>
-          {muted ? t("planning.mute") : t("planning.unmute")}
-        </button>
-      )}
+      <button type="button" style={touchTargetStyle} aria-pressed={muted} onClick={() => setMuted((current) => !current)}>
+        {muted ? t("planning.mute") : t("planning.unmute")}
+      </button>
     </div>
   );
 }

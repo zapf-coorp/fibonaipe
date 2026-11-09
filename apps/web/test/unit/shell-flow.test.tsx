@@ -74,7 +74,13 @@ async function remount(pathname = "/") {
 }
 
 function chooseLabeled(label: string) {
-  const button = screen.queryByRole("button", { name: label });
+  const findButton = () => screen.queryByRole("button", { name: label });
+  let button = findButton();
+  if (!button) {
+    const profile = screen.queryByRole("button", { name: /mesa|convidado/i });
+    if (profile && profile.getAttribute("aria-expanded") !== "true") fireEvent.click(profile);
+    button = findButton();
+  }
   if (button) {
     fireEvent.click(button);
     return;
@@ -161,7 +167,7 @@ describe("mobile-first shell", () => {
     chooseLabeled("Escuro");
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(localStorage.getItem("fibonaipe.theme")).toBe("dark");
-    expect(themeColor()).toBe("#0b0f17");
+    expect(themeColor()).toBe("#1a1738");
     vi.advanceTimersByTime(150);
     expect(readPolite()).toContain("Tema alterado para Escuro");
     await remount("/");

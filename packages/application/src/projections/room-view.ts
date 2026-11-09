@@ -36,6 +36,8 @@ interface ProjectedItem {
   readonly id: string;
   readonly status: ItemStatus;
   readonly finalEstimate: Card | null;
+  readonly title?: string;
+  readonly externalUrl?: string | null;
 }
 
 interface ProjectedRound {
@@ -59,6 +61,8 @@ interface OwnVote {
   readonly comment: string | null;
 }
 
+type Viewer = { readonly kind: "participant"; readonly participantId: string } | { readonly kind: "screen" };
+
 export interface RoomView {
   readonly id: string;
   readonly code: string;
@@ -77,16 +81,21 @@ export interface RoomView {
     readonly afk: boolean;
     readonly hasVoted: boolean;
   }[];
-  readonly queue: readonly { readonly id: string; readonly status: ItemStatus; readonly finalEstimate: Card | null }[];
-  readonly currentItem: { readonly id: string; readonly status: ItemStatus } | null;
+  readonly queue: readonly {
+    readonly id: string;
+    readonly status: ItemStatus;
+    readonly finalEstimate: Card | null;
+    readonly title: string;
+    readonly link: string | null;
+  }[];
+  readonly currentItem: { readonly id: string; readonly status: ItemStatus; readonly title: string; readonly link: string | null } | null;
   readonly currentRound: { readonly id: string; readonly itemId: string; readonly number: number; readonly status: string } | null;
   readonly ownVote: OwnVote | null;
   readonly votes: readonly { readonly participantId: string; readonly card: Card; readonly suit: Suit }[] | null;
   readonly stats: RoundStats | null;
   readonly permissions: Readonly<Record<string, boolean>>;
+  readonly viewer: Viewer;
 }
-
-type Viewer = { readonly kind: "participant"; readonly participantId: string } | { readonly kind: "screen" };
 
 function isOnline(lastSeenAt: Date, now: Date): boolean {
   return now.getTime() - lastSeenAt.getTime() <= ONLINE_WINDOW_SECONDS * 1000;
@@ -208,6 +217,8 @@ function queueOf(items: readonly ProjectedItem[]): RoomView["queue"] {
         id: item.id,
         status: item.status,
         finalEstimate: item.finalEstimate,
+        title: item.title ?? "",
+        link: typeof item.externalUrl === "string" ? item.externalUrl : null,
       }),
     ),
   );
@@ -224,7 +235,14 @@ function currentItemOf(items: readonly ProjectedItem[]): RoomView["currentItem"]
       break;
     }
   }
-  const summary = current ? Object.freeze({ id: current.id, status: current.status }) : null;
+  const summary = current
+    ? Object.freeze({
+        id: current.id,
+        status: current.status,
+        title: current.title ?? "",
+        link: typeof current.externalUrl === "string" ? current.externalUrl : null,
+      })
+    : null;
   currentItemCache.set(items, summary);
   return summary;
 }
@@ -298,5 +316,6 @@ export function projectRoomForViewer(
       : null,
     stats: revealed ? computeRoundStats(room.scale, roundVotes) : null,
     permissions: permissionsFor(room, viewer),
+    viewer,
   };
 }

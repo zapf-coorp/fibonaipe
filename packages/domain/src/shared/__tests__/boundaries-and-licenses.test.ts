@@ -8,6 +8,10 @@ import { verifyLicenses } from "../../../../../tools/check-licenses.mjs";
 const root = join(dirname(fileURLToPath(import.meta.url)), "../../../../../");
 
 describe("boundary fixtures", () => {
+  it("rejects implicit current time while permitting construction from supplied values", () => {
+    expect(scanSourceForViolations("const now = new Date ( );", "domain")).toContain("NEW_DATE");
+    expect(scanSourceForViolations("const copy = new Date(timestamp);", "domain")).not.toContain("NEW_DATE");
+  });
   it("rejects an adapter import, a cross-adapter import, and Date.now", () => {
     const adapterImport = readFileSync(join(root, "tools/boundary-fixtures/domain-imports-adapter/bad.ts"), "utf8");
     const cross = readFileSync(join(root, "tools/boundary-fixtures/adapter-imports-adapter/bad.ts"), "utf8");

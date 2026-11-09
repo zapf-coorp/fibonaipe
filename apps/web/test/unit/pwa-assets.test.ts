@@ -18,8 +18,8 @@ describe("PWA shell assets", () => {
     expect(manifest.lang).toBe("pt-BR");
     expect(manifest.display).toBe("standalone");
     expect(manifest.start_url).toBe("/");
-    expect(manifest.theme_color?.toLowerCase()).toBe("#0f52ba");
-    expect(manifest.background_color?.toLowerCase()).toBe("#0b0f17");
+    expect(manifest.theme_color?.toLowerCase()).toBe("#f3ead2");
+    expect(manifest.background_color?.toLowerCase()).toBe("#1a1738");
     const icons = manifest.icons ?? [];
     expect(icons.some((icon) => icon.sizes === "192x192")).toBe(true);
     expect(icons.some((icon) => icon.sizes === "512x512")).toBe(true);

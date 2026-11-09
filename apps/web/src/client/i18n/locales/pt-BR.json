@@ -1,4 +1,13 @@
 {
+  "forecast": { "plannedCapacity": "Capacidade planejada", "refresh": "Atualizar previsão", "loadError": "Não foi possível carregar a previsão.", "title": "Previsão de entrega", "disclaimer": "Estimativa estatística baseada no ritmo recente; não é compromisso.", "insufficient": "Dados insuficientes: {have} de {need} sprints elegíveis. Nenhum valor previsto é exibido.", "predicted": "Previsão estimada: {value} pontos", "band": "Faixa provável: {low} a {high} pontos", "medianPace": "Ritmo mediano: {value}", "risk": "A sprint tem concentração alta de itens ♣. Considere a extremidade inferior da faixa.", "accuracy": "Acurácia da previsão", "noAccuracy": "Ainda não há previsões comparáveis.", "meanAbsError": "Erro percentual absoluto médio: {value}%", "from": "De", "to": "Até", "chartLabel": "Pontos previstos e entregues por sprint", "sprint": "Sprint", "predictedHeader": "Previstos", "deliveredHeader": "Entregues", "errorHeader": "Erro", "exports": "Exportar série filtrada", "csv": "Baixar CSV", "json": "Baixar JSON", "svg": "Baixar SVG", "exportForbidden": "Exportação indisponível para observadores." },
+  "sprintDetail": { "activate": "Iniciar sprint", "close": "Encerrar sprint", "confirm": "Confirmar encerramento", "cancel": "Cancelar", "confirmTitle": "Confirmar encerramento da sprint?", "committed": "Comprometidos: {value}", "delivered": "Entregues: {value}", "capacity": "Capacidade: {value}", "closedNotice": "Sprint encerrada. As métricas não podem ser alteradas." },
+  "sprintDetail": { "activate": "Iniciar sprint", "close": "Encerrar sprint", "confirm": "Confirmar encerramento", "cancel": "Cancelar", "confirmTitle": "Confirmar encerramento da sprint?", "committed": "Comprometidos: {value}", "delivered": "Entregues: {value}", "capacity": "Capacidade: {value}", "closedNotice": "Sprint encerrada. As métricas não podem ser alteradas." },
+  "sprints": { "title": "Sprints", "empty": "Nenhuma sprint cadastrada.", "loading": "Carregando sprints...", "error": "Não foi possível carregar ou salvar a sprint.", "name": "Nome da sprint", "start": "Início", "end": "Fim", "goal": "Objetivo", "create": "Criar sprint", "planned": "Planejada", "active": "Ativa", "closed": "Encerrada" },
+  "capacityGrid": { "title": "Capacidade por pessoa", "member": "Pessoa", "absence": "Ausências", "focus": "Foco (%)", "absenceFor": "Ausências de {name}", "focusFor": "Foco de {name}", "save": "Salvar capacidade" },
+  "holidayCalendar": { "title": "Feriados do time", "name": "Nome do feriado", "date": "Data do feriado", "add": "Adicionar feriado", "remove": "Remover {name}" },
+  "sprintScope": { "title": "Escopo da sprint", "available": "Itens estimados", "add": "Adicionar {name}", "remove": "Remover {name}", "done": "Concluir {name}", "addedLate": "Adicionado após início", "completed": "Concluído", "loadMore": "Carregar mais" },
+  "sprintOverrun": { "label": "Estourou a estimativa de {name}" },
+  "sprintClosure": { "carryOver": "Itens que voltam ao backlog: {count}", "unestimated": "Itens sem estimativa: {count}" },
   "app": {
     "title": "Fibonaipe",
     "subtitle": "Planning Poker e previsão de sprints",
@@ -52,6 +61,7 @@
     }
   },
   "create": {
+    "hostName": "Seu apelido",
     "roomName": "Nome da sala",
     "cards": "Cartas Fibonacci",
     "suit": "Naipe",
@@ -90,8 +100,13 @@
     "return": "Voltar a votar",
     "reveal": "Revelar",
     "revealed": "Rodada revelada",
-    "queue": "Fila",
+    "queue": "Tarefas",
     "import": "Importar",
+    "importJson": "Importar JSON",
+    "exportJson": "Exportar JSON",
+    "close": "Fechar",
+    "remove": "Remover",
+    "timerLabel": "Tempo",
     "settings": "Configurações",
     "estimate": "Estimativa final",
     "confirm": "Confirmar",
@@ -120,7 +135,13 @@
     "mean": "Média",
     "divergence": "Divergência de naipe",
     "whoVotes": "Quem vota muda na próxima rodada.",
-    "invalidLink": "Link inválido: somente http(s)."
+    "invalidLink": "Link inválido: somente http(s).",
+    "needRound": "Abra um item na fila para começar a rodada."
+  },
+  "profile": {
+    "guest": "Convidado",
+    "atTable": "Na mesa",
+    "away": "Fora da mesa"
   },
   "announcements": {
     "themeChanged": "Tema alterado para {theme}",

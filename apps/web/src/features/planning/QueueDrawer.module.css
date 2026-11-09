@@ -1,0 +1,71 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(40rem, 100%);
+  max-height: min(80vh, 40rem);
+  overflow: auto;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.composer,
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.composer input {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.iconButton {
+  display: inline-grid;
+  place-items: center;
+  width: var(--touch-min);
+  min-width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+}
+
+.iconButton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

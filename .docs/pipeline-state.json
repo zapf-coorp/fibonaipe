@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "workflow": "docs",
+  "workflow": "resume",
   "appRoot": "c:\\GIT\\ZAPFCOORP\\fibonaipe",
   "stage": "pipeline",
   "pendingSpecs": [],
@@ -556,7 +556,512 @@
       "role": "systemArchitect",
       "status": "done",
       "expectedOutputs": [],
-      "updatedAt": "2026-10-26T21:43:04.493Z"
+      "updatedAt": "2026-10-27T21:37:56.601Z"
+    },
+    "qa-tdd-red:ports-and-testing-fakes": {
+      "id": "qa-tdd-red:ports-and-testing-fakes",
+      "role": "qaEngineer",
+      "slug": "ports-and-testing-fakes",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/ports-and-testing-fakes*.test.*"
+      ],
+      "updatedAt": "2026-10-27T02:39:59.169Z"
+    },
+    "se-implement:ports-and-testing-fakes": {
+      "id": "se-implement:ports-and-testing-fakes",
+      "role": "softwareEngineer",
+      "slug": "ports-and-testing-fakes",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T03:06:30.014Z"
+    },
+    "delivery-critic:ports-and-testing-fakes": {
+      "id": "delivery-critic:ports-and-testing-fakes",
+      "role": "softwareEngineer",
+      "slug": "ports-and-testing-fakes",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T03:07:24.117Z"
+    },
+    "qa-tdd-verify": {
+      "id": "qa-tdd-verify",
+      "role": "qaEngineer",
+      "status": "done",
+      "expectedOutputs": [
+        "**/*.{test,spec}.*",
+        "tests/**",
+        ".docs/todo.md"
+      ],
+      "updatedAt": "2026-10-27T11:33:25.116Z"
+    },
+    "qa-tdd-red:web-pwa-shell": {
+      "id": "qa-tdd-red:web-pwa-shell",
+      "role": "qaEngineer",
+      "slug": "web-pwa-shell",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/web-pwa-shell*.test.*"
+      ],
+      "updatedAt": "2026-10-27T03:47:17.255Z"
+    },
+    "se-implement:web-pwa-shell": {
+      "id": "se-implement:web-pwa-shell",
+      "role": "softwareEngineer",
+      "slug": "web-pwa-shell",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T04:29:20.566Z"
+    },
+    "delivery-critic:web-pwa-shell": {
+      "id": "delivery-critic:web-pwa-shell",
+      "role": "softwareEngineer",
+      "slug": "web-pwa-shell",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T11:32:12.298Z"
+    },
+    "qa-tdd-red:domain-scales-and-stats": {
+      "id": "qa-tdd-red:domain-scales-and-stats",
+      "role": "qaEngineer",
+      "slug": "domain-scales-and-stats",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/domain-scales-and-stats*.test.*"
+      ],
+      "updatedAt": "2026-10-27T11:46:43.466Z"
+    },
+    "se-implement:domain-scales-and-stats": {
+      "id": "se-implement:domain-scales-and-stats",
+      "role": "softwareEngineer",
+      "slug": "domain-scales-and-stats",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T11:59:44.092Z"
+    },
+    "delivery-critic:domain-scales-and-stats": {
+      "id": "delivery-critic:domain-scales-and-stats",
+      "role": "softwareEngineer",
+      "slug": "domain-scales-and-stats",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T12:00:50.504Z"
+    },
+    "qa-tdd-red:domain-policy-and-room": {
+      "id": "qa-tdd-red:domain-policy-and-room",
+      "role": "qaEngineer",
+      "slug": "domain-policy-and-room",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/domain-policy-and-room*.test.*"
+      ],
+      "updatedAt": "2026-10-27T12:35:09.214Z"
+    },
+    "se-implement:domain-policy-and-room": {
+      "id": "se-implement:domain-policy-and-room",
+      "role": "softwareEngineer",
+      "slug": "domain-policy-and-room",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T12:51:46.029Z"
+    },
+    "delivery-critic:domain-policy-and-room": {
+      "id": "delivery-critic:domain-policy-and-room",
+      "role": "softwareEngineer",
+      "slug": "domain-policy-and-room",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T12:52:20.622Z"
+    },
+    "qa-tdd-red:domain-item-round-vote": {
+      "id": "qa-tdd-red:domain-item-round-vote",
+      "role": "qaEngineer",
+      "slug": "domain-item-round-vote",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/domain-item-round-vote*.test.*"
+      ],
+      "updatedAt": "2026-10-27T13:24:28.385Z"
+    },
+    "se-implement:domain-item-round-vote": {
+      "id": "se-implement:domain-item-round-vote",
+      "role": "softwareEngineer",
+      "slug": "domain-item-round-vote",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T14:28:01.819Z"
+    },
+    "delivery-critic:domain-item-round-vote": {
+      "id": "delivery-critic:domain-item-round-vote",
+      "role": "softwareEngineer",
+      "slug": "domain-item-round-vote",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T14:29:03.689Z"
+    },
+    "qa-tdd-red:application-room-and-voting": {
+      "id": "qa-tdd-red:application-room-and-voting",
+      "role": "qaEngineer",
+      "slug": "application-room-and-voting",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/application-room-and-voting*.test.*"
+      ],
+      "updatedAt": "2026-10-27T15:06:37.654Z"
+    },
+    "se-implement:application-room-and-voting": {
+      "id": "se-implement:application-room-and-voting",
+      "role": "softwareEngineer",
+      "slug": "application-room-and-voting",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T15:55:53.490Z"
+    },
+    "delivery-critic:application-room-and-voting": {
+      "id": "delivery-critic:application-room-and-voting",
+      "role": "softwareEngineer",
+      "slug": "application-room-and-voting",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T15:56:31.618Z"
+    },
+    "qa-tdd-red:adapters-r1-infrastructure": {
+      "id": "qa-tdd-red:adapters-r1-infrastructure",
+      "role": "qaEngineer",
+      "slug": "adapters-r1-infrastructure",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/adapters-r1-infrastructure*.test.*"
+      ],
+      "updatedAt": "2026-10-27T16:29:55.940Z"
+    },
+    "se-implement:adapters-r1-infrastructure": {
+      "id": "se-implement:adapters-r1-infrastructure",
+      "role": "softwareEngineer",
+      "slug": "adapters-r1-infrastructure",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T17:01:15.718Z"
+    },
+    "delivery-critic:adapters-r1-infrastructure": {
+      "id": "delivery-critic:adapters-r1-infrastructure",
+      "role": "softwareEngineer",
+      "slug": "adapters-r1-infrastructure",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T18:08:26.160Z"
+    },
+    "qa-tdd-red:api-and-room-entry-ui": {
+      "id": "qa-tdd-red:api-and-room-entry-ui",
+      "role": "qaEngineer",
+      "slug": "api-and-room-entry-ui",
+      "status": "done",
+      "expectedOutputs": [],
+      "updatedAt": "2026-10-27T18:24:28.240Z"
+    },
+    "se-implement:api-and-room-entry-ui": {
+      "id": "se-implement:api-and-room-entry-ui",
+      "role": "softwareEngineer",
+      "slug": "api-and-room-entry-ui",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:50:07.557Z"
+    },
+    "qa-tdd-red:monorepo-foundation": {
+      "id": "qa-tdd-red:monorepo-foundation",
+      "role": "qaEngineer",
+      "slug": "monorepo-foundation",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/monorepo-foundation*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:monorepo-foundation": {
+      "id": "se-implement:monorepo-foundation",
+      "role": "softwareEngineer",
+      "slug": "monorepo-foundation",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:monorepo-foundation": {
+      "id": "delivery-critic:monorepo-foundation",
+      "role": "softwareEngineer",
+      "slug": "monorepo-foundation",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:api-and-room-entry-ui": {
+      "id": "delivery-critic:api-and-room-entry-ui",
+      "role": "softwareEngineer",
+      "slug": "api-and-room-entry-ui",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:50:52.645Z"
+    },
+    "qa-tdd-red:poker-table-and-projector-ui": {
+      "id": "qa-tdd-red:poker-table-and-projector-ui",
+      "role": "qaEngineer",
+      "slug": "poker-table-and-projector-ui",
+      "status": "done",
+      "expectedOutputs": [
+        "tests/**/poker-table-and-projector-ui*.test.*"
+      ],
+      "updatedAt": "2026-10-27T21:10:47.341Z"
+    },
+    "se-implement:poker-table-and-projector-ui": {
+      "id": "se-implement:poker-table-and-projector-ui",
+      "role": "softwareEngineer",
+      "slug": "poker-table-and-projector-ui",
+      "status": "done",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T21:36:25.856Z"
+    },
+    "delivery-critic:poker-table-and-projector-ui": {
+      "id": "delivery-critic:poker-table-and-projector-ui",
+      "role": "softwareEngineer",
+      "slug": "poker-table-and-projector-ui",
+      "status": "done",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T21:37:48.268Z"
+    },
+    "qa-tdd-red:auth-teams-and-claiming": {
+      "id": "qa-tdd-red:auth-teams-and-claiming",
+      "role": "qaEngineer",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/auth-teams-and-claiming*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:auth-teams-and-claiming": {
+      "id": "se-implement:auth-teams-and-claiming",
+      "role": "softwareEngineer",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:auth-teams-and-claiming": {
+      "id": "delivery-critic:auth-teams-and-claiming",
+      "role": "softwareEngineer",
+      "slug": "auth-teams-and-claiming",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "qa-tdd-red:aggregated-history-and-audit": {
+      "id": "qa-tdd-red:aggregated-history-and-audit",
+      "role": "qaEngineer",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/aggregated-history-and-audit*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:aggregated-history-and-audit": {
+      "id": "se-implement:aggregated-history-and-audit",
+      "role": "softwareEngineer",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:aggregated-history-and-audit": {
+      "id": "delivery-critic:aggregated-history-and-audit",
+      "role": "softwareEngineer",
+      "slug": "aggregated-history-and-audit",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "qa-tdd-red:domain-and-app-sprints": {
+      "id": "qa-tdd-red:domain-and-app-sprints",
+      "role": "qaEngineer",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/domain-and-app-sprints*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:domain-and-app-sprints": {
+      "id": "se-implement:domain-and-app-sprints",
+      "role": "softwareEngineer",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:domain-and-app-sprints": {
+      "id": "delivery-critic:domain-and-app-sprints",
+      "role": "softwareEngineer",
+      "slug": "domain-and-app-sprints",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "qa-tdd-red:sprint-and-observability-ui": {
+      "id": "qa-tdd-red:sprint-and-observability-ui",
+      "role": "qaEngineer",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/sprint-and-observability-ui*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:sprint-and-observability-ui": {
+      "id": "se-implement:sprint-and-observability-ui",
+      "role": "softwareEngineer",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:sprint-and-observability-ui": {
+      "id": "delivery-critic:sprint-and-observability-ui",
+      "role": "softwareEngineer",
+      "slug": "sprint-and-observability-ui",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "qa-tdd-red:forecasting-and-accuracy": {
+      "id": "qa-tdd-red:forecasting-and-accuracy",
+      "role": "qaEngineer",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/forecasting-and-accuracy*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:forecasting-and-accuracy": {
+      "id": "se-implement:forecasting-and-accuracy",
+      "role": "softwareEngineer",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:forecasting-and-accuracy": {
+      "id": "delivery-critic:forecasting-and-accuracy",
+      "role": "softwareEngineer",
+      "slug": "forecasting-and-accuracy",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "qa-tdd-red:adapters-clickup-and-jira": {
+      "id": "qa-tdd-red:adapters-clickup-and-jira",
+      "role": "qaEngineer",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        "tests/**/adapters-clickup-and-jira*.test.*"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "se-implement:adapters-clickup-and-jira": {
+      "id": "se-implement:adapters-clickup-and-jira",
+      "role": "softwareEngineer",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
+    },
+    "delivery-critic:adapters-clickup-and-jira": {
+      "id": "delivery-critic:adapters-clickup-and-jira",
+      "role": "softwareEngineer",
+      "slug": "adapters-clickup-and-jira",
+      "status": "pending",
+      "expectedOutputs": [
+        ".docs/todo.md",
+        "src/**"
+      ],
+      "updatedAt": "2026-10-27T20:19:21.237Z"
     }
   },
   "errorClass": null,
@@ -571,7 +1076,6 @@
     "maxBootstrapFix": 1,
     "maxFeatureFix": 3
   },
-  "updatedAt": "2026-10-26T21:43:04.494Z",
-  "recordStatus": "done",
-  "recordRole": "systemArchitect"
+  "updatedAt": "2026-10-27T21:37:56.673Z",
+  "recordStatus": "info"
 }

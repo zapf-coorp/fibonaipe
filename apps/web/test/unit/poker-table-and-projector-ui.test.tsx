@@ -316,6 +316,15 @@ function assertTouchTarget(element: Element): void {
   expect(height).toBeGreaterThanOrEqual(44);
 }
 
+function clickHostAction(name: string): void {
+  const ready = screen.queryByRole("button", { name });
+  if (!ready) {
+    const profile = screen.getByRole("button", { name: /Na mesa|Fora da mesa/ });
+    if (profile.getAttribute("aria-expanded") !== "true") fireEvent.click(profile);
+  }
+  fireEvent.click(screen.getByRole("button", { name }));
+}
+
 function fontPx(element: Element): number {
   const attr = element.getAttribute("style") ?? "";
   const inline = /font-size:\s*([0-9.]+)px/i.exec(attr);
@@ -401,14 +410,16 @@ describe("poker table and projector screens", () => {
     expect(within(deck).getByRole("button", { name: "?" })).toBeTruthy();
     expect(within(deck).getByRole("button", { name: "Coringa" })).toBeTruthy();
     expect(within(deck).getByRole("button", { name: "AFK" })).toBeTruthy();
-    expect(mesa.textContent).toMatch(/Coringa/);
+    const suits = within(mesa).getByRole("group", { name: "Naipe" });
+    expect(within(suits).getAllByRole("button")).toHaveLength(5);
+    expect(within(suits).getByRole("button", { name: "Naipe Coringa" })).toHaveAttribute("aria-pressed", "true");
     const ada = within(mesa).getByRole("listitem", { name: /Ada/ });
-    expect(ada.textContent).toContain("Você");
-    expect(ada.textContent).toContain("Online");
-    expect(ada.textContent).toContain("Aguardando");
+    expect(ada.textContent).not.toContain("Você");
+    expect(within(ada).getByRole("img", { name: "Online" })).toBeTruthy();
+    expect(within(ada).getByRole("img", { name: "Aguardando" })).toBeTruthy();
     expect(ada.textContent).not.toContain("Você está ausente");
     const helena = within(mesa).getByRole("listitem", { name: /Helena/ });
-    expect(helena.textContent).toContain("Votou");
+    expect(within(helena).getByRole("img", { name: "Votou" })).toBeTruthy();
     expect(helena.textContent).not.toMatch(/Alto|♣/);
     for (const button of deck.querySelectorAll("button")) assertTouchTarget(button);
     const root = document.documentElement;
@@ -486,11 +497,17 @@ describe("poker table and projector screens", () => {
         stats: divergenceStats(),
       };
     };
-    fireEvent.click(within(mesa).getByRole("button", { name: "Revelar" }));
+    clickHostAction("Revelar");
     const result = await screen.findByRole("region", { name: "Resultado" });
     expect(result.textContent).toContain("Alto");
     expect(result.textContent).toContain("Baixo");
-    expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-disabled", "true");
+    expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(within(mesa).getByRole("button", { name: "8" }));
+    expect(within(mesa).getByRole("button", { name: "8" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(within(mesa).getByRole("button", { name: "8" }));
+    expect(within(mesa).getByRole("button", { name: "8" })).toHaveAttribute("aria-pressed", "false");
+    expect(network.some((entry) => entry.startsWith("DELETE "))).toBe(true);
     expect(mesa.textContent).toMatch(/revelad/i);
     await waitFor(() => {
       expect(readPolite()).toMatch(/Alto/);
@@ -564,7 +581,7 @@ describe("poker table and projector screens", () => {
       }),
     );
     const mesa = await screen.findByRole("region", { name: "Mesa" });
-    fireEvent.click(within(mesa).getByRole("button", { name: "Estimativa final" }));
+    clickHostAction("Estimativa final");
     const dialog = screen.getByRole("dialog", { name: "Estimativa final" });
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
     onEstimate = () => {
@@ -614,25 +631,22 @@ describe("poker table and projector screens", () => {
       }),
     );
     const mesa = await screen.findByRole("region", { name: "Mesa" });
-    fireEvent.click(within(mesa).getByRole("button", { name: "Fila" }));
-    expect(screen.getByRole("dialog", { name: "Fila" })).toBeTruthy();
+    clickHostAction("Tarefas");
+    const tasks = screen.getByRole("dialog", { name: "Tarefas" });
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Importar" }));
-    expect(screen.queryByRole("dialog", { name: "Fila" })).toBeNull();
-    expect(screen.getByRole("dialog", { name: "Importar" })).toBeTruthy();
-    expect(screen.getAllByRole("dialog")).toHaveLength(1);
-    fireEvent.click(within(mesa).getByRole("button", { name: "Configurações" }));
+    fireEvent.click(within(tasks).getByRole("button", { name: "Fechar" }));
+    expect(screen.queryByRole("dialog", { name: "Tarefas" })).toBeNull();
+    clickHostAction("Configurações");
     const settings = screen.getByRole("dialog", { name: "Configurações" });
-    expect(screen.queryByRole("dialog", { name: "Importar" })).toBeNull();
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
     expect(settings.textContent).toMatch(/quem vota/i);
     expect(settings.textContent).toMatch(/próxima rodada/i);
     expect(within(settings).getByRole("group", { name: /Fibonacci/ })).toBeTruthy();
     expect(within(settings).getByRole("checkbox", { name: "Média" })).toBeTruthy();
-    fireEvent.click(within(mesa).getByRole("button", { name: "Estimativa final" }));
+    clickHostAction("Estimativa final");
     expect(screen.queryByRole("dialog", { name: "Configurações" })).toBeNull();
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
-    fireEvent.click(within(mesa).getByRole("button", { name: "Mostrar QR" }));
+    clickHostAction("Mostrar QR");
     const qr = screen.getByRole("dialog", { name: "QR da sala" });
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
     expect(qr.querySelector("svg, canvas")).not.toBeNull();
@@ -641,60 +655,46 @@ describe("poker table and projector screens", () => {
 
   it("confirms a 50-line import in order and clears the busy state", async () => {
     const lines = Array.from({ length: 50 }, (_, index) => `Linha ${String(index + 1).padStart(2, "0")}`);
-    await boot(`/r/${CODE}`, base({ selfId: "host", permissions: permissions("host") }));
-    const mesa = await screen.findByRole("region", { name: "Mesa" });
-    fireEvent.click(within(mesa).getByRole("button", { name: "Fila" }));
-    fireEvent.click(screen.getByRole("button", { name: "Importar" }));
-    const dialog = screen.getByRole("dialog", { name: "Importar" });
-    expect(screen.queryByRole("dialog", { name: "Fila" })).toBeNull();
-    fireEvent.change(within(dialog).getByRole("textbox", { name: /colar|texto|csv/i }), {
-      target: { value: lines.join("\n") },
+    await boot(`/r/${CODE}`, base({ selfId: "host", permissions: permissions("host"), items: [] }));
+    const dialog = await screen.findByRole("dialog", { name: "Tarefas" });
+    const input = within(dialog).getByLabelText(/importar json/i);
+    const file = new File([JSON.stringify(lines.map((title) => ({ title, link: null })))], "tarefas.json", {
+      type: "application/json",
     });
-    expect(dialog.textContent).toContain("Linha 01");
-    expect(dialog.textContent?.indexOf("Linha 01") ?? -1).toBeLessThan(dialog.textContent?.indexOf("Linha 02") ?? -1);
-    expect(dialog.textContent).toContain("Linha 50");
-    holdImport = true;
-    onImport = () => {
-      snapshot = {
-        ...snapshot,
-        items: lines.map((title, index) => item(`line-${index + 1}`, title, index === 0 ? "current" : "pending")),
-      };
-    };
-    const confirm = within(dialog).getByRole("button", { name: "Confirmar" });
-    fireEvent.click(confirm);
-    expect(confirm).toHaveAttribute("aria-busy", "true");
-    releaseImport?.();
-    releaseImport = null;
-    const queue = await screen.findByRole("list", { name: "Fila" });
+    fireEvent.change(input, { target: { files: [file] } });
+    const queue = await screen.findByRole("list", { name: "Tarefas" });
+    await waitFor(() => {
+      expect(within(queue).getAllByRole("listitem")).toHaveLength(50);
+    });
     const labels = within(queue).getAllByRole("listitem").map((row) => row.textContent ?? "");
-    expect(labels).toHaveLength(50);
     expect(labels[0]).toContain("Linha 01");
     expect(labels[49]).toContain("Linha 50");
-    const leftover = screen.queryByRole("button", { name: "Confirmar" });
-    if (leftover) expect(leftover).not.toHaveAttribute("aria-busy", "true");
+    expect(dialog.textContent?.indexOf("Linha 01") ?? -1).toBeLessThan(dialog.textContent?.indexOf("Linha 02") ?? -1);
+    await waitFor(() => expect(input).toHaveAttribute("aria-busy", "false"));
   });
 
   it("renders an https link with noopener and rejects an ftp link in the preview", async () => {
     await boot(`/r/${CODE}`, base({ selfId: "host", permissions: permissions("host"), items: [] }));
     const mesa = await screen.findByRole("region", { name: "Mesa" });
-    fireEvent.click(within(mesa).getByRole("button", { name: "Fila" }));
-    const queue = screen.getByRole("dialog", { name: "Fila" });
+    clickHostAction("Tarefas");
+    const queue = screen.getByRole("dialog", { name: "Tarefas" });
     fireEvent.change(within(queue).getByRole("textbox", { name: /título/i }), { target: { value: "Boleto" } });
     fireEvent.change(within(queue).getByRole("textbox", { name: /link/i }), {
       target: { value: "https://example.com/boleto" },
     });
     fireEvent.click(within(queue).getByRole("button", { name: "Adicionar" }));
-    const link = await within(mesa).findByRole("link", { name: /example.com\/boleto/i });
+    const link = await within(mesa).findByRole("link", { name: "Boleto" });
+    expect(link).toHaveAttribute("href", "https://example.com/boleto");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    fireEvent.click(screen.getByRole("button", { name: "Importar" }));
-    const dialog = screen.getByRole("dialog", { name: "Importar" });
-    expect(screen.queryByRole("dialog", { name: "Fila" })).toBeNull();
-    fireEvent.change(within(dialog).getByRole("textbox", { name: /colar|texto|csv/i }), {
-      target: { value: "Boleto;nota;ftp://files.example/boleto\nValido;nota;https://example.com/ok" },
-    });
-    expect(dialog.textContent).toMatch(/inválid|http\(s\)|somente http/i);
-    expect(dialog.querySelector("a[href^='ftp:']")).toBeNull();
-    expect(dialog.textContent).toContain("Valido");
+    const file = new File(
+      [JSON.stringify([{ title: "Ruim", link: "ftp://files.example/boleto" }, { title: "Valido", link: "https://example.com/ok" }])],
+      "tarefas.json",
+      { type: "application/json" },
+    );
+    fireEvent.change(within(queue).getByLabelText(/importar json/i), { target: { files: [file] } });
+    expect(await screen.findByText(/inválid|http\(s\)|somente http/i)).toBeTruthy();
+    expect(queue.querySelector("a[href^='ftp:']")).toBeNull();
+    expect(await within(queue).findByRole("link", { name: "Valido" })).toHaveAttribute("href", "https://example.com/ok");
   });
 
   it("announces a keyboard move of item 3 up to position 2", async () => {
@@ -707,8 +707,8 @@ describe("poker table and projector screens", () => {
       }),
     );
     const mesa = await screen.findByRole("region", { name: "Mesa" });
-    fireEvent.click(within(mesa).getByRole("button", { name: "Fila" }));
-    const queue = screen.getByRole("dialog", { name: "Fila" });
+    clickHostAction("Tarefas");
+    const queue = screen.getByRole("dialog", { name: "Tarefas" });
     const charlie = within(queue).getByRole("listitem", { name: /Charlie/ });
     const up = within(charlie).getByRole("button", { name: "Mover para cima" });
     expect(up.tagName).toBe("BUTTON");
@@ -724,7 +724,7 @@ describe("poker table and projector screens", () => {
       expect(readPolite()).toMatch(/Charlie/);
       expect(readPolite()).toMatch(/2/);
     });
-    const labels = within(screen.getByRole("list", { name: "Fila" }))
+    const labels = within(screen.getByRole("list", { name: "Tarefas" }))
       .getAllByRole("listitem")
       .map((row) => row.textContent ?? "");
     expect(labels.findIndex((label) => label.includes("Charlie"))).toBeLessThan(labels.findIndex((label) => label.includes("Bravo")));
@@ -734,11 +734,11 @@ describe("poker table and projector screens", () => {
     await boot(`/r/${CODE}`, base({ selfId: "host", permissions: permissions("host") }));
     const mesa = await screen.findByRole("region", { name: "Mesa" });
     expect(mesa).toHaveAttribute("data-round-state", "voting-empty");
-    expect(screen.getByRole("timer")).toHaveAttribute("data-timer-state", "off");
+    expect(screen.queryByRole("timer")).toBeNull();
     onTimer = () => {
       snapshot = { ...snapshot, timerEndsAt: "2025-10-27T15:01:00.000Z" };
     };
-    fireEvent.click(within(mesa).getByRole("button", { name: "Iniciar tempo" }));
+    clickHostAction("Iniciar tempo");
     expect(await screen.findByRole("timer")).toHaveAttribute("data-timer-state", "running");
     expect(screen.getByRole("button", { name: /silenciar/i })).toBeTruthy();
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -782,7 +782,7 @@ describe("poker table and projector screens", () => {
     );
     projector = await screen.findByRole("region", { name: "Projetor" });
     expect(projector).toHaveAttribute("data-projector-state", "voting");
-    expect(projector.textContent).toMatch(/Votou/);
+    expect(within(projector).getAllByRole("img", { name: "Votou" }).length).toBeGreaterThan(0);
     expect(projector.textContent).not.toMatch(/\b(1|2|3|5|8|13)\b/);
     expect(projector.textContent).not.toMatch(/[♣♥♠♦]/);
     expect(within(projector).queryByRole("group", { name: "Baralho" })).toBeNull();

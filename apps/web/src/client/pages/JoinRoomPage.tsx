@@ -30,7 +30,7 @@ export function JoinRoomPage() {
   return (
     <div className={styles.stage}>
       <form
-        className={styles.form}
+        className={styles.form + " surface"}
         onSubmit={(event) => {
           event.preventDefault();
           flushSync(() => setNicknameTaken(true));

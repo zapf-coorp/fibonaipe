@@ -15,8 +15,7 @@ export function enqueueVote(code: string, body: unknown): void {
 }
 
 export function nextClientOpId(): string {
-  const stamp = queue.length + 1;
-  return `01JCLIENTOP${String(stamp).padStart(16, "0")}`;
+  return crypto.randomUUID();
 }
 
 function ensureOnlineFlush(): void {

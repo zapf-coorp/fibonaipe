@@ -31,6 +31,8 @@ When the user invokes a **subcommand**, follow that path **before** a generic fu
 | `write_zteam_config` | Write `.zteam/config.json` (always include **uiUxDesigner**, optional `provider`, `projectType` & `cursorModels`) |
 | `ensure_zteam_setup` | Skill + `.docs` stubs + optional config template (no LLM) |
 | `run_development_pipeline` | Pipeline / 2-wave playbook (`workspaceRoot` **required**, `workflow` optional) |
+| `get_development_step` | Fetch only the next unfinished stage from the on-disk plan |
+| `run_development_check` | Scripted red/focused/verify checks with short diagnostics and full logs on disk |
 | `get_pipeline_state` | Live Canvas Dashboard state + push subagent telemetry (`recordStage`, `recordRole`, `recordStatus`, `recordMessage`, `checkGate`) |
 | `approve_gate` | HITL when `ZTEAM_HITL=1` |
 
@@ -71,43 +73,17 @@ When `run_development_pipeline` runs on `llmRuntime="cursor"`, it writes `.docs/
   - TDD per slug: `qa-tdd-red:{slug}` → `se-implement:{slug}` → `delivery-critic:{slug}`
   - Final suite verification: `qa-tdd-verify`
 
-```text
-If response.llmRuntime === "cursor" (or delegated === true):
-0. Tell the user once: "Live Canvas Dashboard: `.zteam/dashboard/index.html`"
-   If response.parentPickerBanner is present, show it once so the user knows which 9r model to select in the parent chat picker.
-1. For each stage in delegationPlaybook.stages (in order):
-   a) HOST ONLY: Call get_pipeline_state({
-        workspaceRoot, projectRoot,
-        recordStage: stage.id, recordRole: stage.role,
-        recordStatus: "start", skillKey: stage.skillKey,
-        recordMessage: "Starting " + stage.title
-      })
-      Print ONLY the 1-line `chatBanner` in chat (keep chat ultra-clean).
-   b) Run Task({
-        subagent_type: stage.subagentType,  // system-architect | technology-architect | generalPurpose | software-engineer | qa-engineer
-        model: stage.model,                 // ALWAYS "inherit" or allowlisted Cursor slug; NEVER pass 9r-* or "auto" here!
-        description: stage.title,
-        prompt: stage.instructions + "\n\nFull User Idea / Constraints:\n" + delegationPlaybook.userIdea + "\n\nWrite expected outputs: " + stage.expectedOutputs.join(", ")
-      })
-   c) HOST ONLY: Call get_pipeline_state({
-        workspaceRoot, projectRoot,
-        recordStage: stage.id, recordRole: stage.role,
-        recordStatus: "done", skillKey: stage.skillKey,
-        checkGate: true,
-        recordMessage: "Completed " + stage.title
-      })
-      Print ONLY the 1-line `chatBanner` in chat.
-      If `gate.ok === false` (e.g. contradictory QA-red tests or forbidden native addon like better-sqlite3), re-run the subagent to fix `gate.reasons` before advancing!
-   d) If `stage.id === "sa-todo-and-specs"` just finished and `.docs/todo.md` now has open `- [ ] slug: title` items:
-      Call `run_development_pipeline({ workspaceRoot, projectRoot, userIdea, workflow: "resume" })` to expand Wave 2 per-slug stages (`sa-spec:{slug}`, `ux-spec:{slug}`, `ta-spec:{slug}`, `qa-tdd-red:{slug}`, `se-implement:{slug}`, `delivery-critic:{slug}`, `qa-tdd-verify`) and execute them in order!
-2. When all stages finish, call:
-   get_pipeline_state({
-     workspaceRoot, projectRoot,
-     recordStage: "pipeline", recordStatus: "done",
-     recordMessage: "Pipeline completed"
-   })
-   so `.zteam/dashboard/index.html` transitions to "Pipeline Completed ✓".
-```
+The default response contains one stage and the path of the full plan on disk. Display the two observability links once, then use this loop:
+
+1. Use the returned stage, then call `get_development_step` for subsequent stages. Do not request the complete playbook repeatedly.
+2. The host records start with `get_pipeline_state(compact:true)`. For SE keep the returned writerToken; pass it on progress/completion and to focused checks. A second writer is rejected. Do not edit the same slug while its engineer is active. Read-only review is allowed.
+3. Send one worker the stage instructions, slug, exact test paths and acceptance goal. Bootstrap also receives the original idea. Do not append the full chat, checkpoint, playbook or unrelated files. Workers write artifacts to disk; their handoff is at most eight lines: changed paths, command/result, remaining failure, next action.
+4. QA red uses `run_development_check(mode:"red",slug,tests:[...])`. SE uses `mode:"focused"` with explicit paths and writerToken until those tests pass. Complete logs stay in .docs/execution/logs; show only the short result and log path. On failure read the failed test and cited source range. The parent takes over only after the worker stops or the same failure occurs twice; stop the worker and record error with its token before starting a new writer. Never steal a live lock or use a timer to infer completion.
+5. A delivery critic is read-only and uses the existing focused-test receipt and file presence; it does not launch another implementation or rerun passing tests. At final QA call `run_development_check(mode:"verify")`: it runs the project's npm run verify, or test fallback, and reuses success only when source/configuration/environment are unchanged. Pass exitCode and short evidence to the gate; mark tasks only after current final verification. Run commit only after verification and required UI evidence. Do not commit unless the user authorized it.
+6. For UI changes, check the actual flow once (for example create room, enter room, connection state), including relevant errors. Batch deterministic actions and capture the form and final room states where sufficient; obtain additional state only when needed to choose or validate the next action. Follow browser tool observation requirements. Do not repeat the entire browser journey after an unrelated change.
+7. Record done/error through get_pipeline_state with compact:true and writerToken. If a gate fails, repair only its cited reasons within the retry budget. After sa-todo-and-specs, request workflow=resume once to expand the next wave; otherwise fetch the next step. Publish a single pipeline done only after required stages, verification and report.
+
+For happy-dom connection/navigation noise, mock the specific transport or navigation dependency in unit tests, and close connections after each test. Preserve behavioral assertions and a separate integration/browser check against the real server. Do not globally swallow console errors, disable unhandled-error detection or ignore failing assertions. If the application source is unavailable, report the missing test setup instead of claiming the noise is fixed.
 
 ### `@zteam/models`
 
@@ -138,3 +114,19 @@ Help the user choose models for **this** project (`provider: "hybrid"` | `"curso
 6. Confirm paths written; point user to .zteam/config.json and .zteam/README.MD
 7. Stop (unless user asked to run a pipeline next)
 ```
+
+## Adaptive execution and compact handoffs
+
+Use the smallest workflow matching the request: fix for a defect, feature for a bounded addition, resume for interrupted work. Reuse completed stages only when their artifacts and acceptance evidence still apply. Never bypass QA or mark a task complete merely because another stage started.
+
+Give each role its stage instructions, current slug, relevant source paths, approved constraints and any failing test excerpt. Bootstrap gets the original idea; downstream roles read the relevant requirements instead of receiving the entire chat and every document. Send changed files through the required FILE contract, with concise test evidence and remaining blockers. Do not repeat unchanged artifacts in prose.
+
+The orchestrator may choose implementation details, targeted tests and the smallest repair scope without asking for routine confirmation. Keep scripted dependencies intact. Consult another role for a specific unresolved decision; otherwise proceed. Respect configured retry budgets and report the failing evidence when progress stops. A repair should address gate.reasons, not rerun unrelated phases.
+
+Use compact:true on frequent get_pipeline_state event updates to avoid repeating the complete checkpoint. Request the full state only for planning/resume. For delegated execution, the host records start, concise progress at artifact milestones or every 30 seconds while waiting, and exactly one done/error per attempt through get_pipeline_state. Include measured charsIn only at dispatch and charsOut only on response; omit unknown usage, never invent token counts. Pass testExitCode and testOutput for QA gates. Keep task completion in todo.md tied to QA evidence. Publish pipeline done only after all required stages and the final report; otherwise publish pipeline error with a resume hint. Never edit live JSON directly.
+
+The dashboard is the live MCP observer. Studio shows the graph and runs launched through its Agent Server. For MCP traces, configure LangSmith explicitly; correlate the zteamRunId metadata with the dashboard run identifier.
+
+## Context budget
+
+Default to one compact chat banner per milestone. Keep prose handoffs under eight lines; source artifacts and exact test evidence are exempt. Read only the failed test and the error's source range when diagnosing a focused failure. Do not paste repeated AggregateError stacks, full typecheck logs, diffs or browser trees into the conversation. The raw logs and on-disk checkpoint remain the evidence source. Use the scripted MCP checks instead of rebuilding the same shell commands in each agent. Never change assertions merely to reduce output.

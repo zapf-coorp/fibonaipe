@@ -3,6 +3,8 @@ import type {
   ClientOpId,
   EstimateAuditId,
   HistoryEntryId,
+  HolidayId,
+  Holiday,
   InviteId,
   ItemId,
   OrganizationId,
@@ -12,6 +14,7 @@ import type {
   RoomId,
   RoundId,
   SprintId,
+  SprintProps,
   TeamId,
   TeamRole,
   UserId,
@@ -120,6 +123,7 @@ export interface PersistedSprintRecord {
   readonly id: SprintId;
   readonly teamId: TeamId;
   readonly name: string;
+  readonly state?: SprintProps;
 }
 
 export interface PersistedUserRecord {
@@ -177,7 +181,13 @@ export interface InviteRepository {
 
 export interface SprintRepository {
   findById(id: SprintId): Promise<PersistedSprintRecord | null>;
+  listByTeam(teamId: TeamId): Promise<readonly PersistedSprintRecord[]>;
   save(sprint: PersistedSprintRecord): Promise<void>;
+}
+export interface HolidayRepository {
+  listByTeam(teamId: TeamId): Promise<readonly Holiday[]>;
+  save(holiday: Holiday): Promise<void>;
+  delete(id: HolidayId): Promise<void>;
 }
 
 export interface UserRepository {
@@ -195,11 +205,13 @@ export interface TransactionRepos {
   readonly invites: InviteRepository;
   readonly history: HistoryRepository;
   readonly sprints: SprintRepository;
+  readonly holidays: HolidayRepository;
   readonly users: UserRepository;
 }
 
 export interface TransactionOptions {
   readonly lockRoomId?: RoomId;
+  readonly lockTeamId?: TeamId;
   readonly isolation?: "read_committed" | "serializable";
 }
 

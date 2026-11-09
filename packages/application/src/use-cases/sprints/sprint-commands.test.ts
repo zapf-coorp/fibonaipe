@@ -1,0 +1,90 @@
+import { describe, expect, it } from "vitest";
+import { HolidayId, Sprint, SprintId, UserId, ok } from "@fibonaipe/domain";
+import { CreateTeam } from "../teams/create-team.js";
+import { CreateTeamRoom } from "../teams/create-team-room.js";
+import { AddItem } from "../items/item-commands.js";
+import { asOk, createPorts, readRoomByCode } from "../__tests__/harness.js";
+import { CreateSprint } from "./create-sprint.js";
+import { ActivateSprint, CloseSprint, GetSprintReport, LinkSprintItem, MarkSprintItemDone, SetSprintCapacity, SetSprintCapacityEntries, UnlinkSprintItem } from "./sprint-commands.js";
+
+describe("sprint commands", () => {
+  it("activates, closes and freezes the report", async () => {
+    const ports = createPorts();
+    const actorUserId = UserId.create("admin").value;
+    const team = asOk(await new CreateTeam(ports.deps).execute({ name: "Team", creatorUserId: actorUserId }));
+    const sprint = asOk(await new CreateSprint(ports.deps).execute({ teamId: team.teamId, actorUserId, name: "Sprint", startDate: "2026-03-01", endDate: "2026-03-14" }));
+    const input = { teamId: team.teamId, actorUserId, sprintId: sprint.sprintId };
+    expect((await new SetSprintCapacity(ports.deps).execute({ ...input, capacityTotal: 10 })).ok).toBe(true);
+    expect((await new ActivateSprint(ports.deps).execute(input)).ok).toBe(true);
+    const closed = await new CloseSprint(ports.deps).execute(input);
+    expect(closed.ok).toBe(true);
+    if (closed.ok) expect(closed.value).toMatchObject({ committed: 0, delivered: 0, capacityTotal: 10, pace: 0 });
+    expect(asOk(await new GetSprintReport(ports.deps).execute(input))).toEqual(asOk(closed));
+    expect((await new GetSprintReport(ports.deps).execute({ ...input, actorUserId: "stranger" })).ok).toBe(false);
+    const edit = await new SetSprintCapacity(ports.deps).execute({ ...input, capacityTotal: 20 });
+    expect(edit.ok).toBe(false);
+    if (!edit.ok) expect(edit.error.code).toBe("FORBIDDEN");
+    const denied = await new ActivateSprint(ports.deps).execute({ ...input, actorUserId: "stranger" });
+    expect(denied.ok).toBe(false);
+    if (!denied.ok) expect(denied.error.code).toBe("FORBIDDEN");
+  });
+  it("records delivery and carries an unfinished item at closure", async () => {
+    const ports = createPorts();
+    const actorUserId = UserId.create("admin").value;
+    const team = asOk(await new CreateTeam(ports.deps).execute({ name: "Team", creatorUserId: actorUserId }));
+    const created = asOk(await new CreateSprint(ports.deps).execute({ teamId: team.teamId, actorUserId, name: "Sprint", startDate: "2026-03-01", endDate: "2026-03-14" }));
+    const sprintId = SprintId.create(created.sprintId).value;
+    await ports.store.transaction({}, async (repos) => {
+      const record = (await repos.sprints.findById(sprintId))!;
+      const first = Sprint.create(record.state!).linkItem({ id: "a", estimate: 5, doneAt: null }).value;
+      const second = first.linkItem({ id: "b", estimate: 8, doneAt: null }).value;
+      await repos.sprints.save({ ...record, state: second.props });
+      return ok(true);
+    });
+    const input = { teamId: team.teamId, actorUserId, sprintId };
+    expect((await new ActivateSprint(ports.deps).execute(input)).ok).toBe(true);
+    expect((await new MarkSprintItemDone(ports.deps).execute({ ...input, itemId: "a", estimateExceeded: true })).ok).toBe(true);
+    const closed = asOk(await new CloseSprint(ports.deps).execute(input));
+    expect(closed).toMatchObject({ committed: 13, delivered: 5, carryOver: [{ id: "b", estimate: 8 }] });
+    const retry = await new MarkSprintItemDone(ports.deps).execute({ ...input, itemId: "b" });
+    expect(retry.ok).toBe(false);
+  });
+  it("calculates capacity using persisted team holidays", async () => {
+    const ports = createPorts();
+    const actorUserId = UserId.create("admin").value;
+    const team = asOk(await new CreateTeam(ports.deps).execute({ name: "Team", creatorUserId: actorUserId }));
+    const created = asOk(await new CreateSprint(ports.deps).execute({ teamId: team.teamId, actorUserId, name: "Sprint", startDate: "2026-11-02", endDate: "2026-11-13" }));
+    const sprintId = SprintId.create(created.sprintId).value;
+    await ports.store.transaction({}, async (repos) => {
+      const record = (await repos.sprints.findById(sprintId))!;
+      await repos.holidays.save({ id: HolidayId.create("holiday").value, teamId: record.teamId, date: "2026-11-02", name: "Holiday" });
+      return ok(true);
+    });
+    const result = await new SetSprintCapacityEntries(ports.deps).execute({ teamId: team.teamId, actorUserId, sprintId, entries: [{ personId: "a", absenceDays: 1, focusPct: 80 }, { personId: "b", absenceDays: 0 }] });
+    expect(result).toEqual({ ok: true, value: 15.4 });
+  });
+  it("links a real team room item to at most one open sprint", async () => {
+    const ports = createPorts();
+    const actorUserId = UserId.create("admin").value;
+    const team = asOk(await new CreateTeam(ports.deps).execute({ name: "Team", creatorUserId: actorUserId }));
+    const room = asOk(await new CreateTeamRoom(ports.deps).execute({ teamId: team.teamId, actorUserId, name: "Room", mode: "voter" }));
+    const stored = (await readRoomByCode(ports.store, room.code))!;
+    const host = (stored as typeof stored & { planning: { hostParticipantId: string } }).planning.hostParticipantId;
+    asOk(await new AddItem(ports.deps).execute({ code: room.code, actorParticipantId: host, title: "Item", clientOpId: "add" }));
+    const item = (await readRoomByCode(ports.store, room.code))!.items[0]!;
+    const create = new CreateSprint(ports.deps);
+    const common = { teamId: team.teamId, actorUserId, name: "Sprint" };
+    const first = asOk(await create.execute({ ...common, startDate: "2026-03-01", endDate: "2026-03-14" }));
+    const second = asOk(await create.execute({ ...common, startDate: "2026-03-15", endDate: "2026-03-28" }));
+    const link = new LinkSprintItem(ports.deps);
+    const results = await Promise.all([first, second].map(({ sprintId }) => link.execute({ ...common, sprintId, roomId: stored.id, itemId: item.id })));
+    expect(results.filter((result) => result.ok)).toHaveLength(1);
+    const winner = results[0]?.ok ? first.sprintId : second.sprintId;
+    const loser = results[0]?.ok ? second.sprintId : first.sprintId;
+    expect((await new UnlinkSprintItem(ports.deps).execute({ ...common, sprintId: winner, itemId: item.id })).ok).toBe(true);
+    expect((await link.execute({ ...common, sprintId: loser, roomId: stored.id, itemId: item.id })).ok).toBe(true);
+    expect((await new ActivateSprint(ports.deps).execute({ ...common, sprintId: loser })).ok).toBe(true);
+    expect((await new CloseSprint(ports.deps).execute({ ...common, sprintId: loser })).ok).toBe(true);
+    expect((await link.execute({ ...common, sprintId: winner, roomId: stored.id, itemId: item.id })).ok).toBe(true);
+  });
+});

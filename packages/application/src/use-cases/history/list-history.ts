@@ -21,6 +21,8 @@ export interface HistoryQueryInput {
 
 export interface HistoryListRow {
   readonly id: string;
+  readonly itemId: string;
+  readonly roomId: string;
   readonly title: string;
   readonly finalEstimate: string;
   readonly estimatedAt: Date;
@@ -142,6 +144,8 @@ function timeOf(record: AggregatedHistoryRecord): number {
 function listRow(record: AggregatedHistoryRecord): HistoryListRow {
   return {
     id: record.id,
+    itemId: record.itemId,
+    roomId: record.roomId,
     title: record.title ?? "",
     finalEstimate: record.finalEstimate ?? "",
     estimatedAt: record.estimatedAt instanceof Date ? record.estimatedAt : new Date(record.estimatedAt ?? 0),

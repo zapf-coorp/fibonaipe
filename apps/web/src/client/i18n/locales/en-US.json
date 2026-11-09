@@ -1,4 +1,13 @@
 {
+  "forecast": { "plannedCapacity": "Planned capacity", "refresh": "Refresh forecast", "loadError": "Could not load the forecast.", "title": "Delivery forecast", "disclaimer": "Statistical estimate based on recent pace; it is not a commitment.", "insufficient": "Insufficient data: {have} of {need} eligible sprints. No predicted value is shown.", "predicted": "Estimated forecast: {value} points", "band": "Likely range: {low} to {high} points", "medianPace": "Median pace: {value}", "risk": "This sprint has a high share of ♣ items. Consider the lower end of the range.", "accuracy": "Forecast accuracy", "noAccuracy": "There are no comparable forecasts yet.", "meanAbsError": "Mean absolute percentage error: {value}%", "from": "From", "to": "To", "chartLabel": "Predicted and delivered points by sprint", "sprint": "Sprint", "predictedHeader": "Predicted", "deliveredHeader": "Delivered", "errorHeader": "Error", "exports": "Export filtered series", "csv": "Download CSV", "json": "Download JSON", "svg": "Download SVG", "exportForbidden": "Export is unavailable to observers." },
+  "sprintDetail": { "activate": "Start sprint", "close": "Close sprint", "confirm": "Confirm closure", "cancel": "Cancel", "confirmTitle": "Close this sprint?", "committed": "Committed: {value}", "delivered": "Delivered: {value}", "capacity": "Capacity: {value}", "closedNotice": "Sprint closed. Metrics cannot be changed." },
+  "sprintDetail": { "activate": "Start sprint", "close": "Close sprint", "confirm": "Confirm closure", "cancel": "Cancel", "confirmTitle": "Close this sprint?", "committed": "Committed: {value}", "delivered": "Delivered: {value}", "capacity": "Capacity: {value}", "closedNotice": "Sprint closed. Metrics cannot be changed." },
+  "sprints": { "title": "Sprints", "empty": "No sprints yet.", "loading": "Loading sprints...", "error": "Could not load or save the sprint.", "name": "Sprint name", "start": "Start", "end": "End", "goal": "Goal", "create": "Create sprint", "planned": "Planned", "active": "Active", "closed": "Closed" },
+  "capacityGrid": { "title": "Capacity per person", "member": "Person", "absence": "Absences", "focus": "Focus (%)", "absenceFor": "Absences for {name}", "focusFor": "Focus for {name}", "save": "Save capacity" },
+  "holidayCalendar": { "title": "Team holidays", "name": "Holiday name", "date": "Holiday date", "add": "Add holiday", "remove": "Remove {name}" },
+  "sprintScope": { "title": "Sprint scope", "available": "Estimated items", "add": "Add {name}", "remove": "Remove {name}", "done": "Complete {name}", "addedLate": "Added after start", "completed": "Completed", "loadMore": "Load more" },
+  "sprintOverrun": { "label": "Estimate exceeded for {name}" },
+  "sprintClosure": { "carryOver": "Items returning to backlog: {count}", "unestimated": "Items without estimates: {count}" },
   "app": {
     "title": "Fibonaipe",
     "subtitle": "Planning Poker and sprint forecasting",
@@ -52,6 +61,7 @@
     }
   },
   "create": {
+    "hostName": "Your nickname",
     "roomName": "Room name",
     "cards": "Fibonacci cards",
     "suit": "Suit",
@@ -90,8 +100,13 @@
     "return": "Return to voting",
     "reveal": "Reveal",
     "revealed": "Round revealed",
-    "queue": "Queue",
+    "queue": "Tasks",
     "import": "Import",
+    "importJson": "Import JSON",
+    "exportJson": "Export JSON",
+    "close": "Close",
+    "remove": "Remove",
+    "timerLabel": "Time",
     "settings": "Settings",
     "estimate": "Final estimate",
     "confirm": "Confirm",
@@ -120,7 +135,13 @@
     "mean": "Mean",
     "divergence": "Suit divergence",
     "whoVotes": "Who votes changes on the next round.",
-    "invalidLink": "Invalid link: http(s) only."
+    "invalidLink": "Invalid link: http(s) only.",
+    "needRound": "Open a queue item to start the round."
+  },
+  "profile": {
+    "guest": "Guest",
+    "atTable": "At the table",
+    "away": "Away from the table"
   },
   "announcements": {
     "themeChanged": "Theme changed to {theme}",

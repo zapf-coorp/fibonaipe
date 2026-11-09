@@ -1,5 +1,6 @@
-import type { StructuredLogger } from "@fibonaipe/application";
+import { AddItem, CreateTeamRoom, type StructuredLogger, type UseCaseDependencies } from "@fibonaipe/application";
 import { FakeAuthProvider, FakeClock, InMemoryPersistence, InMemoryRateLimiter } from "@fibonaipe/testing";
+import { HistoryEntryId, ItemId, RoomCode, RoomId, RoundId, TeamId, ok } from "@fibonaipe/domain";
 import { describe, expect, it } from "vitest";
 import { createApp } from "../../src/server/app.js";
 import { createAppContainer, type AppContainer } from "../../src/server/composition.js";
@@ -18,6 +19,7 @@ interface Payload {
 function testApp(): {
   app: ReturnType<typeof createApp>;
   auth: FakeAuthProvider;
+  container: AppContainer;
 } {
   const clock = new FakeClock("2026-10-27T15:00:00.000Z");
   const auth = new FakeAuthProvider();
@@ -37,7 +39,7 @@ function testApp(): {
     rateLimiter: new InMemoryRateLimiter(clock),
     logger: silent,
   };
-  return { app: createApp(container), auth };
+  return { app: createApp(container), auth, container };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -100,6 +102,76 @@ async function guestCookie(app: ReturnType<typeof createApp>): Promise<string> {
 }
 
 describe("auth teams HTTP", () => {
+  it("creates and closes a team sprint using the signed-in account", async () => {
+    const { app, auth, container } = testApp();
+    await send(app, "POST", "/api/auth/magic-link", { ip: "203.0.113.8", body: { email: "owner@example.com" } });
+    const signed = await send(app, "POST", "/api/auth/callback", { ip: "203.0.113.8", body: { token: auth.latestMagicLinkToken() } });
+    const cookie = sessionCookie(signed.response).split(";")[0];
+    const team = await send(app, "POST", "/api/teams", { ip: "203.0.113.8", cookie, body: { name: "Team" } });
+    await container.persistence.transaction({}, async (repos) => {
+      await repos.history.appendAggregated({ id: HistoryEntryId.create("history-a").value, teamId: TeamId.create(teamIdOf(team.json)).value, itemId: ItemId.create("item-a").value, roomId: RoomId.create("room-a").value, roundId: RoundId.create("round-a").value, title: "Estimated item", dominantSuit: "clubs", finalEstimate: "5", estimatedAt: new Date("2026-11-02T00:00:00Z"), stats: { voteCount: 2, consensus: true } });
+      return ok(true);
+    });
+    const history = await send(app, "GET", `/api/teams/${teamIdOf(team.json)}/history`, { ip: "203.0.113.8", cookie });
+    expect(history.json).toMatchObject({ rows: [{ itemId: "item-a", roomId: "room-a", title: "Estimated item", finalEstimate: "5" }] });
+    const membersPath = `/api/teams/${teamIdOf(team.json)}/members`;
+    const members = await send(app, "GET", membersPath, { ip: "203.0.113.8", cookie });
+    expect(members.status).toBe(200);
+    expect(members.json).toMatchObject({ members: [{ id: expect.any(String), name: expect.any(String), role: "teamAdmin" }] });
+    const base = `/api/teams/${teamIdOf(team.json)}/sprints`;
+    expect((await send(app, "POST", base, { ip: "203.0.113.8", body: { name: "Sprint", startDate: "2026-11-02", endDate: "2026-11-13" } })).status).toBe(403);
+    const created = await send(app, "POST", base, { ip: "203.0.113.8", cookie, body: { name: "Sprint", startDate: "2026-11-02", endDate: "2026-11-13" } });
+    expect(created.status).toBe(201);
+    const id = isRecord(created.json) ? created.json.sprintId : undefined;
+    expect(typeof id).toBe("string");
+    const list = await send(app, "GET", base, { ip: "203.0.113.8", cookie });
+    expect(list.status).toBe(200);
+    expect(list.json).toMatchObject({ sprints: [{ id, name: "Sprint", status: "planned" }] });
+    const indicators = await send(app, "GET", `/api/teams/${teamIdOf(team.json)}/indicators`, { ip: "203.0.113.8", cookie });
+    expect(indicators.json).toMatchObject({ firstRoundConsensusRate: 1, frequency: { "5": 1 } });
+    const holiday = await send(app, "POST", `/api/teams/${teamIdOf(team.json)}/holidays`, { ip: "203.0.113.8", cookie, body: { date: "2026-11-02", name: "Holiday" } });
+    expect(holiday.status).toBe(201);
+    const holidayId = isRecord(holiday.json) ? holiday.json.holidayId : undefined;
+    const holidaysPath = `/api/teams/${teamIdOf(team.json)}/holidays`;
+    expect((await send(app, "GET", holidaysPath, { ip: "203.0.113.8", cookie })).json).toMatchObject({ holidays: [{ id: holidayId, name: "Holiday" }] });
+    expect((await send(app, "PUT", `${holidaysPath}/${holidayId}`, { ip: "203.0.113.8", cookie, body: { date: "2026-11-02", name: "Updated" } })).status).toBe(200);
+    const capacity = await send(app, "PUT", `${base}/${id}/capacity`, { ip: "203.0.113.8", cookie, body: { entries: [{ personId: "a", absenceDays: 1, focusPct: 80 }, { personId: "b", absenceDays: 0 }] } });
+    expect(capacity.json).toMatchObject({ capacityTotal: 15.4 });
+    expect((await send(app, "POST", `${base}/${id}/items`, { ip: "203.0.113.8", cookie, body: { roomId: "missing", itemId: "missing" } })).code).toBe("NOT_FOUND");
+    expect((await send(app, "POST", `${base}/${id}/items/missing/done`, { ip: "203.0.113.8", cookie, body: { estimateExceeded: true } })).code).toBe("NOT_FOUND");
+    expect((await send(app, "DELETE", `${base}/${id}/items/missing`, { ip: "203.0.113.8", cookie })).code).toBe("NOT_FOUND");
+    const actorUserId = isRecord(signed.json) && typeof signed.json.userId === "string" ? signed.json.userId : "";
+    const deps: UseCaseDependencies = { persistence: container.persistence, realtime: container.realtime, ids: container.idGenerator, clock: container.clock, rateLimiter: container.rateLimiter, issueTracker: container.issueTracker, exporter: container.exporter, logger: container.logger };
+    const room = await new CreateTeamRoom(deps).execute({ teamId: teamIdOf(team.json), actorUserId, name: "Room", mode: "voter" });
+    if (!room.ok) throw new Error(room.error.code);
+    const stored = await container.persistence.transaction({}, async (repos) => {
+      const code = RoomCode.create(room.value.code);
+      if (!code.ok) return code;
+      return ok(await repos.rooms.findByCode(code.value));
+    });
+    if (!stored.ok || !stored.value) throw new Error("missing room");
+    const planning = (stored.value as typeof stored.value & { planning: { hostParticipantId: string } }).planning;
+    expect((await new AddItem(deps).execute({ code: room.value.code, actorParticipantId: planning.hostParticipantId, title: "Item", clientOpId: "add" })).ok).toBe(true);
+    const reloaded = await container.persistence.transaction({}, async (repos) => ok(await repos.rooms.findById(stored.value!.id)));
+    if (!reloaded.ok || !reloaded.value) throw new Error("missing room");
+    const itemId = reloaded.value.items[0]?.id;
+    expect(itemId).toBeTruthy();
+    expect((await send(app, "POST", `${base}/${id}/items`, { ip: "203.0.113.8", cookie, body: { roomId: stored.value.id, itemId } })).status).toBe(200);
+    await send(app, "POST", "/api/auth/magic-link", { ip: "203.0.113.9", body: { email: "other@example.com" } });
+    const otherSigned = await send(app, "POST", "/api/auth/callback", { ip: "203.0.113.9", body: { token: auth.latestMagicLinkToken() } });
+    const otherCookie = sessionCookie(otherSigned.response).split(";")[0];
+    const crossTeam = await send(app, "POST", `${base}/${id}/items/${itemId}/done`, { ip: "203.0.113.9", cookie: otherCookie, body: {} });
+    expect(crossTeam.code).toBe("FORBIDDEN");
+    expect((await send(app, "GET", base, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
+    expect((await send(app, "GET", membersPath, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
+    expect((await send(app, "POST", `${base}/${id}/activate`, { ip: "203.0.113.8", cookie })).status).toBe(200);
+    expect((await send(app, "POST", `${base}/${id}/items/${itemId}/done`, { ip: "203.0.113.8", cookie, body: {} })).status).toBe(200);
+    expect((await send(app, "POST", `${base}/${id}/close`, { ip: "203.0.113.8", cookie })).status).toBe(200);
+    const report = await send(app, "GET", `${base}/${id}/report`, { ip: "203.0.113.8", cookie });
+    expect(report.status).toBe(200);
+    expect(report.json).toMatchObject({ committed: 0, delivered: 0 });
+    expect((await send(app, "DELETE", `${holidaysPath}/${holidayId}`, { ip: "203.0.113.8", cookie })).status).toBe(200);
+  });
   it("returns identical status and body for an unknown email and a known email", async () => {
     const { app, auth } = testApp();
     await auth.sendMagicLink("ada@example.com", REDIRECT);

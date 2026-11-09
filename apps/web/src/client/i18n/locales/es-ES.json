@@ -1,4 +1,12 @@
 {
+  "forecast": { "plannedCapacity": "Capacidad planificada", "refresh": "Actualizar previsión", "loadError": "No se pudo cargar la previsión.", "title": "Previsión de entrega", "disclaimer": "Estimación estadística basada en el ritmo reciente; no es un compromiso.", "insufficient": "Datos insuficientes: {have} de {need} sprints aptos. No se muestra ninguna predicción.", "predicted": "Previsión estimada: {value} puntos", "band": "Rango probable: {low} a {high} puntos", "medianPace": "Ritmo mediano: {value}", "risk": "Este sprint tiene una proporción alta de elementos ♣. Considera el extremo inferior del rango.", "accuracy": "Precisión de la previsión", "noAccuracy": "Aún no hay previsiones comparables.", "meanAbsError": "Error porcentual absoluto medio: {value}%", "from": "Desde", "to": "Hasta", "chartLabel": "Puntos previstos y entregados por sprint", "sprint": "Sprint", "predictedHeader": "Previstos", "deliveredHeader": "Entregados", "errorHeader": "Error", "exports": "Exportar serie filtrada", "csv": "Descargar CSV", "json": "Descargar JSON", "svg": "Descargar SVG", "exportForbidden": "La exportación no está disponible para observadores." },
+  "sprintDetail": { "activate": "Iniciar sprint", "close": "Cerrar sprint", "confirm": "Confirmar cierre", "cancel": "Cancelar", "confirmTitle": "¿Cerrar este sprint?", "committed": "Comprometidos: {value}", "delivered": "Entregados: {value}", "capacity": "Capacidad: {value}", "closedNotice": "Sprint cerrado. Las métricas no se pueden modificar." },
+  "sprints": { "title": "Sprints", "empty": "Aún no hay sprints.", "loading": "Cargando sprints...", "error": "No se pudo cargar o guardar el sprint.", "name": "Nombre del sprint", "start": "Inicio", "end": "Fin", "goal": "Objetivo", "create": "Crear sprint", "planned": "Planificada", "active": "Activa", "closed": "Cerrada" },
+  "capacityGrid": { "title": "Capacidad por persona", "member": "Persona", "absence": "Ausencias", "focus": "Enfoque (%)", "absenceFor": "Ausencias de {name}", "focusFor": "Enfoque de {name}", "save": "Guardar capacidad" },
+  "holidayCalendar": { "title": "Festivos del equipo", "name": "Nombre del festivo", "date": "Fecha del festivo", "add": "Añadir festivo", "remove": "Eliminar {name}" },
+  "sprintScope": { "title": "Alcance del sprint", "available": "Elementos estimados", "add": "Añadir {name}", "remove": "Eliminar {name}", "done": "Completar {name}", "addedLate": "Añadido tras el inicio", "completed": "Completado", "loadMore": "Cargar más" },
+  "sprintOverrun": { "label": "Se superó la estimación de {name}" },
+  "sprintClosure": { "carryOver": "Elementos que vuelven al backlog: {count}", "unestimated": "Elementos sin estimación: {count}" },
   "app": {
     "title": "Fibonaipe",
     "subtitle": "Planning Poker y previsión de sprints",
@@ -52,6 +60,7 @@
     }
   },
   "create": {
+    "hostName": "Tu apodo",
     "roomName": "Nombre de la sala",
     "cards": "Cartas Fibonacci",
     "suit": "Palo",
@@ -90,8 +99,13 @@
     "return": "Volver a votar",
     "reveal": "Revelar",
     "revealed": "Ronda revelada",
-    "queue": "Fila",
+    "queue": "Tareas",
     "import": "Importar",
+    "importJson": "Importar JSON",
+    "exportJson": "Exportar JSON",
+    "close": "Cerrar",
+    "remove": "Quitar",
+    "timerLabel": "Tiempo",
     "settings": "Configuración",
     "estimate": "Estimación final",
     "confirm": "Confirmar",
@@ -120,7 +134,13 @@
     "mean": "Media",
     "divergence": "Divergencia de palo",
     "whoVotes": "Quién vota cambia en la próxima ronda.",
-    "invalidLink": "Enlace inválido: solo http(s)."
+    "invalidLink": "Enlace inválido: solo http(s).",
+    "needRound": "Abre un ítem de la fila para empezar la ronda."
+  },
+  "profile": {
+    "guest": "Invitado",
+    "atTable": "En la mesa",
+    "away": "Fuera de la mesa"
   },
   "announcements": {
     "themeChanged": "Tema cambiado a {theme}",

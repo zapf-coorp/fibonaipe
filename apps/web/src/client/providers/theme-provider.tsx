@@ -8,8 +8,8 @@ export type ThemeMode = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
 
 const THEME_COLOR: Record<ResolvedTheme, string> = {
-  light: "#0F52BA",
-  dark: "#0B0F17",
+  light: "#f3ead2",
+  dark: "#1a1738",
 };
 
 const THEME_LABEL: Record<ThemeMode, TranslationKey> = {

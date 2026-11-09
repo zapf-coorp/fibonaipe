@@ -15,9 +15,9 @@ export class SuspendUser {
 
   async execute(input: SuspendUserInput): Promise<Result<{ readonly suspended: true }, AppError>> {
     if (input.actorSystemRole !== "superAdmin") {
-      const forbidden = err(createAppError("FORBIDDEN"));
-      warn(this.deps, "SuspendUser", forbidden.error);
-      return forbidden;
+      const forbidden = createAppError("FORBIDDEN");
+      warn(this.deps, "SuspendUser", forbidden);
+      return err(forbidden);
     }
     const userId = UserId.create(input.targetUserId);
     if (!userId.ok) return userId;

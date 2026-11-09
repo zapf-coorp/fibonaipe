@@ -250,14 +250,14 @@ describe("theme provider", () => {
     expect(screen.getByTestId("mode").textContent).toBe("dark");
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(localStorage.getItem("fibonaipe.theme")).toBe("dark");
-    expect(themeColor()).toBe("#0b0f17");
+    expect(themeColor()).toBe("#1a1738");
     scheme.setDark(false);
     expect(document.documentElement.dataset.theme).toBe("dark");
 
     fireEvent.click(screen.getByRole("button", { name: "light" }));
     expect(localStorage.getItem("fibonaipe.theme")).toBe("light");
     expect(document.documentElement.dataset.theme).toBe("light");
-    expect(themeColor()).toBe("#0f52ba");
+    expect(themeColor()).toBe("#f3ead2");
 
     fireEvent.click(screen.getByRole("button", { name: "system" }));
     expect(localStorage.getItem("fibonaipe.theme")).toBe("system");
@@ -315,7 +315,7 @@ describe("theme provider", () => {
       renderTheme();
       expect(() => fireEvent.click(screen.getByRole("button", { name: "dark" }))).not.toThrow();
       expect(document.documentElement.dataset.theme).toBe("dark");
-      expect(themeColor()).toBe("#0b0f17");
+      expect(themeColor()).toBe("#1a1738");
     } finally {
       Storage.prototype.setItem = original;
     }

@@ -13,12 +13,14 @@ import type {
   PersistedSprintRecord,
   PersistedTeamRecord,
   PersistedUserRecord,
+  HolidayRepository,
   RoomRepository,
   TransactionOptions,
   TransactionRepos,
 } from "@fibonaipe/application";
 
 interface MemoryStore {
+  holidays: Map<string, Parameters<HolidayRepository["save"]>[0]>;
   rooms: Map<string, PersistedRoomRecord>;
   idempotency: Map<string, IdempotencyRecord>;
   teams: Map<string, PersistedTeamRecord>;
@@ -31,6 +33,7 @@ interface MemoryStore {
 }
 
 interface DirtySet {
+  holidays: Set<string>;
   rooms: Set<string>;
   deletedRooms: Set<string>;
   idempotency: Set<string>;
@@ -55,7 +58,8 @@ export class InMemoryPersistence implements Persistence {
     options: TransactionOptions,
     work: (repos: TransactionRepos) => Promise<Result<T, AppError>>,
   ): Promise<Result<T, AppError>> {
-    const release = options.lockRoomId ? await this.acquireLock(options.lockRoomId) : undefined;
+    const lockKey = options.lockTeamId ? `team:${options.lockTeamId}` : options.lockRoomId ? `room:${options.lockRoomId}` : undefined;
+    const release = lockKey ? await this.acquireLock(lockKey) : undefined;
     const working = cloneStore(this.store);
     const dirty = emptyDirty();
     const lockedId = options.lockRoomId;
@@ -109,6 +113,7 @@ export class InMemoryPersistence implements Persistence {
     patch(this.store.history, working.history, dirty.history);
     patch(this.store.audits, working.audits, dirty.audits);
     patch(this.store.sprints, working.sprints, dirty.sprints);
+    patch(this.store.holidays, working.holidays, dirty.holidays);
     patch(this.store.users, working.users, dirty.users);
   }
 }
@@ -200,9 +205,17 @@ function createRepos(
         dirty.audits.add(copy.id);
       },
     },
+    holidays: {
+      async listByTeam(teamId) { return [...working.holidays.values()].filter((holiday) => holiday.teamId === teamId).map(cloneData); },
+      async save(holiday) { working.holidays.set(holiday.id, cloneData(holiday)); dirty.holidays.add(holiday.id); },
+      async delete(id) { working.holidays.delete(id); dirty.holidays.add(id); },
+    },
     sprints: {
       async findById(id) {
         return cloneOptional(working.sprints.get(id));
+      },
+      async listByTeam(teamId) {
+        return [...working.sprints.values()].filter((sprint) => sprint.teamId === teamId).map(cloneData);
       },
       async save(sprint) {
         const copy = cloneData(sprint);
@@ -297,6 +310,7 @@ function inviteRepos(working: MemoryStore, dirty: DirtySet): InviteRepository {
 
 function emptyStore(): MemoryStore {
   return {
+    holidays: new Map(),
     rooms: new Map(),
     idempotency: new Map(),
     teams: new Map(),
@@ -311,6 +325,7 @@ function emptyStore(): MemoryStore {
 
 function emptyDirty(): DirtySet {
   return {
+    holidays: new Set(),
     rooms: new Set(),
     deletedRooms: new Set(),
     idempotency: new Set(),
@@ -326,6 +341,7 @@ function emptyDirty(): DirtySet {
 
 function cloneStore(store: MemoryStore): MemoryStore {
   return {
+    holidays: cloneMap(store.holidays),
     rooms: cloneMap(store.rooms),
     idempotency: cloneMap(store.idempotency),
     teams: cloneMap(store.teams),

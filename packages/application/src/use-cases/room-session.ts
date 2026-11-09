@@ -441,13 +441,21 @@ export function itemPropsOf(item: {
   };
 }
 
-export function freshItem(room: Room, title: string, description: string, position: number, id: string): Result<ItemProps, AppError> {
+export function freshItem(
+  room: Room,
+  title: string,
+  description: string,
+  position: number,
+  id: string,
+  externalUrl: string | null = null,
+): Result<ItemProps, AppError> {
   const built = new ItemBuilder()
     .withId(id)
     .withRoomId(room.id)
     .withTeamId(room.teamId)
     .withTitle(title)
     .withDescription(description)
+    .withExternalUrl(externalUrl)
     .withPosition(position)
     .build();
   if (!built.ok) return built;
@@ -468,7 +476,7 @@ async function hydrateIn(repos: TransactionRepos, code: RoomCode): Promise<Resul
   return hydrate(record);
 }
 
-function hydrate(record: PersistedRoomRecord): Result<LoadedRoom, AppError> {
+export function hydrate(record: PersistedRoomRecord): Result<LoadedRoom, AppError> {
   const planning = planningOf(record);
   if (planning === null) return err(createAppError("VALIDATION"));
   const scale = ScaleBuilder.fibonacci().withId(planning.scaleId).withName(planning.scaleName).build();

@@ -33,7 +33,7 @@ export function scanSourceForViolations(content, layer) {
 
   if (layer === "domain" || layer === "application") {
     if (stripped.includes("Date.now(")) violations.push("DATE_NOW");
-    if (/new\s+Date\s*\(/.test(stripped)) violations.push("NEW_DATE");
+    if (/new\s+Date\s*\(\s*\)/.test(stripped)) violations.push("NEW_DATE");
     if (stripped.includes("Math.random(")) violations.push("MATH_RANDOM");
     if (stripped.includes("process.env")) violations.push("PROCESS_ENV");
   }

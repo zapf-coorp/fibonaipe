@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
 import { addQueueItem, addQueueItems, queueSnapshot, removeQueueItem, reorderQueue } from "./commands.js";
-import { isHttp, type ItemRow, type RoomView } from "./model.js";
+import { can, isHttp, type ItemRow, type RoomView } from "./model.js";
 import { setRoomError } from "./room-store.js";
 import styles from "./QueueDrawer.module.css";
 
@@ -119,6 +119,7 @@ export function QueueDrawer({
             );
           })}
         </ul>
+        {can(view, "exportOwnRoomSummary") ? (
         <div className={styles.files}>
           <button type="button" style={touchTargetStyle} onClick={() => exportTasks(items)}>
             {t("planning.exportJson")}
@@ -155,6 +156,7 @@ export function QueueDrawer({
             />
           </label>
         </div>
+        ) : null}
       </div>
     </div>
   );

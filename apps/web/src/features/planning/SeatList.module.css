@@ -18,7 +18,7 @@
   padding: 0.35rem 0.45rem;
   color: var(--ink);
   background: color-mix(in srgb, var(--card-face) 90%, transparent);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
 }
@@ -50,8 +50,8 @@
   place-items: center;
   width: 0.85rem;
   height: 0.85rem;
-  border: 2px solid var(--ink);
-  background: #3a3358;
+  background: var(--presence-off);
+  border: var(--stroke-thin);
 }
 
 .light {
@@ -59,8 +59,8 @@
 }
 
 .light[data-on="true"] {
-  background: #3ddc97;
-  box-shadow: 0 0 0 2px #3ddc97;
+  background: var(--presence-on);
+  box-shadow: 0 0 0 2px var(--presence-on);
 }
 
 .check {
@@ -76,7 +76,7 @@
 }
 
 .check[data-on="true"] {
-  background: #3ddc97;
+  background: var(--presence-on);
 }
 
 .afk {

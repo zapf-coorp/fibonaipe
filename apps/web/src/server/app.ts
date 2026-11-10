@@ -3,6 +3,7 @@ import { createAppContainer, type AppContainer } from "./composition.js";
 import { httpErrorBody, jsonResponse } from "./http-error.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerAuthTeamRoutes } from "./routes/auth-teams.js";
+import { registerDevAuthRoutes } from "./routes/dev-auth.js";
 import { registerRoomRoutes } from "./routes/rooms.js";
 
 const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
@@ -18,6 +19,7 @@ export function createApp(container: AppContainer = createAppContainer()): Hono 
   registerHealthRoutes(app, container);
   registerRoomRoutes(app, container);
   registerAuthTeamRoutes(app, container);
+  registerDevAuthRoutes(app, container);
   app.on(["POST", "PUT", "PATCH", "DELETE"], "*", (c) => {
     const denied = crossOriginDenied(c, container);
     if (denied) return denied;

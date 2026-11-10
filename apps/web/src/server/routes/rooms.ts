@@ -7,12 +7,13 @@ import {
   type AppError,
   type Result,
 } from "@fibonaipe/domain";
-import type { IssueTrackerImportInput } from "@fibonaipe/application";
+import { CreateTeam, CreateTeamRoom, ListTeams, type IssueTrackerImportInput, type PersistedUserRecord } from "@fibonaipe/application";
 import type { Context, Hono } from "hono";
 import { z } from "zod";
 import type { AppContainer } from "../composition.js";
 import { errorResponse } from "../error-map.js";
 import { jsonResponse } from "../http-error.js";
+import { accountUser } from "../account-user.js";
 import { guestSessionCookie, readSessionToken, secretsMatch } from "../session-cookie.js";
 import { createRoomUseCases, type RoomUseCases } from "../use-cases.js";
 
@@ -23,6 +24,8 @@ const nickname = z.string().trim().min(1).max(MAX_NICKNAME_LENGTH);
 const createSchema = z.object({
   name: z.string().trim().min(1).max(ROOM_NAME_MAX),
   hostNickname: nickname,
+  teamId: z.string().trim().min(1).max(64).optional(),
+  teamName: z.string().trim().min(1).max(ROOM_NAME_MAX).optional(),
 });
 
 const joinSchema = z.object({
@@ -92,11 +95,14 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
   app.post("/api/rooms", async (c) => {
     const parsed = await parseBody(c, createSchema);
     if (!parsed.ok) return fail(container, parsed.error);
-    const created = await useCases.createRoom.execute({
-      name: parsed.value.name,
-      hostNickname: parsed.value.hostNickname,
-      ip: clientIp(c),
-    });
+    const account = await accountUser(c, container);
+    const created = account
+      ? await openDurableRoom(useCases, account, parsed.value)
+      : await useCases.createRoom.execute({
+          name: parsed.value.name,
+          hostNickname: parsed.value.hostNickname,
+          ip: clientIp(c),
+        });
     if (!created.ok) return fail(container, created.error);
     return jsonWithSession(container, { code: created.value.code }, 201, created.value.hostToken);
   });
@@ -355,6 +361,34 @@ async function parseBody<T>(c: Context, schema: z.ZodType<T>): Promise<Result<T,
   const parsed = schema.safeParse(raw);
   if (!parsed.success) return err(createAppError("VALIDATION"));
   return success(parsed.data);
+}
+
+async function openDurableRoom(
+  useCases: RoomUseCases,
+  account: PersistedUserRecord,
+  input: { readonly name: string; readonly hostNickname: string; readonly teamId?: string; readonly teamName?: string },
+): Promise<Result<{ readonly code: string; readonly hostToken: string }, AppError>> {
+  const deps = useCases.deps;
+  const listed = await new ListTeams(deps).execute({ actorUserId: account.id });
+  if (!listed.ok) return listed;
+  let teamId = input.teamId ?? "";
+  if (!teamId && listed.value.length === 1) {
+    const only = listed.value[0];
+    if (only) teamId = only.teamId;
+  }
+  if (!teamId && input.teamName) {
+    const created = await new CreateTeam(deps).execute({ name: input.teamName, creatorUserId: account.id });
+    if (!created.ok) return created;
+    teamId = created.value.teamId;
+  }
+  if (!teamId) return err(createAppError("VALIDATION"));
+  return new CreateTeamRoom(deps).execute({
+    teamId,
+    actorUserId: account.id,
+    name: input.name,
+    mode: "voter",
+    hostNickname: input.hostNickname,
+  });
 }
 
 function clientIp(c: Context): string {

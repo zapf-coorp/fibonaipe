@@ -77,7 +77,7 @@ function chooseLabeled(label: string) {
   const findButton = () => screen.queryByRole("button", { name: label });
   let button = findButton();
   if (!button) {
-    const profile = screen.queryByRole("button", { name: /mesa|convidado/i });
+    const profile = document.querySelector("[aria-controls='profile-menu']");
     if (profile && profile.getAttribute("aria-expanded") !== "true") fireEvent.click(profile);
     button = findButton();
   }

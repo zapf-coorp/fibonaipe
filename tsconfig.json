@@ -8,6 +8,7 @@
     { "path": "packages/adapter-persistence-sqlite" },
     { "path": "packages/adapter-realtime-supabase" },
     { "path": "packages/adapter-issuetracker-manual" },
+    { "path": "packages/adapter-auth-devfake" },
     { "path": "packages/adapter-exporter-csvjson" },
     { "path": "packages/adapter-system" },
     { "path": "apps/web" }

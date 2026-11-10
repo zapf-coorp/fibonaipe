@@ -60,7 +60,7 @@ const lightTokens: ReadonlyArray<readonly [string, string]> = [
   ["--space-6", "1.5rem"],
   ["--space-8", "2rem"],
   ["--space-10", "2.5rem"],
-  ["--touch-min", "2.75rem"],
+  ["--touch-min", "44px"],
   ["--radius-sm", "4px"],
   ["--radius-md", "4px"],
   ["--radius-lg", "8px"],

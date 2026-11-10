@@ -73,7 +73,7 @@ const MATRIX: Record<PolicyAction, PolicyRule> = {
   transferHost: (actor) => actor.isHost,
   viewDashboard: (actor) => actor.kind !== "guest",
   exportTeamData: (actor) => actor.kind !== "guest" && actor.teamRole !== "observer",
-  exportOwnRoomSummary: () => true,
+  exportOwnRoomSummary: (actor) => actor.kind !== "guest",
 };
 
 export function can(actor: PolicyActor, action: PolicyAction, ctx: PolicyContext): boolean {

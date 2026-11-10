@@ -31,4 +31,6 @@ it("shows a sign-in message when the session is missing", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ error: { code: "FORBIDDEN" } }), { status: 403 })));
   render(<I18nProvider><TeamsPage /></I18nProvider>);
   expect(await screen.findByText("Entre na sua conta para ver e criar times.")).toBeTruthy();
+  expect(screen.getByRole("link", { name: "Entrar no modo Dev (fake)" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Criar time" })).toBeNull();
 });

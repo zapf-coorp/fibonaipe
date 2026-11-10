@@ -18,7 +18,7 @@ export class ExportRoomSummary {
       return loaded;
     }
     const participant = loaded.value.room.participants.find((seat) => seat.id === input.participantId);
-    if (!participant) {
+    if (!participant || loaded.value.room.kind === "guest" || participant.userId == null) {
       const error = createAppError("FORBIDDEN");
       warn(this.deps, "ExportRoomSummary", error, loaded.value.room.id);
       return err(error);

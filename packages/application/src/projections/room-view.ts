@@ -174,6 +174,11 @@ function permissionsFor(room: Room, viewer: Viewer): Record<PolicyAction, boolea
       const context = contextOf(room, viewer.participantId);
       permissions = deniedPermissions();
       for (const action of ACTIONS) permissions[action] = can(actor, action, context);
+      const participant = room.participants.find((seat) => seat.id === viewer.participantId);
+      if (!participant?.userId) {
+        permissions.exportOwnRoomSummary = false;
+        permissions.exportTeamData = false;
+      }
     }
   }
   const frozen = Object.freeze(permissions);

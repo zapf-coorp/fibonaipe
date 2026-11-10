@@ -1,5 +1,5 @@
 import { createAppError, type AppError } from "../shared/app-error.js";
-import { MAX_ITEMS_PER_ROOM, MAX_VOTE_COMMENT_LENGTH, ONLINE_WINDOW_SECONDS } from "../shared/constants.js";
+import { GUEST_MAX_ITEMS, MAX_ITEMS_PER_ROOM, MAX_VOTE_COMMENT_LENGTH, ONLINE_WINDOW_SECONDS } from "../shared/constants.js";
 import { err, ok, type Result } from "../shared/result.js";
 import { can, type PolicyAction, type PolicyActor, type PolicyContext, type TeamRole } from "../policy/can.js";
 import { AfkCard, DoubtCard, JokerCard, type Card } from "../scales/card.js";
@@ -218,7 +218,8 @@ export class PlanningTable {
     if (input.item.position !== this.items.length) return err(createAppError("VALIDATION"));
     if (input.item.status !== "pending") return err(createAppError("VALIDATION"));
     if (this.items.some((item) => item.id === input.item.id)) return err(createAppError("VALIDATION"));
-    if (this.items.length >= MAX_ITEMS_PER_ROOM) return err(createAppError("LIMIT_EXCEEDED"));
+    const itemCap = this.room.kind === "guest" ? GUEST_MAX_ITEMS : MAX_ITEMS_PER_ROOM;
+    if (this.items.length >= itemCap) return err(createAppError("LIMIT_EXCEEDED"));
     const table = this.spawn({ items: [...this.items, Item.create(input.item)] });
     return this.done(table, [table.queueEvent(input.now)]);
   }

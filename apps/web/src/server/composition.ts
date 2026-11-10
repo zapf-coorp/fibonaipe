@@ -1,3 +1,4 @@
+import { createDevFakeAuthProvider } from "@fibonaipe/adapter-auth-devfake";
 import { createCsvJsonExporter } from "@fibonaipe/adapter-exporter-csvjson";
 import { createManualIssueTracker } from "@fibonaipe/adapter-issuetracker-manual";
 import { createPostgresPersistence } from "@fibonaipe/adapter-persistence-postgres";
@@ -37,18 +38,27 @@ export interface AppContainer {
 export function createAppContainer(overrides?: Partial<ServerEnv>): AppContainer {
   const env = loadServerEnv(overrides);
   const clock = createSystemClock();
+  const idGenerator = createIdGenerator();
   return {
     env,
     clock,
-    idGenerator: createIdGenerator(),
+    idGenerator,
     persistence: persistenceFor(env),
     realtime: pollingPublisher(),
-    authProvider: unavailableAuth(),
+    authProvider: authProviderFor(env, clock, idGenerator),
     rateLimiter: createInMemoryRateLimiter(clock),
     issueTracker: createManualIssueTracker(),
     exporter: createCsvJsonExporter(),
     logger: createRedactingLogger({ write: (line) => console.error(line) }),
   };
+}
+
+function authProviderFor(env: ServerEnv, clock: Clock, idGenerator: IdGenerator): AuthProvider {
+  const driver = env.AUTH_DRIVER ?? (env.NODE_ENV === "development" ? "dev-fake" : "unavailable");
+  if (env.NODE_ENV !== "production" && driver === "dev-fake") {
+    return createDevFakeAuthProvider({ clock, ids: idGenerator });
+  }
+  return unavailableAuth();
 }
 
 function persistenceFor(env: ServerEnv): Persistence {

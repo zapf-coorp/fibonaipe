@@ -1,9 +1,15 @@
 @import "./tokens.css";
 
+/* Reset */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* Page. 95% makes 1rem about 5% smaller than the browser default. */
+html {
+  font-size: 95%;
 }
 
 html,
@@ -17,11 +23,15 @@ body {
   background-size: 8px 8px;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
+body {
+  font-size: 1rem;
+}
+
+/* Type */
 h1,
 h2,
 h3 {
@@ -38,19 +48,20 @@ textarea {
   font: inherit;
 }
 
+/* Controls share one sticker: face, ink stroke, offset shadow. */
 button {
-  font-family: var(--font-display);
-  font-size: 16px;
-  line-height: 1.35;
   width: max-content;
   max-width: 100%;
-  white-space: normal;
+  padding: 0.35rem 0.75rem;
   color: var(--ink);
   background: var(--ribbon);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-  padding: 0.35rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.35;
+  white-space: normal;
   cursor: pointer;
 }
 
@@ -62,12 +73,12 @@ input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
   max-width: 100%;
+  padding: 0.35rem 0.65rem;
   color: var(--ink);
   background: var(--card-face);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-  padding: 0.35rem 0.65rem;
 }
 
 input[type="checkbox"],
@@ -78,14 +89,30 @@ input[type="radio"] {
 }
 
 [role="dialog"] {
-  background: var(--card-face);
+  padding: var(--space-4);
   color: var(--ink);
-  border: 3px solid var(--ink);
+  background: var(--card-face);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-modal);
-  padding: var(--space-4);
 }
 
+/* Reading text outside panels gets a small paper chip. */
+:where(main) :where(p, h1, h2, h3, li, label, legend, [role="timer"]):where(
+  :not(.surface, .surface *, .sr-only, [role="dialog"], [role="dialog"] *)
+) {
+  width: fit-content;
+  max-width: 100%;
+  margin-block: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--card-face) 84%, transparent);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-stamp);
+}
+
+/* Accessibility */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
@@ -105,11 +132,11 @@ input[type="radio"] {
   top: -160px;
   left: var(--space-2);
   z-index: 9999;
-  min-height: var(--touch-min);
   min-width: var(--touch-min);
-  background: var(--card-face);
+  min-height: var(--touch-min);
   color: var(--ink);
-  border: 3px solid var(--ink);
+  background: var(--card-face);
+  border: var(--stroke);
   box-shadow: var(--shadow-card);
 }
 
@@ -121,20 +148,6 @@ input[type="radio"] {
 :focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
-}
-
-:where(main) :where(p, h1, h2, h3, li, label, legend, [role="timer"]):where(
-  :not(.surface, .surface *, .sr-only, [role="dialog"], [role="dialog"] *)
-) {
-  width: fit-content;
-  max-width: 100%;
-  margin-block: 0.35rem;
-  padding: 0.45rem 0.75rem;
-  color: var(--ink);
-  background: color-mix(in srgb, var(--card-face) 84%, transparent);
-  border: 3px solid var(--ink);
-  border-radius: var(--radius-sm);
-  box-shadow: 3px 3px 0 var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

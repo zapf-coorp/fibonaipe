@@ -8,6 +8,7 @@ const serverEnvSchema = z.object({
   REALTIME_DRIVER: z.enum(["fake", "supabase", "polling-only"]),
   SESSION_SECRET: z.string().min(1),
   CRON_SECRET: z.string().min(1),
+  AUTH_DRIVER: z.enum(["unavailable", "dev-fake"]).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -53,6 +54,7 @@ function readProcessEnv(): Partial<ServerEnv> {
   }
   if (source.SESSION_SECRET) partial.SESSION_SECRET = source.SESSION_SECRET;
   if (source.CRON_SECRET) partial.CRON_SECRET = source.CRON_SECRET;
+  if (source.AUTH_DRIVER === "unavailable" || source.AUTH_DRIVER === "dev-fake") partial.AUTH_DRIVER = source.AUTH_DRIVER;
   return partial;
 }
 

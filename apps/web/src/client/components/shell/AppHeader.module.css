@@ -2,13 +2,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: var(--space-2);
   width: 100%;
   max-width: 100%;
   min-height: 56px;
   padding: var(--space-2) var(--space-3);
-  gap: var(--space-2);
   background: color-mix(in srgb, var(--bg-canvas) 88%, transparent);
-  border-bottom: 3px solid var(--ink);
+  border-bottom: var(--stroke);
 }
 
 .control,
@@ -26,12 +26,12 @@
 
 .control {
   position: relative;
+  padding: 0 var(--space-2);
   color: var(--ink);
   background: var(--card-face);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-  padding: 0 var(--space-2);
   text-decoration: none;
 }
 
@@ -53,9 +53,9 @@
   display: block;
   width: 14px;
   height: 18px;
-  border: 2px solid var(--ink);
-  border-radius: 2px;
   background: var(--card-face);
+  border: var(--stroke-thin);
+  border-radius: 2px;
 }
 
 .mini[data-face="heart"] {
@@ -73,9 +73,9 @@
 }
 
 .word {
-  font-family: var(--font-display);
-  font-size: 16px;
   color: var(--title-red);
+  font-family: var(--font-display);
+  font-size: 1rem;
 }
 
 .group {
@@ -84,22 +84,22 @@
   max-width: 100%;
   padding: 2px;
   background: var(--card-dark);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
 }
 
 .hit {
+  padding-inline: var(--space-2);
   color: var(--card-face);
   background: transparent;
   border: 0;
   box-shadow: none;
-  padding-inline: var(--space-2);
 }
 
 .hit:hover {
-  background: var(--ribbon);
   color: var(--ink);
+  background: var(--ribbon);
 }
 
 .profile {
@@ -111,12 +111,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  padding: 0 var(--space-2);
   color: var(--ink);
   background: var(--card-face);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-  padding: 0 var(--space-2);
 }
 
 .avatar {
@@ -124,9 +124,9 @@
   place-items: center;
   width: 28px;
   height: 36px;
-  border: 2px solid var(--ink);
-  background: var(--card-dark);
   color: var(--card-face);
+  background: var(--card-dark);
+  border: var(--stroke-thin);
   font-family: var(--font-display);
   font-size: 12px;
   line-height: 1;
@@ -135,7 +135,7 @@
 .profileName,
 .profileStatus {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.2;
 }
 
@@ -145,8 +145,8 @@
 
 .menu {
   position: absolute;
-  right: 0;
   top: calc(100% + 8px);
+  right: 0;
   z-index: 30;
   display: flex;
   flex-direction: column;
@@ -157,7 +157,7 @@
   padding: var(--space-3);
   color: var(--ink);
   background: color-mix(in srgb, var(--card-face) 92%, transparent);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
 }

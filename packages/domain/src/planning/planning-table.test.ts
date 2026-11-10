@@ -7,11 +7,12 @@ import type { AppError } from "../shared/app-error.js";
 import {
   MAX_ITEM_DESC_LENGTH,
   MAX_ITEM_TITLE_LENGTH,
+  GUEST_MAX_ITEMS,
   MAX_ITEMS_PER_ROOM,
   MAX_VOTE_COMMENT_LENGTH,
   ONLINE_WINDOW_SECONDS,
 } from "../shared/constants.js";
-import { ItemId, ParticipantId, RoomCode, RoomId, RoundId, TeamId } from "../shared/ids.js";
+import { ItemId, ParticipantId, RoomCode, RoomId, RoundId, TeamId, UserId } from "../shared/ids.js";
 import type { Result } from "../shared/result.js";
 import { can, type PolicyAction, type PolicyActor, type PolicyContext } from "../policy/can.js";
 import type { Card } from "../scales/card.js";
@@ -388,6 +389,7 @@ function withSeats(
     afk?: boolean;
     isFacilitator?: boolean;
     seenAt?: Date;
+    userId?: string;
   }[],
 ): Room {
   let next = room;
@@ -398,7 +400,7 @@ function withSeats(
         nickname: seat.nickname,
         role: seat.role,
         mode: seat.mode ?? "voter",
-        guestSessionId: `session-${seat.id}`,
+        ...(seat.userId ? { userId: branded(UserId, seat.userId) } : { guestSessionId: `session-${seat.id}` }),
         now: seat.seenAt ?? NOW,
         afk: seat.afk ?? false,
         isFacilitator: seat.isFacilitator ?? false,
@@ -1210,7 +1212,17 @@ describe("Item, Round, and Vote", () => {
 
     it("rejects the 501st item and a mismatched room or team", () => {
       expect(MAX_ITEMS_PER_ROOM).toBe(500);
-      let table = open(standardRoom());
+      expect(GUEST_MAX_ITEMS).toBe(12);
+      let guest = open(standardRoom());
+      for (let index = 0; index < GUEST_MAX_ITEMS; index += 1) {
+        const built = must(buildItem({ id: branded(ItemId, `guest-${index}`), title: `Guest ${index}`, position: index }));
+        guest = apply(guest.addItem({ actorParticipantId: HOST, item: built, now: NOW })).table;
+      }
+      expect(guest.items).toHaveLength(GUEST_MAX_ITEMS);
+      const guestExtra = must(buildItem({ id: branded(ItemId, "guest-extra"), title: "Guest overflow", position: GUEST_MAX_ITEMS }));
+      expect(code(guest.addItem({ actorParticipantId: HOST, item: guestExtra, now: NOW }))).toBe("LIMIT_EXCEEDED");
+
+      let table = open(makeRoom({ kind: "team" }));
       for (let index = 0; index < MAX_ITEMS_PER_ROOM; index += 1) {
         const built = must(buildItem({ id: branded(ItemId, `item-${index}`), title: `Item ${index}`, position: index }));
         table = apply(table.addItem({ actorParticipantId: HOST, item: built, now: NOW })).table;
@@ -1451,12 +1463,15 @@ describe("projectRoomForViewer", () => {
     );
     expect(project(table, { kind: "screen" }).permissions).toEqual(allDenied());
 
-    const team = currentTable(withSeats(makeRoom({ kind: "team" }), [{ id: "voter-a", nickname: "Ada", role: "dev" }]));
+    const team = currentTable(withSeats(makeRoom({ kind: "team" }), [{ id: "voter-a", nickname: "Ada", role: "dev", userId: "user-ada" }]));
     expect(project(team, { kind: "participant", participantId: VOTER_A }).permissions).toEqual(
       permissionsFor(
         { kind: "member", teamRole: "dev", isHost: false, isFacilitator: false, roomMode: "voter" },
         { roomKind: "team", actorCreatedRoom: false },
       ),
     );
+    const unlinked = currentTable(withSeats(makeRoom({ kind: "team" }), [{ id: "voter-a", nickname: "Ada", role: "dev" }]));
+    expect(project(unlinked, { kind: "participant", participantId: VOTER_A }).permissions.exportOwnRoomSummary).toBe(false);
+    expect(project(unlinked, { kind: "participant", participantId: VOTER_A }).permissions.vote).toBe(true);
   });
 });

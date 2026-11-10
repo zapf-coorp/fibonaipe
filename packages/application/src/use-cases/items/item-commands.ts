@@ -75,6 +75,8 @@ export class ImportItems {
     const imported = await this.deps.issueTracker.importItems(input.source);
     if (!imported.ok) return imported;
     return mutate(this.deps, input.code, "ImportItems", async (ctx) => {
+      const seat = ctx.loaded.room.participants.find((entry) => entry.id === input.actorParticipantId);
+      if (!seat || ctx.loaded.room.kind === "guest" || seat.userId == null) return err(createAppError("FORBIDDEN"));
       const op = await beginOp(ctx, input.actorParticipantId, input.clientOpId);
       if (!op.ok) return op;
       if (op.value === "replay") return replay();

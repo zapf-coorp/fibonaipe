@@ -25,7 +25,8 @@
 }
 
 .composer,
-.row {
+.row,
+.files {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -62,10 +63,4 @@
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: square;
-}
-
-.files {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }

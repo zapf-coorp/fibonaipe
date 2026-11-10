@@ -1,6 +1,16 @@
 import type { Hono } from "hono";
-import { app } from "./app.js";
+import { createApp } from "./app.js";
+import { createAppContainer } from "./composition.js";
+
+// The Vite dev server is the only caller. Keep one container so in-memory
+// persistence survives across requests, and always expose the fake sign-in.
+const devApp = createApp(
+  createAppContainer({
+    NODE_ENV: "development",
+    AUTH_DRIVER: "dev-fake",
+  }),
+);
 
 export function createDevGateway(): Hono {
-  return app;
+  return devApp;
 }

@@ -42,7 +42,7 @@ export default defineConfig({
   plugins: [missingShellPlugin()],
   resolve: {
     alias: Object.fromEntries([
-      "domain", "application", "testing", "adapter-exporter-csvjson",
+      "domain", "application", "testing", "adapter-auth-devfake", "adapter-exporter-csvjson",
       "adapter-issuetracker-manual", "adapter-persistence-postgres", "adapter-persistence-sqlite",
       "adapter-realtime-supabase", "adapter-system",
     ].map((name) => [`@fibonaipe/${name}`, resolve(root, `packages/${name}/src/index.ts`)])),

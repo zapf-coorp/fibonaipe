@@ -79,9 +79,9 @@ async function send(
   };
 }
 
-function sessionCookie(response: Response): string {
+function sessionCookie(response: Response, name = "fib_session"): string {
   const listed = typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : [];
-  const header = listed.find((value) => value.toLowerCase().includes("fib_session=")) ?? response.headers.get("set-cookie") ?? "";
+  const header = listed.find((value) => value.toLowerCase().includes(`${name}=`)) ?? response.headers.get("set-cookie") ?? "";
   return header;
 }
 
@@ -106,7 +106,7 @@ describe("auth teams HTTP", () => {
     const { app, auth, container } = testApp();
     await send(app, "POST", "/api/auth/magic-link", { ip: "203.0.113.8", body: { email: "owner@example.com" } });
     const signed = await send(app, "POST", "/api/auth/callback", { ip: "203.0.113.8", body: { token: auth.latestMagicLinkToken() } });
-    const cookie = sessionCookie(signed.response).split(";")[0];
+    const cookie = sessionCookie(signed.response, "fib_account").split(";")[0];
     const team = await send(app, "POST", "/api/teams", { ip: "203.0.113.8", cookie, body: { name: "Team" } });
     await container.persistence.transaction({}, async (repos) => {
       await repos.history.appendAggregated({ id: HistoryEntryId.create("history-a").value, teamId: TeamId.create(teamIdOf(team.json)).value, itemId: ItemId.create("item-a").value, roomId: RoomId.create("room-a").value, roundId: RoundId.create("round-a").value, title: "Estimated item", dominantSuit: "clubs", finalEstimate: "5", estimatedAt: new Date("2026-11-02T00:00:00Z"), stats: { voteCount: 2, consensus: true } });
@@ -165,7 +165,7 @@ describe("auth teams HTTP", () => {
     expect((await send(app, "POST", `${base}/${id}/items`, { ip: "203.0.113.8", cookie, body: { roomId: stored.value.id, itemId } })).status).toBe(200);
     await send(app, "POST", "/api/auth/magic-link", { ip: "203.0.113.9", body: { email: "other@example.com" } });
     const otherSigned = await send(app, "POST", "/api/auth/callback", { ip: "203.0.113.9", body: { token: auth.latestMagicLinkToken() } });
-    const otherCookie = sessionCookie(otherSigned.response).split(";")[0];
+    const otherCookie = sessionCookie(otherSigned.response, "fib_account").split(";")[0];
     const crossTeam = await send(app, "POST", `${base}/${id}/items/${itemId}/done`, { ip: "203.0.113.9", cookie: otherCookie, body: {} });
     expect(crossTeam.code).toBe("FORBIDDEN");
     expect((await send(app, "GET", `/api/teams/${teamIdOf(team.json)}/sprints/${id}`, { ip: "203.0.113.9", cookie: otherCookie })).code).toBe("FORBIDDEN");
@@ -210,7 +210,7 @@ describe("auth teams HTTP", () => {
     expect(unknown.text.toLowerCase()).not.toMatch(/exists|not found|unknown/);
   });
 
-  it("sets a fib_session cookie on the first completion and returns AUTH_LINK_INVALID when the link is reused", async () => {
+  it("sets a fib_account cookie on the first completion and returns AUTH_LINK_INVALID when the link is reused", async () => {
     const { app, auth } = testApp();
     const sent = await send(app, "POST", "/api/auth/magic-link", {
       ip: "203.0.113.20",
@@ -225,7 +225,7 @@ describe("auth teams HTTP", () => {
       body: { token },
     });
     expect(first.status, first.text).toBeLessThan(400);
-    expect(sessionCookie(first.response).toLowerCase()).toContain("fib_session=");
+    expect(sessionCookie(first.response, "fib_account").toLowerCase()).toContain("fib_account=");
     expect(first.text).not.toContain(token);
 
     const second = await send(app, "POST", "/api/auth/callback", {
@@ -237,7 +237,7 @@ describe("auth teams HTTP", () => {
     expect(errorBody(second)?.messageKey).toBe("errors.AUTH_LINK_INVALID");
   });
 
-  it("returns ACCOUNT_SUSPENDED and no fib_session when a suspended user completes sign-in", async () => {
+  it("returns ACCOUNT_SUSPENDED and no fib_account when a suspended user completes sign-in", async () => {
     const { app, auth } = testApp();
     await auth.sendMagicLink("suspended@example.com", REDIRECT);
     await auth.verifyMagicLink(auth.latestMagicLinkToken());
@@ -250,7 +250,7 @@ describe("auth teams HTTP", () => {
     expect(completed.status, completed.text).toBe(403);
     expect(completed.code).toBe("ACCOUNT_SUSPENDED");
     expect(errorBody(completed)?.messageKey).toBe("errors.ACCOUNT_SUSPENDED");
-    expect(sessionCookie(completed.response).toLowerCase()).not.toContain("fib_session=");
+    expect(sessionCookie(completed.response, "fib_account").toLowerCase()).not.toContain("fib_account=");
   });
 
   it("returns 403 for anonymous, guest, and a signed-in non-admin on GET /api/admin/users", async () => {
@@ -277,8 +277,8 @@ describe("auth teams HTTP", () => {
       body: { token: auth.latestMagicLinkToken() },
     });
     expect(signed.status, signed.text).toBeLessThan(400);
-    const header = sessionCookie(signed.response);
-    expect(header.toLowerCase()).toContain("fib_session=");
+    const header = sessionCookie(signed.response, "fib_account");
+    expect(header.toLowerCase()).toContain("fib_account=");
     const member = await send(app, "GET", "/api/admin/users", {
       ip: "203.0.113.42",
       cookie: header.split(";")[0]?.trim(),
@@ -300,8 +300,8 @@ describe("auth teams HTTP", () => {
       body: { token: auth.latestMagicLinkToken() },
     });
     expect(ownerDone.status, ownerDone.text).toBeLessThan(400);
-    const ownerCookie = sessionCookie(ownerDone.response).split(";")[0]?.trim() ?? "";
-    expect(ownerCookie.toLowerCase()).toContain("fib_session=");
+    const ownerCookie = sessionCookie(ownerDone.response, "fib_account").split(";")[0]?.trim() ?? "";
+    expect(ownerCookie.toLowerCase()).toContain("fib_account=");
 
     const created = await send(app, "POST", "/api/teams", {
       ip: "203.0.113.60",
@@ -329,7 +329,7 @@ describe("auth teams HTTP", () => {
       body: { token: auth.latestMagicLinkToken() },
     });
     expect(otherDone.status, otherDone.text).toBeLessThan(400);
-    const otherCookie = sessionCookie(otherDone.response).split(";")[0]?.trim() ?? "";
+    const otherCookie = sessionCookie(otherDone.response, "fib_account").split(";")[0]?.trim() ?? "";
     const otherTeam = await send(app, "POST", "/api/teams", {
       ip: "203.0.113.61",
       cookie: otherCookie,

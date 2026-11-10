@@ -5,6 +5,7 @@ import { useLiveAnnouncer } from "../../providers/live-announcer.js";
 import { useTheme, type ThemeMode } from "../../providers/theme-provider.js";
 import { touchTargetStyle } from "../../touch-target.js";
 import { useConnectionStatus } from "../../connection/status.js";
+import { signOut, useAccount } from "../../../features/auth/account.js";
 import { can, seatsOf, selfId } from "../../../features/planning/model.js";
 import { requestRoomMenu } from "../../../features/planning/room-menu.js";
 import { useRoomView } from "../../../features/planning/room-store.js";
@@ -22,6 +23,7 @@ const THEME_CHOICES: readonly ThemeMode[] = ["light", "dark", "system"];
 export function AppHeader() {
   const { t } = useI18n();
   const connection = useConnectionStatus();
+  const place = useOwnSeat();
   return (
     <header role="banner" className={styles.header}>
       <a href="/" className={styles.control} style={touchTargetStyle} aria-label={t("app.title")}>
@@ -33,22 +35,29 @@ export function AppHeader() {
         </span>
         <span className={styles.word}>{t("app.title")}</span>
       </a>
-      <ConnectionStatusPill status={connection} />
-      <ProfileMenu />
+      <ConnectionStatusPill status={connection} presence={place.seat?.online ? "on" : "off"} />
+      <ProfileMenu seat={place} />
     </header>
   );
 }
 
-function ProfileMenu() {
-  const { t } = useI18n();
-  const [open, setOpen] = useState(false);
+function useOwnSeat() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const code = /^\/r\/([^/]+)$/.exec(pathname)?.[1] ?? "";
   const view = useRoomView(code);
   const mine = view ? selfId(view) : null;
   const seat = view ? seatsOf(view).find((row) => row.id === mine) : undefined;
-  const name = seat?.nickname || t("profile.guest");
-  const status = mine ? t("profile.atTable") : t("profile.away");
+  const roomName = view && typeof view.name === "string" ? view.name : "";
+  return { seat, roomName, view };
+}
+
+function ProfileMenu({ seat: place }: { readonly seat: ReturnType<typeof useOwnSeat> }) {
+  const { t } = useI18n();
+  const { user } = useAccount();
+  const [open, setOpen] = useState(false);
+  const { seat, roomName, view } = place;
+  const name = user?.displayName || seat?.nickname || t("profile.guest");
+  const label = roomName ? `${name} / ${roomName}` : name;
   return (
     <div className={styles.profile}>
       <button
@@ -57,18 +66,30 @@ function ProfileMenu() {
         style={touchTargetStyle}
         aria-expanded={open}
         aria-controls="profile-menu"
-        aria-label={`${name}, ${status}`}
+        aria-label={label}
         onClick={() => setOpen((current) => !current)}
       >
         <span className={styles.avatar} aria-hidden="true">
           {initials(name)}
         </span>
-        <span className={styles.profileName}>{name}</span>
-        <span className={styles.profileStatus}>{status}</span>
+        <span className={styles.profileName}>{label}</span>
       </button>
       {open ? (
         <div id="profile-menu" className={styles.menu}>
-          <a href="/teams" style={touchTargetStyle}>{t("teams.title")}</a>
+          {user ? <a href="/teams" style={touchTargetStyle}>{t("teams.title")}</a> : <a href="/dev/login" style={touchTargetStyle}>{t("profile.signIn")}</a>}
+          {user ? (
+            <button
+              type="button"
+              style={touchTargetStyle}
+              onClick={() => {
+                void signOut().then(() => {
+                  window.location.assign("/");
+                });
+              }}
+            >
+              {t("profile.signOut")}
+            </button>
+          ) : null}
           <LocaleSelector />
           <ThemeToggle />
           {view && can(view, "updateRoomSettings") ? (

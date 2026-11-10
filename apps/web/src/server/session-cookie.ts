@@ -1,19 +1,45 @@
 import { ANON_ROOM_TTL_MINUTES } from "@fibonaipe/domain";
 
-const COOKIE_NAME = "fib_session";
+const ROOM_COOKIE = "fib_session";
+const ACCOUNT_COOKIE = "fib_account";
+const ACCOUNT_MAX_AGE = 60 * 60 * 24 * 14;
 
 export function guestSessionCookie(token: string): string {
   const maxAge = ANON_ROOM_TTL_MINUTES * 60;
-  return `${COOKIE_NAME}=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+  return cookieLine(ROOM_COOKIE, token, maxAge);
+}
+
+export function clearSessionCookie(): string {
+  return cookieLine(ROOM_COOKIE, "", 0);
+}
+
+export function accountSessionCookie(token: string): string {
+  return cookieLine(ACCOUNT_COOKIE, token, ACCOUNT_MAX_AGE);
+}
+
+export function clearAccountCookie(): string {
+  return cookieLine(ACCOUNT_COOKIE, "", 0);
 }
 
 export function readSessionToken(cookieHeader: string | undefined): string | null {
+  return readNamedCookie(cookieHeader, ROOM_COOKIE);
+}
+
+export function readAccountToken(cookieHeader: string | undefined): string | null {
+  return readNamedCookie(cookieHeader, ACCOUNT_COOKIE);
+}
+
+function cookieLine(name: string, token: string, maxAge: number): string {
+  return `${name}=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+}
+
+function readNamedCookie(cookieHeader: string | undefined, expected: string): string | null {
   if (!cookieHeader) return null;
   for (const part of cookieHeader.split(";")) {
     const separator = part.indexOf("=");
     if (separator <= 0) continue;
     const name = part.slice(0, separator).trim();
-    if (name !== COOKIE_NAME) continue;
+    if (name !== expected) continue;
     const raw = part.slice(separator + 1).trim().replaceAll('"', "");
     if (raw.length === 0) return null;
     try {

@@ -1,4 +1,4 @@
-import { UserId, ok, removeMember, type AppError, type Result } from "@fibonaipe/domain";
+import { UserId, createAppError, err, ok, removeMember, type AppError, type Result } from "@fibonaipe/domain";
 import type { UseCaseDependencies } from "../room-session.js";
 import { requireTeamAction, saveMemberships } from "./access.js";
 
@@ -14,6 +14,7 @@ export class RemoveMember {
   async execute(input: RemoveMemberInput): Promise<Result<{ readonly removed: true }, AppError>> {
     const memberUserId = UserId.create(input.memberUserId);
     if (!memberUserId.ok) return memberUserId;
+    if (input.actorUserId === input.memberUserId) return err(createAppError("FORBIDDEN"));
     const allowed = await requireTeamAction(this.deps, input.teamId, input.actorUserId, "manageTeam");
     if (!allowed.ok) return allowed;
     const removed = removeMember(allowed.value.members, memberUserId.value);

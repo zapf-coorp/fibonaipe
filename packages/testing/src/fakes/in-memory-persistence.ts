@@ -24,6 +24,7 @@ interface MemoryStore {
   rooms: Map<string, PersistedRoomRecord>;
   idempotency: Map<string, IdempotencyRecord>;
   teams: Map<string, PersistedTeamRecord>;
+  teamTasks: Map<string, import("@fibonaipe/application").PersistedTeamTaskRecord>;
   memberships: Map<string, PersistedMembershipRecord>;
   invites: Map<string, PersistedInviteRecord>;
   history: Map<string, AggregatedHistoryRecord>;
@@ -38,6 +39,7 @@ interface DirtySet {
   deletedRooms: Set<string>;
   idempotency: Set<string>;
   teams: Set<string>;
+  teamTasks: Set<string>;
   memberships: Set<string>;
   invites: Set<string>;
   history: Set<string>;
@@ -108,6 +110,7 @@ export class InMemoryPersistence implements Persistence {
     }
     patch(this.store.idempotency, working.idempotency, dirty.idempotency);
     patch(this.store.teams, working.teams, dirty.teams);
+    patch(this.store.teamTasks, working.teamTasks, dirty.teamTasks);
     patch(this.store.memberships, working.memberships, dirty.memberships);
     patch(this.store.invites, working.invites, dirty.invites);
     patch(this.store.history, working.history, dirty.history);
@@ -181,6 +184,26 @@ function createRepos(
       async delete(id) {
         working.teams.delete(id);
         dirty.teams.add(id);
+      },
+    },
+    teamTasks: {
+      async listByTeam(teamId) {
+        return [...working.teamTasks.values()].filter((task) => task.teamId === teamId).map(cloneData);
+      },
+      async save(task) {
+        working.teamTasks.set(task.id, cloneData(task));
+        dirty.teamTasks.add(task.id);
+      },
+      async delete(id) {
+        working.teamTasks.delete(id);
+        dirty.teamTasks.add(id);
+      },
+      async deleteByTeam(teamId) {
+        for (const [id, task] of [...working.teamTasks]) {
+          if (task.teamId !== teamId) continue;
+          working.teamTasks.delete(id);
+          dirty.teamTasks.add(id);
+        }
       },
     },
     memberships: membershipRepos(working, dirty),
@@ -314,6 +337,7 @@ function emptyStore(): MemoryStore {
     rooms: new Map(),
     idempotency: new Map(),
     teams: new Map(),
+    teamTasks: new Map(),
     memberships: new Map(),
     invites: new Map(),
     history: new Map(),
@@ -330,6 +354,7 @@ function emptyDirty(): DirtySet {
     deletedRooms: new Set(),
     idempotency: new Set(),
     teams: new Set(),
+    teamTasks: new Set(),
     memberships: new Set(),
     invites: new Set(),
     history: new Set(),
@@ -348,6 +373,7 @@ function cloneStore(store: MemoryStore): MemoryStore {
     rooms: new Map(store.rooms),
     idempotency: new Map(store.idempotency),
     teams: new Map(store.teams),
+    teamTasks: new Map(store.teamTasks),
     memberships: new Map(store.memberships),
     invites: new Map(store.invites),
     history: new Map(store.history),

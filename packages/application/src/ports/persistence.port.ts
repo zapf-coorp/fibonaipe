@@ -167,6 +167,21 @@ export interface TeamRepository {
   delete(id: TeamId): Promise<void>;
 }
 
+export interface PersistedTeamTaskRecord {
+  readonly id: string;
+  readonly teamId: TeamId;
+  readonly title: string;
+  readonly sprintName: string;
+  readonly number: number;
+}
+
+export interface TeamTaskRepository {
+  listByTeam(teamId: TeamId): Promise<readonly PersistedTeamTaskRecord[]>;
+  save(task: PersistedTeamTaskRecord): Promise<void>;
+  delete(id: string): Promise<void>;
+  deleteByTeam(teamId: TeamId): Promise<void>;
+}
+
 export interface MembershipRepository {
   listByTeam(teamId: TeamId): Promise<readonly PersistedMembershipRecord[]>;
   listByUser(userId: UserId): Promise<readonly PersistedMembershipRecord[]>;
@@ -201,6 +216,7 @@ export interface TransactionRepos {
   readonly rooms: RoomRepository;
   readonly idempotency: IdempotencyRepository;
   readonly teams: TeamRepository;
+  readonly teamTasks: TeamTaskRepository;
   readonly memberships: MembershipRepository;
   readonly invites: InviteRepository;
   readonly history: HistoryRepository;

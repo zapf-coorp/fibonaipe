@@ -19,6 +19,7 @@
       "@fibonaipe/domain": ["./packages/domain/src/index.ts"],
       "@fibonaipe/application": ["./packages/application/src/index.ts"],
       "@fibonaipe/testing": ["./packages/testing/src/index.ts"],
+      "@fibonaipe/adapter-auth-devfake": ["./packages/adapter-auth-devfake/src/index.ts"],
       "@fibonaipe/adapter-exporter-csvjson": ["./packages/adapter-exporter-csvjson/src/index.ts"],
       "@fibonaipe/adapter-issuetracker-manual": ["./packages/adapter-issuetracker-manual/src/index.ts"],
       "@fibonaipe/adapter-persistence-postgres": ["./packages/adapter-persistence-postgres/src/index.ts"],

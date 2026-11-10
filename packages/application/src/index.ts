@@ -23,10 +23,12 @@ export type {
   PersistedRoomRecord,
   PersistedSprintRecord,
   PersistedTeamRecord,
+  PersistedTeamTaskRecord,
   PersistedUserRecord,
   RoomRepository,
   SprintRepository,
   TeamRepository,
+  TeamTaskRepository,
   InviteRepository,
   MembershipRepository,
   TransactionOptions,
@@ -118,7 +120,7 @@ export type {
   TimerUpdatedPayload,
   VoteChangedPayload,
 } from "./projections/events.js";
-export { CompleteSignIn, type CompleteSignInInput, type CompleteSignInResult } from "./use-cases/identity/complete-sign-in.js";
+export { CompleteIdentitySignIn, CompleteSignIn, persistSignedInUser, type CompleteSignInInput, type CompleteSignInResult } from "./use-cases/identity/complete-sign-in.js";
 export { DeleteAccount, type DeleteAccountInput } from "./use-cases/identity/delete-account.js";
 export { LinkGuestToAccount, type LinkGuestToAccountInput, type LinkGuestToAccountResult } from "./use-cases/identity/link-guest-to-account.js";
 export { SendMagicLink, type SendMagicLinkInput } from "./use-cases/identity/send-magic-link.js";
@@ -132,3 +134,7 @@ export { ListTeamMembers, type TeamMemberSummary } from "./use-cases/teams/list-
 export { ListTeams, type ListTeamsInput, type TeamSummary } from "./use-cases/teams/list-teams.js";
 export { CreateTeamRoom, type CreateTeamRoomInput, type CreateTeamRoomResult } from "./use-cases/teams/create-team-room.js";
 export { RemoveMember, type RemoveMemberInput } from "./use-cases/teams/remove-member.js";
+export { RenameTeam, type RenameTeamInput } from "./use-cases/teams/rename-team.js";
+export { DeleteTeam, type DeleteTeamInput } from "./use-cases/teams/delete-team.js";
+export { AddTeamMember, type AddTeamMemberInput } from "./use-cases/teams/add-team-member.js";
+export { ListTeamTasks, CreateTeamTask, type TeamTaskSummary, type CreateTeamTaskInput } from "./use-cases/teams/team-tasks.js";

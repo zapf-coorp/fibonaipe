@@ -20,22 +20,34 @@ import {
   SaveHoliday,
   SetSprintCapacityEntries,
   CreateTeam,
+  RenameTeam,
+  DeleteTeam,
+  AddTeamMember,
+  CreateInvite,
+  AcceptInvite,
+  RemoveMember,
+  ListTeamTasks,
+  CreateTeamTask,
   SendMagicLink,
   type AuthProvider,
   type PersistedUserRecord,
-  type UseCaseDependencies,
 } from "@fibonaipe/application";
-import { TeamId, UserId, createAppError, ok, type AppError, type Result } from "@fibonaipe/domain";
+import { TeamId, createAppError, ok, type AppError, type Result } from "@fibonaipe/domain";
 import type { Context, Hono } from "hono";
 import { z } from "zod";
 import type { AppContainer } from "../composition.js";
+import { dependenciesOf } from "../dependencies.js";
 import { errorResponse } from "../error-map.js";
 import { jsonResponse } from "../http-error.js";
-import { guestSessionCookie, readSessionToken } from "../session-cookie.js";
+import { accountUser } from "../account-user.js";
+import { accountSessionCookie, clearAccountCookie, readAccountToken } from "../session-cookie.js";
 
 const emailSchema = z.object({ email: z.string().trim().min(3).max(320) });
 const callbackSchema = z.object({ token: z.string().trim().min(1).max(512) });
 const teamSchema = z.object({ name: z.string().trim().min(1).max(80) });
+const memberSchema = z.object({ email: z.string().trim().min(3).max(320) });
+const taskSchema = z.object({ title: z.string().trim().min(1).max(120), sprintName: z.string().trim().max(80).optional() });
+const inviteSchema = z.object({ token: z.string().trim().min(1).max(512) });
 const sprintSchema = z.object({ name: z.string().trim().min(1).max(80), startDate: z.string(), endDate: z.string(), goal: z.string().nullable().optional() });
 const holidaySchema = z.object({ date: z.string(), name: z.string().trim().min(1).max(80) });
 const capacitySchema = z.object({ entries: z.array(z.object({ personId: z.string().min(1), absenceDays: z.number().nonnegative(), focusPct: z.number().min(0).max(100).optional() })) });
@@ -55,6 +67,26 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
     });
     if (!sent.ok) return fail(container, sent.error);
     return okJson(container, { ok: true });
+  });
+
+  app.get("/api/auth/me", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return okJson(container, { user: null });
+    return okJson(container, {
+      user: { userId: user.id, email: user.email, displayName: user.displayName },
+    });
+  });
+
+  app.post("/api/auth/logout", async (c) => {
+    const token = readAccountToken(c.req.header("cookie"));
+    if (token) {
+      const identity = await container.authProvider.verifySessionToken(token);
+      if (identity.ok) await container.authProvider.revokeUserSessions(identity.value.userId);
+    }
+    const response = okJson(container, { ok: true });
+    const headers = new Headers(response.headers);
+    headers.append("set-cookie", clearAccountCookie());
+    return new Response(response.body, { status: response.status, headers });
   });
 
   app.post("/api/auth/callback", async (c) => {
@@ -95,6 +127,77 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
     const created = await new CreateTeam(deps).execute({ name: parsed.value.name, creatorUserId: user.id });
     if (!created.ok) return fail(container, created.error);
     return okJson(container, { teamId: created.value.teamId, role: created.value.role }, 201);
+  });
+
+  app.patch("/api/teams/:id", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const parsed = await parseBody(c, teamSchema);
+    if (!parsed.ok) return fail(container, parsed.error);
+    const result = await new RenameTeam(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id, name: parsed.value.name });
+    return result.ok ? okJson(container, result.value) : fail(container, result.error);
+  });
+
+  app.delete("/api/teams/:id", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new DeleteTeam(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id });
+    return result.ok ? okJson(container, result.value) : fail(container, result.error);
+  });
+
+  app.post("/api/teams/:id/members", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const parsed = await parseBody(c, memberSchema);
+    if (!parsed.ok) return fail(container, parsed.error);
+    const result = await new AddTeamMember(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id, email: parsed.value.email });
+    return result.ok ? okJson(container, result.value, 201) : fail(container, result.error);
+  });
+
+  app.delete("/api/teams/:id/members/:userId", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new RemoveMember(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id, memberUserId: c.req.param("userId") });
+    return result.ok ? okJson(container, result.value) : fail(container, result.error);
+  });
+
+  app.post("/api/teams/:id/invites", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new CreateInvite(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id, role: "dev" });
+    if (!result.ok) return fail(container, result.error);
+    const link = `${container.env.PUBLIC_APP_URL}/teams?invite=${encodeURIComponent(result.value.token)}`;
+    return okJson(container, { link, expiresAt: result.value.expiresAt }, 201);
+  });
+
+  app.post("/api/invites/accept", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const parsed = await parseBody(c, inviteSchema);
+    if (!parsed.ok) return fail(container, parsed.error);
+    const result = await new AcceptInvite(deps).execute({ token: parsed.value.token, userId: user.id });
+    return result.ok ? okJson(container, result.value) : fail(container, result.error);
+  });
+
+  app.get("/api/teams/:id/tasks", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new ListTeamTasks(deps).execute({ teamId: c.req.param("id"), actorUserId: user.id });
+    return result.ok ? okJson(container, { tasks: result.value }) : fail(container, result.error);
+  });
+
+  app.post("/api/teams/:id/tasks", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const parsed = await parseBody(c, taskSchema);
+    if (!parsed.ok) return fail(container, parsed.error);
+    const result = await new CreateTeamTask(deps).execute({
+      teamId: c.req.param("id"),
+      actorUserId: user.id,
+      title: parsed.value.title,
+      sprintName: parsed.value.sprintName ?? "",
+    });
+    return result.ok ? okJson(container, result.value, 201) : fail(container, result.error);
   });
 
   app.post("/api/teams/:id/sprints", async (c) => {
@@ -283,29 +386,8 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
   });
 }
 
-function dependenciesOf(container: AppContainer): UseCaseDependencies {
-  return {
-    persistence: container.persistence,
-    realtime: container.realtime,
-    ids: container.idGenerator,
-    clock: container.clock,
-    rateLimiter: container.rateLimiter,
-    issueTracker: container.issueTracker,
-    exporter: container.exporter,
-    logger: container.logger,
-  };
-}
-
 async function sessionUser(c: Context, container: AppContainer): Promise<PersistedUserRecord | null> {
-  const token = readSessionToken(c.req.header("cookie"));
-  if (!token) return null;
-  const identity = await container.authProvider.verifySessionToken(token);
-  if (!identity.ok) return null;
-  const userId = UserId.create(identity.value.userId);
-  if (!userId.ok) return null;
-  const loaded = await container.persistence.transaction({}, async (repos) => ok(await repos.users.findById(userId.value)));
-  if (!loaded.ok) return null;
-  return loaded.value;
+  return accountUser(c, container);
 }
 
 function issuedSessionToken(auth: AuthProvider): string {
@@ -337,7 +419,7 @@ function okJson(container: AppContainer, body: unknown, status = 200): Response 
 function jsonWithSession(container: AppContainer, body: unknown, token: string): Response {
   const response = okJson(container, body);
   const headers = new Headers(response.headers);
-  headers.append("set-cookie", guestSessionCookie(token));
+  headers.append("set-cookie", accountSessionCookie(token));
   return new Response(response.body, { status: response.status, headers });
 }
 

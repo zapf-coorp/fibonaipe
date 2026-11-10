@@ -17,6 +17,7 @@ import type {
   PersistedRoomRecord,
   PersistedSprintRecord,
   PersistedTeamRecord,
+  PersistedTeamTaskRecord,
   PersistedUserRecord,
   RoomRepository,
   TransactionOptions,
@@ -75,6 +76,13 @@ CREATE TABLE IF NOT EXISTS sprints (
   state_json TEXT
 );
 CREATE TABLE IF NOT EXISTS holidays (id TEXT PRIMARY KEY, team_id TEXT NOT NULL, date TEXT NOT NULL, name TEXT NOT NULL, UNIQUE(team_id, date));
+CREATE TABLE IF NOT EXISTS team_tasks (
+  id TEXT PRIMARY KEY,
+  team_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  sprint_name TEXT NOT NULL,
+  task_number INTEGER NOT NULL
+);
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL,
@@ -87,6 +95,7 @@ interface MemoryStore {
   rooms: Map<string, PersistedRoomRecord>;
   idempotency: Map<string, IdempotencyRecord>;
   teams: Map<string, PersistedTeamRecord>;
+  teamTasks: Map<string, PersistedTeamTaskRecord>;
   memberships: Map<string, PersistedMembershipRecord>;
   invites: Map<string, PersistedInviteRecord>;
   history: Map<string, AggregatedHistoryRecord>;
@@ -101,6 +110,7 @@ interface DirtySet {
   deletedRooms: Set<string>;
   idempotency: Set<string>;
   teams: Set<string>;
+  teamTasks: Set<string>;
   memberships: Set<string>;
   invites: Set<string>;
   history: Set<string>;
@@ -204,6 +214,16 @@ class SqlitePersistenceStore implements Persistence {
       const record = teamFromRow(row);
       store.teams.set(record.id, record);
     }
+    for (const row of asRecords(this.statements.teamTasksAll.all())) {
+      const task = {
+        id: text(row, "id"),
+        teamId: text(row, "team_id") as TeamId,
+        title: text(row, "title"),
+        sprintName: text(row, "sprint_name"),
+        number: integer(row, "task_number"),
+      };
+      store.teamTasks.set(task.id, task);
+    }
     for (const row of asRecords(this.statements.membershipsAll.all())) {
       const record = membershipFromRow(row);
       store.memberships.set(membershipKey(record.userId, record.teamId), record);
@@ -277,6 +297,11 @@ class SqlitePersistenceStore implements Persistence {
         if (team) this.statements.upsertTeam.run(team.id, team.name, team.organizationId ?? "org-mvp");
         else this.statements.deleteTeam.run(id);
       }
+      for (const id of dirty.teamTasks) {
+        const task = working.teamTasks.get(id);
+        if (task) this.statements.upsertTeamTask.run(task.id, task.teamId, task.title, task.sprintName, task.number);
+        else this.statements.deleteTeamTask.run(id);
+      }
       for (const key of dirty.memberships) {
         const membership = working.memberships.get(key);
         if (membership) this.statements.upsertMembership.run(membership.userId, membership.teamId, membership.role);
@@ -344,6 +369,9 @@ interface Statements {
   teamsAll: SqliteStatement;
   upsertTeam: SqliteStatement;
   deleteTeam: SqliteStatement;
+  teamTasksAll: SqliteStatement;
+  upsertTeamTask: SqliteStatement;
+  deleteTeamTask: SqliteStatement;
   membershipsAll: SqliteStatement;
   upsertMembership: SqliteStatement;
   deleteMembership: SqliteStatement;
@@ -412,6 +440,12 @@ function prepare(db: DatabaseSync): Statements {
          from_label = excluded.from_label,
          to_label = excluded.to_label`,
     ),
+    teamTasksAll: db.prepare("SELECT id, team_id, title, sprint_name, task_number FROM team_tasks"),
+    upsertTeamTask: db.prepare(
+      `INSERT INTO team_tasks (id, team_id, title, sprint_name, task_number) VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, title = excluded.title, sprint_name = excluded.sprint_name, task_number = excluded.task_number`,
+    ),
+    deleteTeamTask: db.prepare("DELETE FROM team_tasks WHERE id = ?"),
     teamsAll: db.prepare("SELECT id, name, organization_id FROM teams"),
     upsertTeam: db.prepare(
       `INSERT INTO teams (id, name, organization_id) VALUES (?, ?, ?)
@@ -535,6 +569,26 @@ function createRepos(
       async delete(id) {
         working.teams.delete(id);
         dirty.teams.add(id);
+      },
+    },
+    teamTasks: {
+      async listByTeam(teamId) {
+        return [...working.teamTasks.values()].filter((task) => task.teamId === teamId).map(cloneData);
+      },
+      async save(task) {
+        working.teamTasks.set(task.id, cloneData(task));
+        dirty.teamTasks.add(task.id);
+      },
+      async delete(id) {
+        working.teamTasks.delete(id);
+        dirty.teamTasks.add(id);
+      },
+      async deleteByTeam(teamId) {
+        for (const [id, task] of [...working.teamTasks]) {
+          if (task.teamId !== teamId) continue;
+          working.teamTasks.delete(id);
+          dirty.teamTasks.add(id);
+        }
       },
     },
     memberships: membershipRepos(working, dirty),
@@ -905,6 +959,7 @@ function emptyStore(): MemoryStore {
     rooms: new Map(),
     idempotency: new Map(),
     teams: new Map(),
+    teamTasks: new Map(),
     memberships: new Map(),
     invites: new Map(),
     history: new Map(),
@@ -921,6 +976,7 @@ function emptyDirty(): DirtySet {
     deletedRooms: new Set(),
     idempotency: new Set(),
     teams: new Set(),
+    teamTasks: new Set(),
     memberships: new Set(),
     invites: new Set(),
     history: new Set(),

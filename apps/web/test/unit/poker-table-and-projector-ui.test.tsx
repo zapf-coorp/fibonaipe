@@ -160,7 +160,7 @@ function permissions(kind: "host" | "voter" | "observer" | "screen"): Record<str
     hostRoom: false,
   };
   if (kind === "host") {
-    return { ...none, vote: true, revealRound: true, setFinalEstimate: true, manageQueue: true, updateRoomSettings: true, hostRoom: true };
+    return { ...none, vote: true, revealRound: true, setFinalEstimate: true, manageQueue: true, updateRoomSettings: true, hostRoom: true, exportOwnRoomSummary: true };
   }
   if (kind === "voter") return { ...none, vote: true };
   return none;
@@ -319,7 +319,8 @@ function assertTouchTarget(element: Element): void {
 function clickHostAction(name: string): void {
   const ready = screen.queryByRole("button", { name });
   if (!ready) {
-    const profile = screen.getByRole("button", { name: /Na mesa|Fora da mesa/ });
+    const profile = document.querySelector("[aria-controls='profile-menu']");
+    if (!(profile instanceof HTMLElement)) throw new Error("missing profile");
     if (profile.getAttribute("aria-expanded") !== "true") fireEvent.click(profile);
   }
   fireEvent.click(screen.getByRole("button", { name }));

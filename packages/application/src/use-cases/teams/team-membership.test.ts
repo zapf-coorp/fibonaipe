@@ -112,9 +112,8 @@ describe("team membership", () => {
       memberUserId: admin.userId,
     });
     expect(removed.ok).toBe(false);
-    if (removed.ok) throw new Error("expected LAST_ADMIN");
-    expect(removed.error.code).toBe("LAST_ADMIN");
-    expect(removed.error.messageKey).toBe("errors.LAST_ADMIN");
+    if (removed.ok) throw new Error("expected FORBIDDEN");
+    expect(removed.error.code).toBe("FORBIDDEN");
   });
 
   it("returns FORBIDDEN when a member without manageTeam changes a role", async () => {

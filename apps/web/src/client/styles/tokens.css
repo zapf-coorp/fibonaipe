@@ -1,21 +1,41 @@
+/*
+  Light theme is the default. Dark overrides only what changes.
+  Space, type, radius, and motion stay here so every screen shares one scale.
+*/
 :root,
 [data-theme="light"] {
+  /* Surfaces */
   --bg-canvas: #f3ead2;
   --bg-surface: #fff8e6;
   --bg-elevated: #e7d7b0;
   --bg-overlay: rgba(26, 23, 56, 0.72);
   --bg-table-felt: #e7d7b0;
-  --border-table-rim: #0b0918;
+  --card-face: #f4ecd8;
+  --card-dark: #241f45;
+  --grid-line: rgba(14, 116, 144, 0.35);
+
+  /* Text */
   --text-primary: #1a1738;
   --text-secondary: #2a2650;
   --text-muted: #4a4570;
   --text-on-accent: #1a1738;
+  --ink: #0b0918;
+  --title-red: #c81e32;
+  --mystery: #ff4fa3;
+
+  /* Lines and accent */
   --border-subtle: #1a1738;
   --border-control: #0b0918;
+  --border-table-rim: #0b0918;
   --accent-primary: #e2b657;
   --accent-primary-hover: #f0cc74;
   --accent-primary-subtle: #f7e7bf;
+  --ribbon: #e2b657;
   --focus-ring: #0e7490;
+  --stroke: 3px solid var(--ink);
+  --stroke-thin: 2px solid var(--ink);
+
+  /* Status */
   --status-success-fg: #3f6212;
   --status-success-bg: #ecfccb;
   --status-success-border: #65a30d;
@@ -25,6 +45,10 @@
   --status-danger-fg: #9f1239;
   --status-danger-bg: #fde2e4;
   --status-danger-border: #e23b4a;
+  --presence-off: #3a3358;
+  --presence-on: #3ddc97;
+
+  /* Suits: foreground, fill, border */
   --suit-clubs-fg: #9f1239;
   --suit-clubs-bg: #fde2e4;
   --suit-clubs-border: #e23b4a;
@@ -40,6 +64,8 @@
   --suit-joker-fg: #1a1738;
   --suit-joker-bg: #efe6ff;
   --suit-joker-border: #6d28d9;
+
+  /* Face-card tags */
   --tag-ace-fg: #3730a3;
   --tag-ace-bg: #e0e7ff;
   --tag-king-fg: #6b21a8;
@@ -48,16 +74,13 @@
   --tag-queen-bg: #fce7f3;
   --tag-jack-fg: #115e59;
   --tag-jack-bg: #ccfbf1;
+
+  /* Type */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Silkscreen", ui-monospace, SFMono-Regular, Consolas, monospace;
   --font-display: "Silkscreen", ui-monospace, SFMono-Regular, Consolas, monospace;
-  --ink: #0b0918;
-  --card-face: #f4ecd8;
-  --card-dark: #241f45;
-  --ribbon: #e2b657;
-  --title-red: #c81e32;
-  --mystery: #ff4fa3;
-  --grid-line: rgba(14, 116, 144, 0.35);
+
+  /* Space. 1rem follows the 95% root in global.css. Touch targets stay 44px. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -66,20 +89,28 @@
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-10: 2.5rem;
-  --touch-min: 2.75rem;
+  --touch-min: 44px;
+
+  /* Shape */
   --radius-sm: 4px;
   --radius-md: 4px;
   --radius-lg: 8px;
   --radius-pill: 4px;
+
+  /* Motion */
   --dur-instant: 90ms;
   --dur-state: 180ms;
   --dur-reveal: 320ms;
   --dur-reveal-cap: 450ms;
   --ease-out-fast: ease-out;
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Elevation */
   --shadow-card: 4px 4px 0 #0b0918;
   --shadow-card-selected: 4px 4px 0 #0e7490;
   --shadow-modal: 6px 6px 0 #0b0918;
+  --shadow-stamp: 3px 3px 0 var(--ink);
+  --shadow-tight: 2px 2px 0 var(--ink);
 }
 
 [data-theme="dark"] {
@@ -88,17 +119,21 @@
   --bg-elevated: #2e2858;
   --bg-overlay: rgba(11, 9, 24, 0.78);
   --bg-table-felt: #14122e;
-  --border-table-rim: #3ec8e0;
+  --grid-line: rgba(62, 200, 224, 0.55);
+
   --text-primary: #f4ecd8;
   --text-secondary: #e7dcc4;
   --text-muted: #c4b89a;
   --text-on-accent: #1a1738;
+
   --border-subtle: #3a3468;
   --border-control: #f4ecd8;
+  --border-table-rim: #3ec8e0;
   --accent-primary: #e2b657;
   --accent-primary-hover: #f0cc74;
   --accent-primary-subtle: #3a3018;
   --focus-ring: #3ec8e0;
+
   --status-success-fg: #d9f99d;
   --status-success-bg: #1a2e10;
   --status-success-border: #84cc16;
@@ -108,6 +143,7 @@
   --status-danger-fg: #ff8b96;
   --status-danger-bg: #3a1020;
   --status-danger-border: #e23b4a;
+
   --suit-clubs-fg: #ff8b96;
   --suit-clubs-bg: #3a1020;
   --suit-clubs-border: #e23b4a;
@@ -123,6 +159,7 @@
   --suit-joker-fg: #f4ecd8;
   --suit-joker-bg: #2a1848;
   --suit-joker-border: #e879f9;
+
   --tag-ace-fg: #a5b4fc;
   --tag-ace-bg: #1e1b4b;
   --tag-king-fg: #d8b4fe;
@@ -131,7 +168,7 @@
   --tag-queen-bg: #500724;
   --tag-jack-fg: #5eead4;
   --tag-jack-bg: #134e4a;
-  --grid-line: rgba(62, 200, 224, 0.55);
+
   --shadow-card: 4px 4px 0 #0b0918;
   --shadow-card-selected: 4px 4px 0 #3ec8e0;
   --shadow-modal: 6px 6px 0 #0b0918;

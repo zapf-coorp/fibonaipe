@@ -20,11 +20,14 @@ export interface CreateTeamRoomInput {
   readonly actorUserId: string;
   readonly name: string;
   readonly mode: ParticipantMode;
+  readonly hostNickname?: string;
 }
 
 export interface CreateTeamRoomResult {
   readonly allowGuests: true;
   readonly code: string;
+  readonly hostToken: string;
+  readonly participantId: string;
 }
 
 export class CreateTeamRoom {
@@ -44,6 +47,7 @@ export class CreateTeamRoom {
     if (!code.ok) return code;
     const scale = ScaleBuilder.fibonacci().withId("fibonacci").withName("Fibonacci").build();
     if (!scale.ok) return scale;
+    const hostToken = this.deps.ids.newToken();
     const built = new RoomBuilder()
       .withId(roomId.value)
       .withCode(code.value)
@@ -54,11 +58,11 @@ export class CreateTeamRoom {
       .withSettings(defaultRoomSettings())
       .withHost({
         id: participantId.value,
-        nickname: "Host",
-        role: "teamAdmin",
+        nickname: input.hostNickname?.trim() || "Host",
+        role: allowed.value.members.find((member) => member.userId === actorUserId.value)?.role ?? "teamAdmin",
         mode: input.mode,
         userId: actorUserId.value,
-        guestSessionId: this.deps.ids.sha256(this.deps.ids.newToken()),
+        guestSessionId: this.deps.ids.sha256(hostToken),
         joinedAt: now,
         lastSeenAt: now,
       })
@@ -78,7 +82,7 @@ export class CreateTeamRoom {
       kind: "done",
       roomId: roomId.value,
       events: [participantJoined(roomId.value, 1, now.toISOString(), participantId.value)],
-      value: { allowGuests: true, code: code.value },
+      value: { allowGuests: true, code: code.value, hostToken, participantId: participantId.value },
     });
   }
 }

@@ -14,7 +14,7 @@
   padding: var(--space-3);
   color: var(--ink);
   background: var(--card-face);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   box-shadow: var(--shadow-card);
 }
 
@@ -30,13 +30,13 @@
 .table li {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
   min-height: var(--touch-min);
-  align-items: center;
   padding: var(--space-2) var(--space-3);
   color: var(--ink);
   background: var(--card-face);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   box-shadow: var(--shadow-card);
 }
 
@@ -69,7 +69,7 @@
   height: 13rem;
   min-height: 13rem;
   padding: var(--space-2);
-  border: 3px solid var(--ink);
+  border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
   font-family: var(--font-display);

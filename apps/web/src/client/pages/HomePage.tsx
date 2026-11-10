@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { loadTeams, useAccount, type AccountTeam } from "../../features/auth/account.js";
 import { QrCode } from "../components/share/QrCode.js";
 import { nextClientOpId } from "../connection/outbox.js";
 import { useI18n, type TranslationKey } from "../i18n/index.js";
@@ -33,6 +34,23 @@ export function HomePage() {
   const [average, setAverage] = useState(true);
   const [createdCode, setCreatedCode] = useState("");
   const [qrOpen, setQrOpen] = useState(false);
+  const [teamName, setTeamName] = useState("");
+  const [teamId, setTeamId] = useState("");
+  const [teams, setTeams] = useState<readonly AccountTeam[]>([]);
+  const { user, ready } = useAccount();
+
+  useEffect(() => {
+    if (!user) {
+      setTeams([]);
+      setTeamId("");
+      return;
+    }
+    void loadTeams().then((rows) => {
+      setTeams(rows);
+      const first = rows[0];
+      if (rows.length === 1 && first) setTeamId(first.teamId);
+    });
+  }, [user]);
 
   if (phase === "share") {
     const href = `/r/${createdCode}`;
@@ -86,6 +104,35 @@ export function HomePage() {
             onChange={(event) => setHostName(event.target.value)}
             style={touchTargetStyle}
           />
+          {ready && user && teams.length === 0 ? (
+            <>
+              <p>{t("create.savedRoom")}</p>
+              <label htmlFor="team-name">{t("create.teamName")}</label>
+              <input
+                id="team-name"
+                aria-label={t("create.teamName")}
+                value={teamName}
+                onChange={(event) => setTeamName(event.target.value)}
+                style={touchTargetStyle}
+              />
+            </>
+          ) : null}
+          {ready && user && teams.length > 1 ? (
+            <>
+              <label htmlFor="team-id">{t("create.teamName")}</label>
+              <select
+                id="team-id"
+                aria-label={t("create.teamName")}
+                value={teamId}
+                style={touchTargetStyle}
+                onChange={(event) => setTeamId(event.target.value)}
+              >
+                {teams.map((team) => (
+                  <option key={team.teamId} value={team.teamId}>{team.name}</option>
+                ))}
+              </select>
+            </>
+          ) : null}
           <label htmlFor="room-name">{t("create.roomName")}</label>
           <input
             id="room-name"
@@ -158,6 +205,8 @@ export function HomePage() {
               void createRoom({
                 name,
                 hostName,
+                teamId: user ? teamId : "",
+                teamName: user && teams.length === 0 ? teamName : "",
                 suitAxisEnabled: suit,
                 autoReveal,
                 timerSeconds: timer,
@@ -269,6 +318,8 @@ export function HomePage() {
 async function createRoom(input: {
   readonly name: string;
   readonly hostName: string;
+  readonly teamId: string;
+  readonly teamName: string;
   readonly suitAxisEnabled: boolean;
   readonly autoReveal: boolean;
   readonly timerSeconds: number;
@@ -278,7 +329,12 @@ async function createRoom(input: {
     method: "POST",
     credentials: "include",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name: input.name, hostNickname: input.hostName.trim() || "Convidado" }),
+    body: JSON.stringify({
+      name: input.name,
+      hostNickname: input.hostName.trim() || "Convidado",
+      ...(input.teamId ? { teamId: input.teamId } : {}),
+      ...(input.teamName.trim() ? { teamName: input.teamName.trim() } : {}),
+    }),
   });
   if (!response.ok) return null;
   const body = (await response.json()) as { code?: string };

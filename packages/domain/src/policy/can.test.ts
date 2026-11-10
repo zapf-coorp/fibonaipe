@@ -166,8 +166,9 @@ function allowed(seat: Seat, action: Action, flags: Flags): boolean {
     case "createTeamRoom":
       return seat === "superAdmin" || seat === "teamAdmin" || seat === "pm" || seat === "po";
     case "createGuestRoom":
-    case "exportOwnRoomSummary":
       return true;
+    case "exportOwnRoomSummary":
+      return seat !== "guest";
     case "hostRoom":
       if (flags.isHost) return true;
       if (seat === "guest") return flags.actorCreatedRoom;
@@ -253,7 +254,7 @@ describe("can matrix rows", () => {
     expect(row("teamObserver", "viewDashboard", "voter who is not host in a team room").allowed).toBe(true);
     expect(row("teamObserver", "exportTeamData", "voter who is not host in a team room").allowed).toBe(false);
     expect(row("guest", "viewDashboard", "created the guest room").allowed).toBe(false);
-    expect(row("guest", "exportOwnRoomSummary", "did not create the guest room").allowed).toBe(true);
+    expect(row("guest", "exportOwnRoomSummary", "did not create the guest room").allowed).toBe(false);
     expect(row("qa", "exportTeamData", "observer mode in a team room").allowed).toBe(true);
   });
 });

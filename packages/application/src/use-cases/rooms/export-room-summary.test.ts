@@ -4,11 +4,11 @@ import { CastVote, RevealRound, SetFinalEstimate } from "../voting/voting-comman
 import { CreateRoom } from "./create-room.js";
 import { JoinRoom } from "./join-room.js";
 import { ExportRoomSummary } from "./export-room-summary.js";
-import { asOk, asView, createPorts, hasIndividualVote, readHistory, readRoomByCode } from "../__tests__/harness.js";
+import { asOk, asView, createPorts, readHistory, readRoomByCode } from "../__tests__/harness.js";
 import { GetRoomSnapshot } from "./room-commands.js";
 
 describe("ExportRoomSummary", () => {
-  it("exports guest items, the final estimate, and round aggregates without individual votes or team history", async () => {
+  it("keeps guest estimates out of history and refuses the guest export", async () => {
     const ports = createPorts();
     const created = asOk(
       await new CreateRoom(ports.deps).execute({
@@ -84,22 +84,13 @@ describe("ExportRoomSummary", () => {
     expect(await readHistory(ports.store, stored.id)).toEqual([]);
 
     const exporter = new ExportRoomSummary(ports.deps);
-    const json = asOk(
-      await exporter.execute({ code: created.code, participantId: bea.participantId, format: "json" }),
-    );
-    const csv = asOk(
-      await exporter.execute({ code: created.code, participantId: created.participantId, format: "csv" }),
-    );
-    expect(json.mimeType).toContain("json");
-    expect(csv.mimeType).toContain("csv");
-    expect(json.content).toContain("Bridge work");
-    expect(json.content).toContain("21");
-    expect(json.content).toContain("10.5");
-    expect(json.content).not.toContain("secret-note");
-    expect(hasIndividualVote(JSON.parse(json.content))).toBe(false);
-    expect(csv.content).toContain("Bridge work");
-    expect(csv.content).toContain("21");
-    expect(csv.content).not.toContain("secret-note");
+    const json = await exporter.execute({ code: created.code, participantId: bea.participantId, format: "json" });
+    const csv = await exporter.execute({ code: created.code, participantId: created.participantId, format: "csv" });
+    expect(json.ok).toBe(false);
+    expect(csv.ok).toBe(false);
+    if (json.ok || csv.ok) throw new Error("guest export should be refused");
+    expect(json.error.code).toBe("FORBIDDEN");
+    expect(csv.error.code).toBe("FORBIDDEN");
     expect(JSON.stringify(ports.logArgs)).not.toContain("secret-note");
     expect(ports.logs.forbiddenKeys()).toEqual([]);
   });

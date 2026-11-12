@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { TaskLine } from "../../client/components/task-line/TaskLine.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
 import { loadTeams, useAccount, type AccountTeam } from "../auth/account.js";
@@ -98,13 +99,7 @@ export function QueueDrawer({
             const pending = item.status === "pending";
             return (
               <li key={item.id} aria-label={item.title} className={styles.row}>
-                {item.link && isHttp(item.link) ? (
-                  <a href={item.link} rel="noopener noreferrer" target="_blank">
-                    {item.title}
-                  </a>
-                ) : (
-                  <span>{item.title}</span>
-                )}
+                <TaskLine title={item.title} href={item.link && isHttp(item.link) ? item.link : undefined} />
                 {pending && index > 0 ? (
                   <button
                     type="button"

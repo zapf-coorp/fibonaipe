@@ -1,0 +1,41 @@
+.line {
+  display: flex;
+  flex: 1 1 12rem;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+  background: var(--card-face);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-stamp);
+}
+
+.sprint {
+  flex: 0 0 auto;
+  max-width: 40%;
+  padding: 0.2rem 0.55rem;
+  overflow: hidden;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ribbon) 35%, var(--card-face));
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-tight);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  overflow-wrap: anywhere;
+}
+
+a.title {
+  text-underline-offset: 0.15em;
+}

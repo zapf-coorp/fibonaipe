@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { CommitTagField } from "../../client/components/commit-tag/CommitTagField.js";
+import { TaskLine } from "../../client/components/task-line/TaskLine.js";
 import { beginErrorFlash, showErrorFlash } from "../../client/error-flash.js";
 import { useI18n, type TranslationKey } from "../../client/i18n/index.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
@@ -406,8 +408,6 @@ function TasksModal({
   const { t } = useI18n();
   const [tasks, setTasks] = useState<readonly TaskRow[]>([]);
   const [sprint, setSprint] = useState("");
-  const [sprintQuery, setSprintQuery] = useState("");
-  const [sprintOpen, setSprintOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [filter, setFilter] = useState("");
@@ -443,32 +443,11 @@ function TasksModal({
   }, [team.teamId, version]);
 
   const sprintNames = [...new Set(tasks.map((task) => task.sprintName).filter((name) => name.length > 0))];
-  const typed = sprintQuery.trim();
-  const folded = typed.toLowerCase();
-  const matches = sprintNames.filter((name) => folded.length === 0 || name.toLowerCase().includes(folded));
-  const exact = sprintNames.find((name) => name.toLowerCase() === folded);
-
-  function chooseSprint(name: string) {
-    setSprint(name);
-    setSprintQuery("");
-    setSprintOpen(false);
-  }
-
-  function sprintForTask(): string | null {
-    if (typed.length === 0) return sprint;
-    if (exact) return exact;
-    if (matches.length === 1) return matches[0] ?? typed;
-    if (matches.length === 0) return typed;
-    return null;
-  }
 
   async function addTask(event: FormEvent) {
     event.preventDefault();
-    const sprintName = sprintForTask();
-    if (sprintName === null) {
-      setSprintOpen(true);
-      return;
-    }
+    const sprintName = sprint.trim();
+    if (sprintName.length === 0) return;
     const nextLink = link.trim();
     if (nextLink && !isHttp(nextLink)) {
       showErrorFlash(beginErrorFlash());
@@ -485,7 +464,6 @@ function TasksModal({
     else {
       setTitle("");
       setLink("");
-      setSprintQuery("");
       setSprint(sprintName);
       setVersion((current) => current + 1);
     }
@@ -501,7 +479,7 @@ function TasksModal({
   }
 
   return (
-    <Modal titleId={titleId} title={t("teams.tasksOf", { name: team.name })} onClose={onClose}>
+    <Modal titleId={titleId} title={t("teams.tasksOf", { name: team.name })} onClose={onClose} grow>
       <input
         aria-label={t("teams.filter")}
         placeholder={t("teams.filter")}
@@ -509,51 +487,14 @@ function TasksModal({
         onChange={(event) => setFilter(event.target.value)}
       />
       <form className={styles.taskRow} onSubmit={(event) => { void addTask(event); }}>
-        <div className={styles.sprintField}>
-          {sprint ? (
-            <button type="button" className={styles.tag} onClick={() => setSprint("")}>
-              {sprint}
-            </button>
-          ) : null}
-          <input
-            aria-label={t("teams.sprintHint")}
-            placeholder={sprint || t("teams.sprintHint")}
-            maxLength={80}
-            value={sprintQuery}
-            onFocus={() => setSprintOpen(true)}
-            onBlur={() => setSprintOpen(false)}
-            onChange={(event) => {
-              setSprint("");
-              setSprintQuery(event.target.value);
-              setSprintOpen(true);
-            }}
-            onKeyDown={(event) => {
-              if (event.key !== "Enter" || typed.length === 0) return;
-              const chosen = sprintForTask();
-              if (chosen === null) return;
-              event.preventDefault();
-              chooseSprint(chosen);
-            }}
-          />
-          {sprintOpen && typed.length > 0 && (matches.length > 0 || !exact) ? (
-            <ul className={styles.suggestions}>
-              {matches.map((name) => (
-                <li key={name}>
-                  <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => chooseSprint(name)}>
-                    {name}
-                  </button>
-                </li>
-              ))}
-              {!exact && matches.length === 0 ? (
-                <li>
-                  <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => chooseSprint(typed)}>
-                    {t("teams.addSprint", { name: typed })}
-                  </button>
-                </li>
-              ) : null}
-            </ul>
-          ) : null}
-        </div>
+        <CommitTagField
+          value={sprint}
+          onChange={setSprint}
+          suggestions={sprintNames}
+          label={t("teams.sprintHint")}
+          placeholder={t("teams.sprintHint")}
+          addLabel={(name) => t("teams.addSprint", { name })}
+        />
         <span aria-hidden="true">-</span>
         <input
           aria-label={t("teams.taskHint")}
@@ -576,17 +517,12 @@ function TasksModal({
       </form>
       <ul className={styles.plainList}>
         {visible.map((task) => (
-          <li key={task.id} className={styles.taskLine}>
-            {task.link && isHttp(task.link) ? (
-              <a href={task.link} rel="noopener noreferrer" target="_blank">
-                {task.sprintName.length > 0 ? `${task.sprintName} - ${task.title}` : task.title}
-              </a>
-            ) : (
-              <span>{task.sprintName.length > 0 ? `${task.sprintName} - ${task.title}` : task.title}</span>
-            )}
-            <button type="button" className={styles.iconButton} style={touchTargetStyle} aria-label={t("teams.remove")} onClick={() => { void removeTask(task.id); }}>
-              <CloseIcon />
-            </button>
+          <li key={task.id}>
+            <TaskLine sprintName={task.sprintName} title={task.title} href={task.link && isHttp(task.link) ? task.link : undefined}>
+              <button type="button" className={styles.iconButton} style={touchTargetStyle} aria-label={t("teams.remove")} onClick={() => { void removeTask(task.id); }}>
+                <CloseIcon />
+              </button>
+            </TaskLine>
           </li>
         ))}
       </ul>
@@ -598,11 +534,13 @@ function Modal({
   titleId,
   title,
   onClose,
+  grow = false,
   children,
 }: {
   readonly titleId: string;
   readonly title: string;
   readonly onClose: () => void;
+  readonly grow?: boolean;
   readonly children: ReactNode;
 }) {
   const { t } = useI18n();
@@ -614,12 +552,12 @@ function Modal({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={grow ? styles.overlayGrow : styles.overlay} onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={styles.dialog}
+        className={grow ? `${styles.dialog} ${styles.dialogGrow}` : styles.dialog}
         onClick={(event) => event.stopPropagation()}
       >
         <header className={styles.dialogHead}>

@@ -1,64 +1,50 @@
 # Community 38
 
-> 26 nodes · cohesion 0.12
+> 15 nodes · cohesion 0.20
 
 ## Key Concepts
 
-- **warn()** (21 connections) — `packages/application/src/use-cases/room-session.ts`
-- **export-room-summary.ts** (21 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **reconnect-participant.ts** (18 connections) — `packages/application/src/use-cases/rooms/reconnect-participant.ts`
-- **fake-exporter.ts** (13 connections) — `packages/testing/src/fakes/fake-exporter.ts`
-- **exporter.port.ts** (10 connections) — `packages/application/src/ports/exporter.port.ts`
-- **.execute()** (10 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **.execute()** (9 connections) — `packages/application/src/use-cases/rooms/reconnect-participant.ts`
-- **ExportArtifact** (8 connections) — `packages/application/src/ports/exporter.port.ts`
-- **readLoaded()** (8 connections) — `packages/application/src/use-cases/room-session.ts`
-- **.execute()** (7 connections) — `packages/application/src/use-cases/rooms/room-commands.ts`
-- **.exportCsv()** (7 connections) — `packages/testing/src/fakes/fake-exporter.ts`
-- **completeIdentity()** (6 connections) — `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- **persistSignedInUser()** (6 connections) — `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- **.exportJson()** (6 connections) — `packages/testing/src/fakes/fake-exporter.ts`
-- **JsonExportInput** (5 connections) — `packages/application/src/ports/exporter.port.ts`
-- **.execute()** (5 connections) — `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- **finishMutation()** (5 connections) — `packages/application/src/use-cases/room-session.ts`
-- **CsvExportInput** (4 connections) — `packages/application/src/ports/exporter.port.ts`
-- **LoadedRoom** (4 connections) — `packages/application/src/use-cases/room-session.ts`
-- **summaryOf()** (3 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **csvRows()** (2 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **ExportRoomSummaryInput** (2 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **formatCell()** (2 connections) — `packages/testing/src/fakes/fake-exporter.ts`
-- **SummaryItem** (1 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- **SummaryRound** (1 connections) — `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- *... and 1 more nodes in this community*
+- **item.ts** (27 connections) — `packages/domain/src/planning/item.ts`
+- **fake-issue-tracker.ts** (20 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **.build()** (10 connections) — `packages/domain/src/planning/item.ts`
+- **.importItems()** (10 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **MAX_ITEM_TITLE_LENGTH** (9 connections) — `packages/domain/src/shared/constants.ts`
+- **parseFigureTag()** (8 connections) — `packages/domain/src/scales/figure-tag.ts`
+- **MAX_ITEM_DESC_LENGTH** (8 connections) — `packages/domain/src/shared/constants.ts`
+- **itemsFromCsv()** (7 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **ItemStatus** (6 connections) — `packages/domain/src/planning/item.ts`
+- **validateTitle()** (6 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **titlesFromText()** (4 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **isHttpUrl()** (2 connections) — `packages/domain/src/planning/item.ts`
+- **isItemStatus()** (2 connections) — `packages/domain/src/planning/item.ts`
+- **splitRow()** (2 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
+- **ITEM_STATUSES** (1 connections) — `packages/domain/src/planning/item.ts`
 
 ## Relationships
 
-- [Community 4](Community_4.md) (25 shared connections)
-- [Community 16](Community_16.md) (11 shared connections)
-- [Community 11](Community_11.md) (11 shared connections)
-- [Community 9](Community_9.md) (10 shared connections)
-- [Community 8](Community_8.md) (10 shared connections)
-- [Community 7](Community_7.md) (8 shared connections)
-- [Community 2](Community_2.md) (7 shared connections)
-- [Community 1](Community_1.md) (4 shared connections)
-- [Community 61](Community_61.md) (4 shared connections)
-- [Community 10](Community_10.md) (4 shared connections)
-- [Community 39](Community_39.md) (4 shared connections)
+- [Community 8](Community_8.md) (22 shared connections)
+- [Community 5](Community_5.md) (15 shared connections)
+- [Community 4](Community_4.md) (8 shared connections)
+- [Community 9](Community_9.md) (6 shared connections)
+- [Community 27](Community_27.md) (4 shared connections)
+- [Community 3](Community_3.md) (4 shared connections)
+- [Community 2](Community_2.md) (3 shared connections)
+- [Community 69](Community_69.md) (3 shared connections)
+- [Community 22](Community_22.md) (2 shared connections)
+- [Community 14](Community_14.md) (2 shared connections)
+- [Community 66](Community_66.md) (2 shared connections)
 - [Community 0](Community_0.md) (2 shared connections)
 
 ## Source Files
 
-- `packages/application/src/ports/exporter.port.ts`
-- `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- `packages/application/src/use-cases/room-session.ts`
-- `packages/application/src/use-cases/rooms/export-room-summary.ts`
-- `packages/application/src/use-cases/rooms/reconnect-participant.ts`
-- `packages/application/src/use-cases/rooms/room-commands.ts`
-- `packages/testing/src/fakes/fake-exporter.ts`
+- `packages/domain/src/planning/item.ts`
+- `packages/domain/src/scales/figure-tag.ts`
+- `packages/domain/src/shared/constants.ts`
+- `packages/testing/src/fakes/fake-issue-tracker.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 147 (100%)
+- EXTRACTED: 101 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

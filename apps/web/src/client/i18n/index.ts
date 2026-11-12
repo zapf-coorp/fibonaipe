@@ -8,6 +8,9 @@ export const LOCALE_STORAGE_KEY = "fibonaipe.locale";
 
 export type SupportedLocale = "pt-BR" | "en-US" | "es-ES";
 
+/** Working language until en-US and es-ES are translated again. */
+export const ACTIVE_LOCALE: SupportedLocale = "pt-BR";
+
 type Catalog = typeof ptBR;
 
 type LeafKeys<T, Prefix extends string = ""> = {
@@ -26,24 +29,20 @@ const catalogs: Record<SupportedLocale, Catalog> = {
   "es-ES": esES as Catalog,
 };
 
-let currentLocale: SupportedLocale = "pt-BR";
+let currentLocale: SupportedLocale = ACTIVE_LOCALE;
 
 export function setCurrentLocale(locale: SupportedLocale): void {
-  currentLocale = locale;
-}
-
-function isSupportedLocale(value: string | null): value is SupportedLocale {
-  return value === "pt-BR" || value === "en-US" || value === "es-ES";
+  currentLocale = locale === ACTIVE_LOCALE ? locale : ACTIVE_LOCALE;
 }
 
 function readStoredLocale(): SupportedLocale {
   try {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (isSupportedLocale(stored)) return stored;
+    if (stored === ACTIVE_LOCALE) return ACTIVE_LOCALE;
   } catch {
-    return "pt-BR";
+    return ACTIVE_LOCALE;
   }
-  return "pt-BR";
+  return ACTIVE_LOCALE;
 }
 
 function lookup(locale: SupportedLocale, key: string): string | undefined {
@@ -99,14 +98,15 @@ export function I18nProvider({ children }: { readonly children: ReactNode }) {
   }
 
   const setLocale = useCallback((next: SupportedLocale) => {
-    currentLocale = next;
+    setCurrentLocale(next);
+    const locale = currentLocale;
     try {
-      localStorage.setItem(LOCALE_STORAGE_KEY, next);
+      localStorage.setItem(LOCALE_STORAGE_KEY, locale);
     } catch {
       // Quota or private mode must not block the language switch.
     }
-    document.documentElement.lang = next;
-    setLocaleState(next);
+    document.documentElement.lang = locale;
+    setLocaleState(locale);
   }, []);
 
   useLayoutEffect(() => {

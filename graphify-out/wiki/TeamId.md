@@ -2,7 +2,7 @@
 
 > God node · 87 connections · `packages/domain/src/shared/ids.ts`
 
-**Community:** [Community 22](Community_22.md)
+**Community:** [Community 88](Community_88.md)
 
 ## Connections by Relation
 

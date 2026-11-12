@@ -2,7 +2,7 @@
 
 > God node · 262 connections · `packages/domain/src/shared/result.ts`
 
-**Community:** [Community 11](Community_11.md)
+**Community:** [Community 8](Community_8.md)
 
 ## Connections by Relation
 

@@ -1,11 +1,10 @@
 # Community 30
 
-> 29 nodes · cohesion 0.11
+> 21 nodes · cohesion 0.18
 
 ## Key Concepts
 
 - **PlanningTable** (16 connections) — `packages/domain/src/planning/planning-table.test.ts`
-- **RoomSettingsBuilder** (14 connections) — `packages/domain/src/room/room-settings-builder.ts`
 - **reach()** (11 connections) — `packages/domain/src/planning/planning-table.test.ts`
 - **runCommand()** (8 connections) — `packages/domain/src/planning/planning-table.test.ts`
 - **currentTable()** (7 connections) — `packages/domain/src/planning/planning-table.test.ts`
@@ -26,30 +25,23 @@
 - **buildItem()** (3 connections) — `packages/domain/src/planning/planning-table.test.ts`
 - **open()** (2 connections) — `packages/domain/src/planning/planning-table.test.ts`
 - **.shouldAutoReveal()** (1 connections) — `packages/domain/src/planning/planning-table.test.ts`
-- **.withActiveScaleId()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
-- **.withAllowObserverComments()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
-- **.withAutoReveal()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
-- *... and 4 more nodes in this community*
 
 ## Relationships
 
 - [Community 4](Community_4.md) (21 shared connections)
-- [Community 3](Community_3.md) (13 shared connections)
-- [Community 19](Community_19.md) (2 shared connections)
-- [Community 10](Community_10.md) (2 shared connections)
+- [Community 3](Community_3.md) (12 shared connections)
 - [Community 31](Community_31.md) (1 shared connections)
-- [Community 1](Community_1.md) (1 shared connections)
-- [Community 8](Community_8.md) (1 shared connections)
+- [Community 92](Community_92.md) (1 shared connections)
+- [Community 19](Community_19.md) (1 shared connections)
 
 ## Source Files
 
 - `packages/domain/src/planning/planning-table.test.ts`
-- `packages/domain/src/room/room-settings-builder.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 74 (85%)
-- INFERRED: 13 (15%)
+- EXTRACTED: 61 (82%)
+- INFERRED: 13 (18%)
 - AMBIGUOUS: 0 (0%)
 
 ---

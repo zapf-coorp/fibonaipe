@@ -11,10 +11,10 @@
 - **.constructor()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 - **.exec()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 - **.prepare()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
-- **node:sqlite** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 - **.all()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 - **.get()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 - **.run()** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
+- **node:sqlite** (1 connections) — `packages/adapter-persistence-sqlite/src/node-sqlite.d.ts`
 
 ## Relationships
 

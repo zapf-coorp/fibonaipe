@@ -1,31 +1,34 @@
 # Community 92
 
-> 9 nodes · cohesion 0.22
+> 8 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **adapter-exporter-csvjson/package.json** (8 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **dependencies** (3 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **@fibonaipe/application@*** (2 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **@fibonaipe/domain@*** (2 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **exports** (1 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **name** (1 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **private** (1 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **type** (1 connections) — `packages/adapter-exporter-csvjson/package.json`
-- **version** (1 connections) — `packages/adapter-exporter-csvjson/package.json`
+- **RoomSettingsBuilder** (14 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withActiveScaleId()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withAllowObserverComments()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withAutoReveal()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withMaxParticipants()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withShowAverage()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withSuitAxis()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
+- **.withTimerSeconds()** (1 connections) — `packages/domain/src/room/room-settings-builder.ts`
 
 ## Relationships
 
-- [Community 87](Community_87.md) (2 shared connections)
-- [Community 89](Community_89.md) (2 shared connections)
+- [Community 9](Community_9.md) (2 shared connections)
+- [Community 30](Community_30.md) (1 shared connections)
+- [Community 3](Community_3.md) (1 shared connections)
+- [Community 5](Community_5.md) (1 shared connections)
+- [Community 31](Community_31.md) (1 shared connections)
+- [Community 8](Community_8.md) (1 shared connections)
 
 ## Source Files
 
-- `packages/adapter-exporter-csvjson/package.json`
+- `packages/domain/src/room/room-settings-builder.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 12 (100%)
+- EXTRACTED: 14 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

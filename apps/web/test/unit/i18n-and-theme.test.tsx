@@ -111,24 +111,20 @@ describe("shell locale catalogs", () => {
     expect(Object.keys(flattenCatalog(readJson(ES_ES))).length).toBeGreaterThan(0);
   });
 
-  it("keeps pt-BR, en-US, and es-ES on the same shell and error keys", () => {
-    const catalogs = [PT_BR, EN_US, ES_ES].map((path) => flattenCatalog(readJson(path)));
-    const [pt, en, es] = catalogs;
-    if (!pt || !en || !es) throw new Error("expected three catalogs");
+  it("keeps the working pt-BR catalog complete while en-US and es-ES stay frozen", () => {
+    const pt = flattenCatalog(readJson(PT_BR));
     const required = [...SHELL_KEYS, ...ERROR_KEYS];
     expect(ERROR_KEYS).toContain("errors.SERVICE_UNAVAILABLE");
     expect(ERROR_KEYS).toHaveLength(13);
-    expect(Object.keys(en).sort()).toEqual(Object.keys(pt).sort());
-    expect(Object.keys(es).sort()).toEqual(Object.keys(pt).sort());
-    for (const catalog of catalogs) {
-      for (const key of required) {
-        expect(catalog[key], key).toEqual(expect.any(String));
-        expect(catalog[key]?.trim().length, key).toBeGreaterThan(0);
-      }
-      for (const [key, value] of Object.entries(catalog)) {
-        expect(value.trim(), key).not.toBe("");
-      }
+    for (const key of required) {
+      expect(pt[key], key).toEqual(expect.any(String));
+      expect(pt[key]?.trim().length, key).toBeGreaterThan(0);
     }
+    for (const [key, value] of Object.entries(pt)) {
+      expect(value.trim(), key).not.toBe("");
+    }
+    expect(Object.keys(flattenCatalog(readJson(EN_US))).length).toBeGreaterThan(0);
+    expect(Object.keys(flattenCatalog(readJson(ES_ES))).length).toBeGreaterThan(0);
   });
 
   it("locks the pt-BR shell copy and locale endonyms", () => {
@@ -176,39 +172,26 @@ describe("t() and Intl formatters", () => {
     expect(t("announcements.themeChanged", { theme: "Escuro" })).toBe("Tema alterado para Escuro");
   });
 
-  it("formats one-decimal averages and two-decimal pace in pt-BR, en-US, and es-ES", () => {
+  it("formats one-decimal averages and two-decimal pace in pt-BR", () => {
     renderLocale();
     expect(screen.getByTestId("avg").textContent).toBe("5,4");
     expect(screen.getByTestId("pace").textContent).toBe("5,25");
     expect(screen.getByTestId("day").textContent).toBe(new Intl.DateTimeFormat("pt-BR", dayOptions).format(new Date(sampleDate)));
+    expect(formatNumber(5.4, oneDecimal)).toBe("5,4");
+    expect(formatDate(sampleDate, dayOptions)).toBe(new Intl.DateTimeFormat("pt-BR", dayOptions).format(new Date(sampleDate)));
 
     fireEvent.click(screen.getByRole("button", { name: "en-US" }));
-    expect(screen.getByTestId("locale").textContent).toBe("en-US");
-    expect(document.documentElement.lang).toBe("en-US");
-    expect(localStorage.getItem("fibonaipe.locale")).toBe("en-US");
-    expect(screen.getByTestId("avg").textContent).toBe("5.4");
-    expect(screen.getByTestId("pace").textContent).toBe("5.25");
-    expect(screen.getByTestId("day").textContent).toBe(new Intl.DateTimeFormat("en-US", dayOptions).format(new Date(sampleDate)));
-    expect(formatNumber(5.4, oneDecimal)).toBe("5.4");
-    expect(formatDate(sampleDate, dayOptions)).toBe(new Intl.DateTimeFormat("en-US", dayOptions).format(new Date(sampleDate)));
-    const enSkip = flattenCatalog(readJson(EN_US))["app.skipToMain"];
-    expect(screen.getByTestId("skip").textContent).toBe(enSkip);
-    expect(t("app.skipToMain")).toBe(enSkip);
-
-    fireEvent.click(screen.getByRole("button", { name: "es-ES" }));
-    expect(document.documentElement.lang).toBe("es-ES");
-    expect(localStorage.getItem("fibonaipe.locale")).toBe("es-ES");
-    expect(screen.getByTestId("avg").textContent).toBe("5,4");
-    expect(screen.getByTestId("pace").textContent).toBe("5,25");
-    expect(screen.getByTestId("day").textContent).toBe(new Intl.DateTimeFormat("es-ES", dayOptions).format(new Date(sampleDate)));
-    expect(screen.getByTestId("skip").textContent).toBe(flattenCatalog(readJson(ES_ES))["app.skipToMain"]);
+    expect(screen.getByTestId("locale").textContent).toBe("pt-BR");
+    expect(document.documentElement.lang).toBe("pt-BR");
+    expect(localStorage.getItem("fibonaipe.locale")).toBe("pt-BR");
+    expect(screen.getByTestId("skip").textContent).toBe("Pular para o conteúdo principal");
   });
 
   it("restores a stored locale and falls back to pt-BR when the stored value is unsupported", () => {
     localStorage.setItem("fibonaipe.locale", "en-US");
     const stored = renderLocale();
-    expect(screen.getByTestId("locale").textContent).toBe("en-US");
-    expect(screen.getByTestId("avg").textContent).toBe("5.4");
+    expect(screen.getByTestId("locale").textContent).toBe("pt-BR");
+    expect(screen.getByTestId("avg").textContent).toBe("5,4");
     stored.unmount();
 
     localStorage.setItem("fibonaipe.locale", "fr-FR");

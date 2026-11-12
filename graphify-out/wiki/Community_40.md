@@ -1,64 +1,46 @@
 # Community 40
 
-> 25 nodes · cohesion 0.16
+> 15 nodes · cohesion 0.23
 
 ## Key Concepts
 
-- **dev-auth.ts** (30 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **AppContainer** (22 connections) — `apps/web/src/server/composition.ts`
-- **session-cookie.ts** (15 connections) — `apps/web/src/server/session-cookie.ts`
-- **account-user.ts** (13 connections) — `apps/web/src/server/account-user.ts`
-- **registerDevAuthRoutes()** (13 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **readAccountToken()** (8 connections) — `apps/web/src/server/session-cookie.ts`
-- **accountUser()** (7 connections) — `apps/web/src/server/account-user.ts`
-- **dependencies.ts** (7 connections) — `apps/web/src/server/dependencies.ts`
-- **accountSessionCookie()** (6 connections) — `apps/web/src/server/session-cookie.ts`
-- **clearAccountCookie()** (6 connections) — `apps/web/src/server/session-cookie.ts`
-- **CompleteIdentitySignIn** (6 connections) — `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- **dependenciesOf()** (5 connections) — `apps/web/src/server/dependencies.ts`
-- **cookieLine()** (5 connections) — `apps/web/src/server/session-cookie.ts`
-- **jsonWithSession()** (4 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **okJson()** (4 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **guestSessionCookie()** (4 connections) — `apps/web/src/server/session-cookie.ts`
-- **readSessionToken()** (4 connections) — `apps/web/src/server/session-cookie.ts`
-- **sessionUser()** (3 connections) — `apps/web/src/server/routes/auth-teams.ts`
-- **fail()** (3 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **parseBody()** (3 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **readNamedCookie()** (3 connections) — `apps/web/src/server/session-cookie.ts`
-- **superAdminEmails()** (2 connections) — `apps/web/src/server/routes/dev-auth.ts`
-- **clearSessionCookie()** (2 connections) — `apps/web/src/server/session-cookie.ts`
-- **.constructor()** (2 connections) — `packages/application/src/use-cases/identity/complete-sign-in.ts`
-- **loginSchema** (1 connections) — `apps/web/src/server/routes/dev-auth.ts`
+- **compute-round-stats.ts** (33 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **computeRoundStats()** (18 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **nearConsensus()** (4 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **tally()** (4 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **RoundExtremes** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **.distance()** (2 connections) — `packages/domain/src/scales/scale.ts`
+- **diverges()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **emptySpecialCounts()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **emptySuitDistribution()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **idsAt()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **labelFor()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **meanOf()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **medianOf()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **modesOf()** (2 connections) — `packages/domain/src/stats/compute-round-stats.ts`
+- **TalliedVotes** (1 connections) — `packages/domain/src/stats/compute-round-stats.ts`
 
 ## Relationships
 
-- [Community 15](Community_15.md) (15 shared connections)
-- [Community 44](Community_44.md) (13 shared connections)
-- [Community 33](Community_33.md) (10 shared connections)
-- [Community 58](Community_58.md) (5 shared connections)
-- [Community 43](Community_43.md) (5 shared connections)
-- [Community 9](Community_9.md) (4 shared connections)
-- [Community 1](Community_1.md) (4 shared connections)
-- [Community 4](Community_4.md) (3 shared connections)
-- [Community 11](Community_11.md) (2 shared connections)
-- [Community 79](Community_79.md) (2 shared connections)
-- [Community 2](Community_2.md) (2 shared connections)
-- [Community 24](Community_24.md) (2 shared connections)
+- [Community 0](Community_0.md) (9 shared connections)
+- [Community 5](Community_5.md) (5 shared connections)
+- [Community 22](Community_22.md) (5 shared connections)
+- [Community 20](Community_20.md) (3 shared connections)
+- [Community 39](Community_39.md) (2 shared connections)
+- [Community 61](Community_61.md) (2 shared connections)
+- [Community 14](Community_14.md) (2 shared connections)
+- [Community 27](Community_27.md) (2 shared connections)
+- [Community 3](Community_3.md) (2 shared connections)
 
 ## Source Files
 
-- `apps/web/src/server/account-user.ts`
-- `apps/web/src/server/composition.ts`
-- `apps/web/src/server/dependencies.ts`
-- `apps/web/src/server/routes/auth-teams.ts`
-- `apps/web/src/server/routes/dev-auth.ts`
-- `apps/web/src/server/session-cookie.ts`
-- `packages/application/src/use-cases/identity/complete-sign-in.ts`
+- `packages/domain/src/scales/scale.ts`
+- `packages/domain/src/stats/compute-round-stats.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 129 (100%)
-- INFERRED: 0 (0%)
+- EXTRACTED: 55 (98%)
+- INFERRED: 1 (2%)
 - AMBIGUOUS: 0 (0%)
 
 ---

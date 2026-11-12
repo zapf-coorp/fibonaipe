@@ -8,14 +8,14 @@
 - **logger.ts** (9 connections) — `packages/adapter-system/src/logger.ts`
 - **logger.test.ts** (8 connections) — `packages/adapter-system/src/logger.test.ts`
 - **createRedactingLogger()** (6 connections) — `packages/adapter-system/src/logger.ts`
-- **clock.ts** (5 connections) — `packages/adapter-system/src/clock.ts`
 - **createSystemClock()** (5 connections) — `packages/adapter-system/src/clock.ts`
+- **clock.ts** (5 connections) — `packages/adapter-system/src/clock.ts`
 - **redact()** (4 connections) — `packages/adapter-system/src/logger.ts`
 - **clock.test.ts** (3 connections) — `packages/adapter-system/src/clock.test.ts`
 - **RedactingLoggerOptions** (2 connections) — `packages/adapter-system/src/logger.ts`
+- **write()** (1 connections) — `packages/adapter-system/src/logger.test.ts`
 - **SECRET_KEYS** (1 connections) — `packages/adapter-system/src/logger.ts`
 - **secrets** (1 connections) — `packages/adapter-system/src/logger.test.ts`
-- **write()** (1 connections) — `packages/adapter-system/src/logger.test.ts`
 
 ## Relationships
 
@@ -24,8 +24,9 @@
 - [Community 9](Community_9.md) (3 shared connections)
 - [Community 2](Community_2.md) (2 shared connections)
 - [Community 65](Community_65.md) (2 shared connections)
-- [Community 70](Community_70.md) (2 shared connections)
-- [Community 43](Community_43.md) (1 shared connections)
+- [Community 45](Community_45.md) (1 shared connections)
+- [Community 4](Community_4.md) (1 shared connections)
+- [Community 8](Community_8.md) (1 shared connections)
 
 ## Source Files
 

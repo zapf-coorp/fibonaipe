@@ -1,95 +1,95 @@
-# Graph Report - fibonaipe  (2026-11-11)
+# Graph Report - fibonaipe  (2026-11-12)
 
 ## Corpus Check
-- 334 files · ~215,171 words
+- 338 files · ~215,275 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 18 file(s) not represented in the graph (top: .css 11, (none) 4, .mmd 1)
 
 ## Summary
-- 2832 nodes · 8982 edges · 128 communities (101 shown, 27 thin omitted)
+- 2836 nodes · 9036 edges · 133 communities (106 shown, 27 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 130 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0f05b853`
+- Built from commit: `66bc5815`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Card
-- domain/src/index.ts
+- compute-forecast.ts
 - vitest
 - planning-table.test.ts
 - AppError
-- TeamId
+- domain/src/index.ts
 - sqlite-persistence.ts
 - record-aggregated-history.test.ts
-- createAppError
+- ok
 - application/src/index.ts
 - room-session.ts
-- ok
+- UserId
 - router.tsx
 - i18n/index.ts
 - PlanningTable
 - auth-teams.ts
-- room-commands.ts
+- persistence.port.ts
 - postgres-persistence.ts
 - persistence.port.ts
-- room.ts
+- RoomBuilder
 - HistoryEntryBuilder
 - Table.tsx
-- TeamTaskRepository
-- TeamsPage.tsx
+- Card
+- ref_react
 - UseCaseDependencies
 - QueueDrawer.tsx
 - AppHeader.tsx
 - planning-table.ts
 - web/package.json
 - room.test.ts
-- SqlitePersistenceStore
+- PlanningTable
 - Room
 - Sprint
 - rooms.ts
-- UserRepository
+- ref_node_fs
 - compilerOptions
 - package.json
 - commands.ts
-- warn
+- item.ts
 - room-view.ts
-- dev-auth.ts
+- compute-round-stats.ts
 - poker-table-and-projector-ui.test.tsx
-- ref_react
-- dev-fake-auth-provider.ts
+- team.ts
+- membership.ts
 - app.ts
 - testing/src/index.ts
-- auth-provider.contract.ts
+- RoomEvent
 - sprint-commands.ts
 - shell-flow.test.tsx
-- DevFakeAuthProvider
+- dev-fake-auth-provider.ts
 - RoomEvent
 - StructuredLogger
 - 001_r1_rooms.sql
 - contract.integration.test.ts
 - RoomId
-- team-tasks.ts
+- ref_node_path
 - room-entry-http.test.ts
 - realtime.contract.ts
 - composition.ts
 - theme-provider.tsx
 - main.tsx
-- exporter.ts
-- history-entry.test.ts
+- export-room-summary.ts
+- invite.test.ts
 - i18n-and-theme.test.tsx
 - import-items.ts
 - src/ids.ts
-- SprintRepository
-- can.test.ts
+- ItemBuilder
+- can.ts
 - devDependencies
-- TeamRepository
-- send-magic-link.ts
-- fake-realtime.ts
+- issue-tracker.contract.ts
+- adapter-auth-devfake/package.json
+- FakeRealtimeClient
 - list-history.ts
-- ref_node_fs
+- check-i18n.mjs
 - Timer.tsx
 - read-source.ts
 - compilerOptions
@@ -99,12 +99,16 @@
 - scripts
 - adapter-persistence-postgres/package.json
 - DatabaseSync
+- adapter-exporter-csvjson/package.json
 - ItemBuilderChain
 - AppErrorBuilder
+- realtime.port.ts
 - @fibonaipe/domain
-- sprint.ts
+- TeamId
+- UserBuilder
 - ../../tsconfig.base.json
 - adapter-auth-devfake/tsconfig.json
+- RoomSettingsBuilder
 - adapter-exporter-csvjson/tsconfig.json
 - adapter-issuetracker-manual/package.json
 - adapter-issuetracker-manual/tsconfig.json
@@ -118,11 +122,11 @@
 - application/tsconfig.json
 - testing/package.json
 - testing/tsconfig.json
+- sprints/estimation-indicators.ts
 - domain/package.json
 - SettingsBuilderChain
+- fake-auth-provider.ts
 - loopback-guard.ts
-- missing-flags.ts
-- HistoryRepository
 - RoomRepository
 - Hash
 - check-bundle-budget.mjs
@@ -132,7 +136,7 @@
 - 002_r2_identity.sql
 - css.d.ts
 - graphify
-- harness.ts
+- create-room.ts
 - tsconfig.json
 - 005_team_tasks.sql
 - domain-impure-date/bad.ts
@@ -147,7 +151,7 @@
 7. `TeamId` - 87 edges
 8. `vitest` - 87 edges
 9. `UserId` - 79 edges
-10. `RoomId` - 67 edges
+10. `useI18n()` - 67 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `@fibonaipe/application@*` --declares--> `@fibonaipe/application`  [EXTRACTED]
@@ -164,199 +168,207 @@
 ## Import Cycles
 - None detected.
 
-## Communities (128 total, 27 thin omitted)
+## Communities (133 total, 27 thin omitted)
 
 ### Community 0 - "Card"
-Cohesion: 0.05
-Nodes (56): OwnVote, ProjectedItem, ProjectedVote, RoomView, summaryOf(), ReconnectParticipantResult, ItemView, OwnVote (+48 more)
+Cohesion: 0.08
+Nodes (24): AfkCard, DoubtCard, JokerCard, NumericCard, SpecialCard, FIGURE_TAGS, FIBONACCI_CARDS, FIBONACCI_LABELS (+16 more)
 
-### Community 1 - "domain/src/index.ts"
-Cohesion: 0.06
-Nodes (44): computeAccuracy(), ForecastAccuracy, ForecastAccuracyRecord, ClosedSprintForecastInput, ForecastInsufficient, ForecastOk, ForecastReportBuilder, ForecastRiskInput (+36 more)
+### Community 1 - "compute-forecast.ts"
+Cohesion: 0.14
+Nodes (10): ClosedSprintForecastInput, computeForecast(), ForecastInsufficient, ForecastOk, ForecastReportBuilder, ForecastRiskInput, isCivilDate(), rows (+2 more)
 
 ### Community 2 - "vitest"
-Cohesion: 0.10
-Nodes (28): signIn(), append(), BASE, mustId(), row(), signIn(), teamOf(), signIn() (+20 more)
+Cohesion: 0.09
+Nodes (40): PersistedRoomRecord, AuditRow, HistoryRow, signIn(), append(), BASE, mustId(), row() (+32 more)
 
 ### Community 3 - "planning-table.test.ts"
-Cohesion: 0.03
-Nodes (44): ACTIONS, AuditView, branded(), CARD_LABELS, CODE, Command, COMMANDS, EDGES (+36 more)
+Cohesion: 0.04
+Nodes (41): ACTIONS, asModule(), AuditView, CARD_LABELS, CODE, Command, COMMANDS, EDGES (+33 more)
 
 ### Community 4 - "AppError"
-Cohesion: 0.05
-Nodes (17): DevAuthProvider, RolledBack, AuthProvider, CryptoVault, apply(), buildItem(), currentTable(), PlanningTable (+9 more)
+Cohesion: 0.06
+Nodes (12): CryptoVault, RateLimitRule, RateLimitStatus, EMAIL_RULE, IP_RULE, PlanningTableApi, RoomView, AppError (+4 more)
 
-### Community 5 - "TeamId"
-Cohesion: 0.05
-Nodes (48): AcceptInviteResult, ChangeMemberRoleInput, CreateInviteResult, TeamMemberSummary, TeamSummary, Invite, InviteAcceptance, InviteBuilder (+40 more)
+### Community 5 - "domain/src/index.ts"
+Cohesion: 0.06
+Nodes (56): computeAccuracy(), ForecastAccuracy, ForecastAccuracyPoint, ForecastAccuracyRecord, STATUSES, THEMES, User, UserProps (+48 more)
 
 ### Community 6 - "sqlite-persistence.ts"
-Cohesion: 0.10
-Nodes (40): applyHistoryDetail(), asRecords(), auditFromRow(), cloneData(), cloneOptional(), createRepos(), createSqlitePersistence(), DirtySet (+32 more)
+Cohesion: 0.07
+Nodes (47): applyHistoryDetail(), asRecords(), auditFromRow(), cloneData(), cloneOptional(), createRepos(), createSqlitePersistence(), DirtySet (+39 more)
 
 ### Community 7 - "record-aggregated-history.test.ts"
-Cohesion: 0.14
-Nodes (29): openDurableRoom(), AuditRow, HistoryRow, means(), seatsOf(), teamRoom(), currentItem(), FORBIDDEN_KEYS (+21 more)
+Cohesion: 0.11
+Nodes (47): createRoomUseCases(), RoomUseCases, means(), seatsOf(), teamRoom(), currentItem(), FORBIDDEN_KEYS, forbiddenKeys() (+39 more)
 
-### Community 8 - "createAppError"
-Cohesion: 0.08
-Nodes (23): unavailableAuth(), parseBody(), createInMemoryRateLimiter(), EditFinalEstimateInput, EditFinalEstimateWithAudit, seatOf(), SPECIAL_CARDS, nextSettings() (+15 more)
+### Community 8 - "ok"
+Cohesion: 0.09
+Nodes (25): createInMemoryRateLimiter(), completeIdentity(), persistSignedInUser(), hydrate(), hydrateIn(), inLockedRoom(), readLoaded(), warn() (+17 more)
 
 ### Community 9 - "application/src/index.ts"
 Cohesion: 0.05
-Nodes (52): applicationPackage, ExternalEstimateRef, ImportedBacklogBatch, ImportRowWarning, IssueTrackerProvider, HostTransferredPayload, ItemEstimateFinalizedPayload, ItemQueueUpdatedPayload (+44 more)
+Nodes (49): applicationPackage, ExternalEstimateRef, ImportedBacklogBatch, ImportedItemCandidate, ImportRowWarning, IssueTrackerImportInput, IssueTrackerProvider, CompleteSignInInput (+41 more)
 
 ### Community 10 - "room-session.ts"
-Cohesion: 0.06
-Nodes (58): IssueTrackerImportInput, RecordAggregatedHistory, ActorInput, AddItemInput, CommandResult, ImportItemsInput, ItemTargetInput, ReorderItemsInput (+50 more)
+Cohesion: 0.07
+Nodes (48): RecordAggregatedHistory, runItem(), actorOf(), addMilliseconds(), authorize(), beginOp(), codeTails, commitAggregate() (+40 more)
 
-### Community 11 - "ok"
+### Community 11 - "UserId"
 Cohesion: 0.09
-Nodes (23): DeleteAccount, deliver(), finishMutation(), FIBONACCI, AcceptInviteInput, inviteRecord(), issuedAtFromExpiry(), membershipFrom() (+15 more)
+Nodes (25): UserRepository, AcceptInviteInput, AcceptInviteResult, inviteRecord(), issuedAtFromExpiry(), MVP_ORGANIZATION_ID, parseRole(), saveMemberships() (+17 more)
 
 ### Community 12 - "router.tsx"
-Cohesion: 0.08
-Nodes (27): enqueueVote(), ensureOnlineFlush(), flushVotes(), queue, QueuedVote, setConnectionStatus(), TranslationKey, dashboardRoute (+19 more)
+Cohesion: 0.06
+Nodes (39): enqueueVote(), ensureOnlineFlush(), flushVotes(), queue, QueuedVote, ConnectionPhase, getConnectionStatus(), listeners (+31 more)
 
 ### Community 13 - "i18n/index.ts"
-Cohesion: 0.06
-Nodes (43): Catalog, catalogs, formatDate(), formatNumber(), I18nContext, I18nContextValue, I18nProvider(), interpolate() (+35 more)
+Cohesion: 0.07
+Nodes (34): ACTIVE_LOCALE, Catalog, catalogs, formatDate(), formatNumber(), I18nContext, I18nContextValue, I18nProvider() (+26 more)
 
 ### Community 14 - "PlanningTable"
-Cohesion: 0.11
-Nodes (10): Item, contextOf(), isOnline(), numericCard(), planningEvent(), PlanningTable, predominantSuit(), seatOf() (+2 more)
+Cohesion: 0.12
+Nodes (7): Item, cardByLabel(), planningEvent(), PlanningTable, seatOf(), Round, Vote
 
 ### Community 15 - "auth-teams.ts"
-Cohesion: 0.06
-Nodes (34): callbackSchema, capacitySchema, clientIp(), doneSchema, emailSchema, fail(), holidaySchema, inviteSchema (+26 more)
+Cohesion: 0.07
+Nodes (33): callbackSchema, capacitySchema, clientIp(), doneSchema, emailSchema, fail(), holidaySchema, inviteSchema (+25 more)
 
-### Community 16 - "room-commands.ts"
-Cohesion: 0.21
-Nodes (19): createRoomUseCases(), RoomUseCases, DeferItem, ImportItems, RemoveItem, ReorderItems, SkipItem, ExportRoomSummary (+11 more)
+### Community 16 - "persistence.port.ts"
+Cohesion: 0.09
+Nodes (30): AggregatedRoundStats, EstimateAuditRecord, HistoryQuery, IdempotencyRepository, InviteRepository, PersistedRoomItem, TransactionRepos, HostTransferredPayload (+22 more)
 
 ### Community 17 - "postgres-persistence.ts"
 Cohesion: 0.06
-Nodes (29): applyHistoryDetail(), applyPostgresMigrations(), asDate(), asNumber(), createPostgresPersistence(), createRepos(), findRoom(), findRoomByCode() (+21 more)
+Nodes (30): applyHistoryDetail(), applyPostgresMigrations(), asDate(), asNumber(), createPostgresPersistence(), createRepos(), findRoom(), findRoomByCode() (+22 more)
 
 ### Community 18 - "persistence.port.ts"
-Cohesion: 0.09
-Nodes (28): MemoryStore, AggregatedHistoryRecord, AggregatedRoundStats, EstimateAuditRecord, HolidayRepository, IdempotencyRecord, IdempotencyRepository, InviteRepository (+20 more)
-
-### Community 19 - "room.ts"
-Cohesion: 0.11
-Nodes (21): hasControlCharacter(), nicknameKey(), nullableSession(), nullableText(), ParticipantMode, ParticipantProps, RoomBuilder, RoomHostSeed (+13 more)
+Cohesion: 0.10
+Nodes (23): MemoryStore, AggregatedHistoryRecord, HolidayRepository, IdempotencyRecord, PersistedInviteRecord, PersistedMembershipRecord, PersistedSprintRecord, PersistedTeamRecord (+15 more)
 
 ### Community 20 - "HistoryEntryBuilder"
-Cohesion: 0.09
-Nodes (7): dominantSuit(), HistoryEntryBuilder, HistoryEntry, HistoryEntryProps, HistoryEntryId, ItemId, SuitDistribution
+Cohesion: 0.07
+Nodes (13): HistoryRepository, HistoryEntryBuilder, HistoryEntry, HistoryEntryProps, FORBIDDEN_KEYS, forbiddenKeys(), id(), must() (+5 more)
 
 ### Community 21 - "Table.tsx"
-Cohesion: 0.13
-Nodes (37): matrixFor(), paintFinder(), QrCode(), useOwnSeat(), EstimateDialog(), activeCards(), can(), currentItem() (+29 more)
+Cohesion: 0.10
+Nodes (40): matrixFor(), paintFinder(), QrCode(), EstimateDialog(), activeCards(), can(), currentItem(), DEFAULT_CARDS (+32 more)
 
-### Community 23 - "TeamsPage.tsx"
+### Community 22 - "Card"
+Cohesion: 0.12
+Nodes (20): OwnVote, ProjectedItem, ProjectedVote, RoomView, StoredItem, StoredRound, ReconnectParticipantResult, ItemView (+12 more)
+
+### Community 23 - "ref_react"
 Cohesion: 0.09
-Nodes (32): CommitTagField(), arm(), beginErrorFlash(), listen(), showErrorFlash(), CheckIcon(), ChevronIcon(), CloseIcon() (+24 more)
+Nodes (37): CommitTagField(), TaskLine(), arm(), beginErrorFlash(), listen(), showErrorFlash(), touchTargetStyle, ImportDialog() (+29 more)
+
+### Community 24 - "UseCaseDependencies"
+Cohesion: 0.04
+Nodes (4): AuthProvider, EditFinalEstimateWithAudit, SendMagicLink, UseCaseDependencies
 
 ### Community 25 - "QueueDrawer.tsx"
-Cohesion: 0.10
-Nodes (30): TaskLine(), createRoom(), FAN, FIBONACCI, HomePage(), Phase, SUITS, AccountTeam (+22 more)
+Cohesion: 0.12
+Nodes (28): createRoom(), FAN, FIBONACCI, HomePage(), Phase, SUITS, AccountTeam, AccountUser (+20 more)
 
 ### Community 26 - "AppHeader.tsx"
-Cohesion: 0.09
-Nodes (21): AppHeader(), initials(), LOCALE_LABEL, LocaleSelector(), ProfileMenu(), THEME_CHOICES, ThemeToggle(), AppShell() (+13 more)
+Cohesion: 0.13
+Nodes (22): AppHeader(), initials(), LOCALE_LABEL, LocaleSelector(), ProfileMenu(), THEME_CHOICES, ThemeToggle(), useOwnSeat() (+14 more)
 
 ### Community 27 - "planning-table.ts"
-Cohesion: 0.07
-Nodes (35): StoredItem, StoredRound, EstimateAudit, isHttpUrl(), isItemStatus(), ITEM_STATUSES, ItemProps, ItemStatus (+27 more)
+Cohesion: 0.11
+Nodes (16): EstimateAudit, ItemProps, actorOf(), cardsByScale, contextOf(), isOnline(), numericCard(), predominantSuit() (+8 more)
 
 ### Community 28 - "web/package.json"
-Cohesion: 0.08
-Nodes (32): dependencies, @fibonaipe/adapter-auth-devfake@*, @fibonaipe/adapter-exporter-csvjson@*, @fibonaipe/adapter-issuetracker-manual@*, @fibonaipe/adapter-persistence-postgres@*, @fibonaipe/adapter-persistence-sqlite@*, @fibonaipe/adapter-system@*, @fibonaipe/application@* (+24 more)
+Cohesion: 0.09
+Nodes (29): dependencies, @fibonaipe/adapter-auth-devfake@*, @fibonaipe/adapter-exporter-csvjson@*, @fibonaipe/adapter-issuetracker-manual@*, @fibonaipe/adapter-persistence-postgres@*, @fibonaipe/adapter-persistence-sqlite@*, @fibonaipe/adapter-system@*, @fibonaipe/domain@* (+21 more)
 
 ### Community 29 - "room.test.ts"
 Cohesion: 0.12
 Nodes (22): assertVoteFree(), at(), branded(), buildRoom(), DomainEvent, EPOCH, findKey(), here (+14 more)
 
-### Community 30 - "SqlitePersistenceStore"
-Cohesion: 0.20
-Nodes (7): emptyDirty(), historyDetail(), membershipKeyParts(), planningJson(), prepare(), SqlitePersistenceStore, writeRoom()
+### Community 30 - "PlanningTable"
+Cohesion: 0.18
+Nodes (12): apply(), branded(), buildItem(), currentTable(), makeRoom(), must(), open(), PlanningTable (+4 more)
 
 ### Community 31 - "Room"
 Cohesion: 0.11
-Nodes (14): LinkGuestToAccount, hydrate(), inLockedRoom(), saveRoom(), ClaimRoom, normalizeNickname(), nullableUserId(), Participant (+6 more)
+Nodes (22): hasControlCharacter(), nicknameKey(), normalizeNickname(), nullableSession(), nullableText(), nullableUserId(), Participant, DomainEvent (+14 more)
 
 ### Community 32 - "Sprint"
-Cohesion: 0.09
-Nodes (5): submit(), mutate(), cloneItem(), cloneReport(), Sprint
+Cohesion: 0.12
+Nodes (5): cloneItem(), cloneReport(), Sprint, SprintProps, SprintReport
 
 ### Community 33 - "rooms.ts"
-Cohesion: 0.13
-Nodes (23): jsonResponse(), actorId(), addItemSchema, clientIp(), clientOpId, createSchema, estimateSchema, fail() (+15 more)
+Cohesion: 0.09
+Nodes (35): accountUser(), sessionUser(), actorId(), addItemSchema, clientIp(), clientOpId, createSchema, estimateSchema (+27 more)
+
+### Community 34 - "ref_node_fs"
+Cohesion: 0.14
+Nodes (4): missingShell, root, here, metaPath
 
 ### Community 35 - "compilerOptions"
 Cohesion: 0.07
 Nodes (27): compilerOptions, declaration, declarationMap, exactOptionalPropertyTypes, forceConsistentCasingInFileNames, isolatedModules, lib, module (+19 more)
 
 ### Community 36 - "package.json"
-Cohesion: 0.08
-Nodes (30): purityBan, devDependencies, eslint@^9.39.1, @eslint/js@^9.39.1, fast-check@^4.3.0, happy-dom@^21.0.4, react@^19.3.1, @testing-library/react@^16.3.3 (+22 more)
+Cohesion: 0.07
+Nodes (35): react-dom@^19.0.0, purityBan, devDependencies, eslint@^9.39.1, @eslint/js@^9.39.1, fast-check@^4.3.0, happy-dom@^21.0.4, react@^19.3.1 (+27 more)
 
 ### Community 37 - "commands.ts"
-Cohesion: 0.11
-Nodes (44): nextClientOpId(), ErrorMessageKey, errorMessageKeys, messageKeyFor(), JoinRoomPage(), submitJoin(), ProjectorPage(), RoomPage() (+36 more)
+Cohesion: 0.12
+Nodes (42): nextClientOpId(), ErrorMessageKey, errorMessageKeys, messageKeyFor(), addQueueItem(), addQueueItems(), castVote(), confirmEstimate() (+34 more)
 
-### Community 38 - "warn"
-Cohesion: 0.14
-Nodes (13): CsvExportInput, ExportArtifact, JsonExportInput, hydrateIn(), LoadedRoom, readLoaded(), warn(), csvRows() (+5 more)
+### Community 38 - "item.ts"
+Cohesion: 0.20
+Nodes (11): isHttpUrl(), isItemStatus(), ITEM_STATUSES, ItemStatus, parseFigureTag(), MAX_ITEM_DESC_LENGTH, MAX_ITEM_TITLE_LENGTH, itemsFromCsv() (+3 more)
 
 ### Community 39 - "room-view.ts"
 Cohesion: 0.12
 Nodes (24): ACTIONS, actorOf(), contextOf(), currentItemCache, currentItemOf(), currentRoundOf(), deniedPermissions(), estimatedItemOf() (+16 more)
 
-### Community 40 - "dev-auth.ts"
-Cohesion: 0.18
-Nodes (18): accountUser(), dependenciesOf(), fail(), jsonWithSession(), loginSchema, okJson(), parseBody(), registerDevAuthRoutes() (+10 more)
+### Community 40 - "compute-round-stats.ts"
+Cohesion: 0.23
+Nodes (13): computeRoundStats(), diverges(), emptySpecialCounts(), emptySuitDistribution(), idsAt(), labelFor(), meanOf(), medianOf() (+5 more)
 
 ### Community 41 - "poker-table-and-projector-ui.test.tsx"
-Cohesion: 0.10
-Nodes (24): assertTouchTarget(), base(), boot(), closed(), guardLoopback(), HappyDom, HappyDomSettings, HOST_CARD (+16 more)
+Cohesion: 0.09
+Nodes (25): save(), assertTouchTarget(), base(), boot(), closed(), guardLoopback(), HappyDom, HappyDomSettings (+17 more)
 
-### Community 42 - "ref_react"
-Cohesion: 0.14
-Nodes (11): JoinMode, touchTargetStyle, Deck(), SpecialIcon(), SPECIALS, SUIT_GLYPH, ImportDialog(), previewRows() (+3 more)
+### Community 42 - "team.ts"
+Cohesion: 0.22
+Nodes (4): Team, TeamBuilder, TeamProps, OrganizationId
 
-### Community 43 - "dev-fake-auth-provider.ts"
-Cohesion: 0.12
-Nodes (16): createDevFakeAuthProvider(), DEV_AUTH_USERS, DevAuthMethod, DevAuthSignInResult, DevAuthUser, DevFakeAuthOptions, DevUserRole, GoogleCode (+8 more)
+### Community 43 - "membership.ts"
+Cohesion: 0.24
+Nodes (7): Invite, adminCount(), changeMemberRole(), isTeamRole(), losesOnlyAdmin(), removeMember(), TEAM_ROLES
 
 ### Community 44 - "app.ts"
-Cohesion: 0.19
-Nodes (14): app, createApp(), crossOriginDenied(), MUTATING, originFromInit(), devApp, errorResponse(), httpStatusFor() (+6 more)
+Cohesion: 0.13
+Nodes (25): app, createApp(), crossOriginDenied(), MUTATING, originFromInit(), dependenciesOf(), devApp, errorResponse() (+17 more)
 
 ### Community 45 - "testing/src/index.ts"
 Cohesion: 0.09
-Nodes (24): errorBody(), guestCookie(), isRecord(), Payload, send(), sessionCookie(), teamIdOf(), testApp() (+16 more)
+Nodes (24): AppContainer, errorBody(), guestCookie(), isRecord(), Payload, send(), sessionCookie(), teamIdOf() (+16 more)
 
-### Community 46 - "auth-provider.contract.ts"
-Cohesion: 0.28
-Nodes (4): AuthProviderContractHarness, describeAuthProviderContract(), expectError(), expectIdentity()
+### Community 46 - "RoomEvent"
+Cohesion: 0.24
+Nodes (5): ThrowingProvider, RealtimeSubscriptionHandlers, RoomEvent, Committed, Subscription
 
 ### Community 47 - "sprint-commands.ts"
-Cohesion: 0.25
-Nodes (12): CreateSprint, ActivateSprint, CloseSprint, GetForecastAccuracy, GetSprintForecast, GetSprintReport, LinkSprintItem, MarkSprintItemDone (+4 more)
+Cohesion: 0.21
+Nodes (14): CreateSprint, DeleteHoliday, SaveHoliday, ActivateSprint, CloseSprint, GetSprint, GetSprintForecast, GetSprintReport (+6 more)
 
 ### Community 48 - "shell-flow.test.tsx"
-Cohesion: 0.28
-Nodes (8): installColorScheme(), clearMissingFlags(), takeMissing(), boot(), assertTouchTarget(), boot(), lengthPx(), remount()
+Cohesion: 0.16
+Nodes (12): ConnectionStatus, installColorScheme(), clearMissingFlags(), markMissing(), takeMissing(), LiveAnnouncerProvider(), useLiveAnnouncer(), boot() (+4 more)
 
-### Community 49 - "DevFakeAuthProvider"
-Cohesion: 0.11
-Nodes (7): DevFakeAuthProvider, normalizeEmail(), AuthenticatedIdentity, completeIdentity(), persistSignedInUser(), MagicLink, VERIFIED_AT_MS
+### Community 49 - "dev-fake-auth-provider.ts"
+Cohesion: 0.06
+Nodes (21): DEV_AUTH_USERS, DevAuthMethod, DevAuthProvider, DevAuthSignInResult, DevAuthUser, DevFakeAuthOptions, DevFakeAuthProvider, DevUserRole (+13 more)
 
 ### Community 50 - "RoomEvent"
-Cohesion: 0.16
-Nodes (10): createRealtimeClient(), RealtimeClientDeps, RealtimeProviderClient, assertNoCardBeforeReveal(), SECRET_KEYS, ThrowingProvider, walk(), RoomEvent (+2 more)
+Cohesion: 0.19
+Nodes (7): createRealtimeClient(), RealtimeClientDeps, RealtimeProviderClient, assertNoCardBeforeReveal(), SECRET_KEYS, walk(), bad
 
 ### Community 51 - "StructuredLogger"
 Cohesion: 0.17
@@ -367,16 +379,12 @@ Cohesion: 0.13
 Nodes (18): aggregated_history, estimate_audits, idempotency_keys, items, participants, rooms, rounds, schema_migrations (+10 more)
 
 ### Community 53 - "contract.integration.test.ts"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (25): adapterSources(), errResult(), hasProcessed(), NATIVE_MODULES, packageManifests(), readRoom(), REQUIRED_TABLES, saveUnlocked() (+17 more)
 
-### Community 54 - "RoomId"
-Cohesion: 0.42
-Nodes (4): HistoryQuery, RoomState, RoomId, FakeRealtime
-
-### Community 55 - "team-tasks.ts"
-Cohesion: 0.20
-Nodes (6): CreateTeamTask, CreateTeamTaskInput, DeleteTeamTask, httpLink(), ListTeamTasks, TeamTaskSummary
+### Community 55 - "ref_node_path"
+Cohesion: 0.35
+Nodes (8): root, layerOf(), NATIVE, scanSourceForViolations(), verifyLicenseText(), verifyWorkspaceBoundaries(), walk(), verifyLicenses()
 
 ### Community 56 - "room-entry-http.test.ts"
 Cohesion: 0.16
@@ -387,8 +395,8 @@ Cohesion: 0.21
 Nodes (10): describeRealtimeContract(), must(), participant, publish(), RealtimeContractHarness, roundId, roundRevealed(), voteChanged() (+2 more)
 
 ### Community 58 - "composition.ts"
-Cohesion: 0.18
-Nodes (15): AppContainer, authProviderFor(), createAppContainer(), persistenceFor(), pollingPublisher(), readDatabaseUrl(), ServerEnv, devApp() (+7 more)
+Cohesion: 0.19
+Nodes (11): authProviderFor(), createAppContainer(), persistenceFor(), pollingPublisher(), readDatabaseUrl(), unavailableAuth(), devApp(), Payload (+3 more)
 
 ### Community 59 - "theme-provider.tsx"
 Cohesion: 0.18
@@ -398,49 +406,53 @@ Nodes (16): useLiveAnnouncer(), applyResolvedTheme(), isProjectorRoute(), isThem
 Cohesion: 0.14
 Nodes (13): @tanstack/react-query@^5.62.8, App(), bootGeneration, bootScope, queryClient, rootElement, LiveAnnouncerContext, LiveAnnouncerContextValue (+5 more)
 
-### Community 61 - "exporter.ts"
-Cohesion: 0.18
-Nodes (9): createCsvJsonExporter(), sortKeys(), expectCsv(), expectJson(), sortKeys(), stableJson(), csvLines(), describeExporterContract() (+1 more)
+### Community 61 - "export-room-summary.ts"
+Cohesion: 0.10
+Nodes (21): createCsvJsonExporter(), sortKeys(), expectCsv(), expectJson(), sortKeys(), stableJson(), CsvExportInput, ExportArtifact (+13 more)
 
-### Community 62 - "history-entry.test.ts"
-Cohesion: 0.40
-Nodes (5): FORBIDDEN_KEYS, forbiddenKeys(), id(), must(), NOW
+### Community 62 - "invite.test.ts"
+Cohesion: 0.25
+Nodes (6): InviteBuilder, InviteState, inviteAt(), must(), NOW, InviteId
 
 ### Community 63 - "i18n-and-theme.test.tsx"
-Cohesion: 0.20
-Nodes (10): ERROR_KEYS, flattenCatalog(), SHELL_KEYS, dayOptions, LocaleProbe(), oneDecimal, renderLocale(), renderTheme() (+2 more)
+Cohesion: 0.19
+Nodes (11): useTheme(), ERROR_KEYS, flattenCatalog(), SHELL_KEYS, dayOptions, LocaleProbe(), oneDecimal, renderLocale() (+3 more)
 
 ### Community 64 - "import-items.ts"
-Cohesion: 0.13
-Nodes (20): cellAt(), columnsOf(), createManualIssueTracker(), CsvColumns, detectDelimiter(), importCsv(), importLimit(), importText() (+12 more)
+Cohesion: 0.27
+Nodes (14): cellAt(), columnsOf(), CsvColumns, detectDelimiter(), importCsv(), importLimit(), importText(), lineCount() (+6 more)
 
 ### Community 65 - "src/ids.ts"
 Cohesion: 0.16
 Nodes (11): createIdGenerator(), encodeBase32(), newId(), newRoomCode(), newToken(), sha256(), ROOM_CODE_ALPHABET, ROOM_CODE_LENGTH (+3 more)
 
-### Community 67 - "can.test.ts"
-Cohesion: 0.18
-Nodes (11): Action, ACTIONS, Actor, actor(), allowed(), cases, Flags, PolicyContext (+3 more)
+### Community 67 - "can.ts"
+Cohesion: 0.08
+Nodes (23): ActorKind, isInstanceAdmin(), isTeamAdmin(), MATRIX, PolicyAction, PolicyActor, PolicyContext, PolicyRule (+15 more)
 
 ### Community 68 - "devDependencies"
 Cohesion: 0.17
 Nodes (9): devDependencies, @types/react@^19.3.0, @types/react-dom@^19.3.0, vite@^6.0.6, @vitejs/plugin-react@^4.3.4, @types/react, @types/react-dom, vite (+1 more)
 
-### Community 70 - "send-magic-link.ts"
-Cohesion: 0.36
-Nodes (4): RateLimitRule, RateLimitStatus, EMAIL_RULE, IP_RULE
+### Community 69 - "issue-tracker.contract.ts"
+Cohesion: 0.31
+Nodes (5): MAX_ITEMS_PER_ROOM, describeIssueTrackerContract(), expectBatch(), expectError(), okBatch()
 
-### Community 71 - "fake-realtime.ts"
-Cohesion: 0.14
-Nodes (8): RealtimeClient, RealtimeConnectionState, RealtimeConnectionStatus, RealtimeSubscription, RealtimeSubscriptionHandlers, VersionGapInfo, FakeRealtimeClient, Subscription
+### Community 70 - "adapter-auth-devfake/package.json"
+Cohesion: 0.22
+Nodes (8): dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, exports, name, private, type, version
+
+### Community 71 - "FakeRealtimeClient"
+Cohesion: 0.29
+Nodes (3): RealtimeConnectionState, RealtimeConnectionStatus, FakeRealtimeClient
 
 ### Community 72 - "list-history.ts"
-Cohesion: 0.21
-Nodes (10): ExportHistory, ExportHistoryInput, HistoryListPage, HistoryListRow, HistoryQueryInput, ListHistory, listRow(), matches() (+2 more)
+Cohesion: 0.25
+Nodes (9): ExportHistory, ExportHistoryInput, HistoryListPage, HistoryListRow, HistoryQueryInput, listRow(), matches(), pageOf() (+1 more)
 
-### Community 73 - "ref_node_fs"
-Cohesion: 0.09
-Nodes (24): root, layerOf(), NATIVE, scanSourceForViolations(), verifyLicenseText(), verifyWorkspaceBoundaries(), walk(), checkCatalogs() (+16 more)
+### Community 73 - "check-i18n.mjs"
+Cohesion: 0.27
+Nodes (12): checkCatalogs(), checkSources(), flatten(), hardcodedJsx(), loadCatalog(), localeDir, locales, referencedKeys() (+4 more)
 
 ### Community 74 - "Timer.tsx"
 Cohesion: 0.31
@@ -459,8 +471,8 @@ Cohesion: 0.26
 Nodes (6): createSystemClock(), createRedactingLogger(), redact(), RedactingLoggerOptions, SECRET_KEYS, secrets
 
 ### Community 79 - "env.ts"
-Cohesion: 0.29
-Nodes (7): defaults, definedOverrides(), globalProcessEnv(), loadServerEnv(), readProcessEnv(), serverEnvSchema, env
+Cohesion: 0.31
+Nodes (7): defaults, definedOverrides(), globalProcessEnv(), loadServerEnv(), readProcessEnv(), ServerEnv, serverEnvSchema
 
 ### Community 80 - "scripts"
 Cohesion: 0.18
@@ -474,13 +486,21 @@ Nodes (10): dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, postgre
 Cohesion: 0.18
 Nodes (3): DatabaseSync, node:sqlite, SqliteStatement
 
-### Community 87 - "@fibonaipe/domain"
-Cohesion: 0.12
-Nodes (17): @fibonaipe/domain, dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, exports, name, private, type (+9 more)
+### Community 83 - "adapter-exporter-csvjson/package.json"
+Cohesion: 0.22
+Nodes (8): dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, exports, name, private, type, version
 
-### Community 88 - "sprint.ts"
-Cohesion: 0.12
-Nodes (14): SprintId, CapacityEntry, civilDate(), computeCapacity(), computeWorkingDays(), hasSprintOverlap(), SprintBuilder, SprintCapacityEntry (+6 more)
+### Community 86 - "realtime.port.ts"
+Cohesion: 0.22
+Nodes (3): RealtimeClient, RealtimeSubscription, VersionGapInfo
+
+### Community 87 - "@fibonaipe/domain"
+Cohesion: 0.25
+Nodes (8): @fibonaipe/domain, dependencies, @fibonaipe/domain@*, exports, name, private, type, version
+
+### Community 88 - "TeamId"
+Cohesion: 0.08
+Nodes (8): MembershipRepository, PersistedTeamTaskRecord, SprintRepository, TeamRepository, TeamTaskRepository, TeamId, SprintBuilder, build()
 
 ### Community 90 - "../../tsconfig.base.json"
 Cohesion: 0.22
@@ -507,8 +527,8 @@ Cohesion: 0.22
 Nodes (8): compilerOptions, composite, outDir, rootDir, exclude, extends, include, references
 
 ### Community 97 - "@fibonaipe/application"
-Cohesion: 0.12
-Nodes (16): @fibonaipe/application, dependencies, @fibonaipe/application@*, exports, name, private, type, version (+8 more)
+Cohesion: 0.20
+Nodes (10): @fibonaipe/application@*, @fibonaipe/application, dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, exports, name, private (+2 more)
 
 ### Community 98 - "adapter-persistence-sqlite/tsconfig.json"
 Cohesion: 0.22
@@ -542,17 +562,21 @@ Nodes (8): dependencies, @fibonaipe/application@*, @fibonaipe/domain@*, exports,
 Cohesion: 0.22
 Nodes (8): compilerOptions, composite, outDir, rootDir, exclude, extends, include, references
 
+### Community 106 - "sprints/estimation-indicators.ts"
+Cohesion: 0.43
+Nodes (3): FIBONACCI, computeEstimationIndicators(), EstimationIndicators
+
 ### Community 107 - "domain/package.json"
 Cohesion: 0.25
 Nodes (7): exports, name, private, scripts, build, type, version
 
+### Community 109 - "fake-auth-provider.ts"
+Cohesion: 0.40
+Nodes (4): MagicLink, normalizeEmail(), StoredUser, VERIFIED_AT_MS
+
 ### Community 110 - "loopback-guard.ts"
 Cohesion: 0.38
 Nodes (6): guardedWindows, HappyDomSettings, HappyDomWindow, installLoopbackGuard(), isTestLoopback(), resolveFetchUrl()
-
-### Community 114 - "missing-flags.ts"
-Cohesion: 0.60
-Nodes (3): markMissing(), LiveAnnouncerProvider(), useLiveAnnouncer()
 
 ### Community 120 - "domain-runtime-dep/package.json"
 Cohesion: 0.50
@@ -566,29 +590,29 @@ Nodes (4): scripts, build, dev, preview
 Cohesion: 0.50
 Nodes (3): invites, memberships, organizations
 
-### Community 130 - "harness.ts"
-Cohesion: 0.17
-Nodes (16): PersistedRoomRecord, StoredParticipant, titles(), limitIp(), participantJoined(), CreateRoom, JoinRoom, expectCount() (+8 more)
+### Community 130 - "create-room.ts"
+Cohesion: 0.14
+Nodes (18): CREATE_ROOM_RULE, deliver(), finishMutation(), JOIN_ATTEMPT_RULE, limitIp(), participantJoined(), saveRoom(), toPersisted() (+10 more)
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `C:/Users/htzc/.local/bin/graphify-mcp.exe`
-  These have ≤1 connection - possible missing edges. (Counts symbols only; 819 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges. (Counts symbols only; 813 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `Card`, `domain/src/index.ts`, `harness.ts`, `planning-table.test.ts`, `TeamId`, `sqlite-persistence.ts`, `record-aggregated-history.test.ts`, `i18n/index.ts`, `room-commands.ts`, `AppHeader.tsx`, `room.test.ts`, `package.json`, `poker-table-and-projector-ui.test.tsx`, `dev-fake-auth-provider.ts`, `testing/src/index.ts`, `auth-provider.contract.ts`, `sprint-commands.ts`, `shell-flow.test.tsx`, `RoomEvent`, `contract.integration.test.ts`, `room-entry-http.test.ts`, `realtime.contract.ts`, `composition.ts`, `exporter.ts`, `history-entry.test.ts`, `i18n-and-theme.test.tsx`, `import-items.ts`, `src/ids.ts`, `can.test.ts`, `ref_node_fs`, `read-source.ts`, `adapter-system/src/index.ts`, `sprint.ts`, `check-bundle-budget.mjs`?**
-  _High betweenness centrality (0.135) - this node is a cross-community bridge._
+- **Why does `vitest` connect `vitest` to `Card`, `compute-forecast.ts`, `create-room.ts`, `planning-table.test.ts`, `domain/src/index.ts`, `sqlite-persistence.ts`, `record-aggregated-history.test.ts`, `router.tsx`, `i18n/index.ts`, `HistoryEntryBuilder`, `ref_react`, `AppHeader.tsx`, `room.test.ts`, `ref_node_fs`, `package.json`, `poker-table-and-projector-ui.test.tsx`, `team.ts`, `membership.ts`, `testing/src/index.ts`, `sprint-commands.ts`, `shell-flow.test.tsx`, `dev-fake-auth-provider.ts`, `RoomEvent`, `contract.integration.test.ts`, `ref_node_path`, `room-entry-http.test.ts`, `realtime.contract.ts`, `composition.ts`, `export-room-summary.ts`, `invite.test.ts`, `i18n-and-theme.test.tsx`, `src/ids.ts`, `can.ts`, `issue-tracker.contract.ts`, `read-source.ts`, `adapter-system/src/index.ts`, `TeamId`, `sprints/estimation-indicators.ts`, `dom-matchers.ts`, `check-bundle-budget.mjs`?**
+  _High betweenness centrality (0.120) - this node is a cross-community bridge._
 - **What connects `C:/Users/htzc/.local/bin/graphify-mcp.exe` to the rest of the system?**
   _1 weakly-connected nodes found - possible missing edges._
 - **Should `Card` be split into smaller, more focused modules?**
-  _Cohesion score 0.049074074074074076 - nodes in this community are weakly interconnected._
-- **Why does `AppError` connect `AppError` to `Card`, `domain/src/index.ts`, `vitest`, `harness.ts`, `planning-table.test.ts`, `TeamId`, `sqlite-persistence.ts`, `createAppError`, `application/src/index.ts`, `room-session.ts`, `ok`, `PlanningTable`, `auth-teams.ts`, `room-commands.ts`, `postgres-persistence.ts`, `persistence.port.ts`, `room.ts`, `HistoryEntryBuilder`, `planning-table.ts`, `room.test.ts`, `SqlitePersistenceStore`, `Room`, `Sprint`, `rooms.ts`, `warn`, `dev-auth.ts`, `dev-fake-auth-provider.ts`, `app.ts`, `testing/src/index.ts`, `auth-provider.contract.ts`, `sprint-commands.ts`, `DevFakeAuthProvider`, `RoomEvent`, `contract.integration.test.ts`, `team-tasks.ts`, `realtime.contract.ts`, `exporter.ts`, `history-entry.test.ts`, `import-items.ts`, `send-magic-link.ts`, `fake-realtime.ts`, `list-history.ts`, `sprint.ts`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
-- **Should `domain/src/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.059227921734531994 - nodes in this community are weakly interconnected._
-- **Why does `Result` connect `AppError` to `Card`, `domain/src/index.ts`, `vitest`, `harness.ts`, `planning-table.test.ts`, `TeamId`, `sqlite-persistence.ts`, `createAppError`, `application/src/index.ts`, `room-session.ts`, `ok`, `PlanningTable`, `auth-teams.ts`, `room-commands.ts`, `postgres-persistence.ts`, `persistence.port.ts`, `room.ts`, `HistoryEntryBuilder`, `planning-table.ts`, `room.test.ts`, `SqlitePersistenceStore`, `Room`, `Sprint`, `rooms.ts`, `warn`, `dev-auth.ts`, `dev-fake-auth-provider.ts`, `testing/src/index.ts`, `auth-provider.contract.ts`, `sprint-commands.ts`, `DevFakeAuthProvider`, `RoomEvent`, `contract.integration.test.ts`, `team-tasks.ts`, `realtime.contract.ts`, `exporter.ts`, `history-entry.test.ts`, `import-items.ts`, `send-magic-link.ts`, `fake-realtime.ts`, `list-history.ts`, `sprint.ts`?**
-  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+  _Cohesion score 0.08080808080808081 - nodes in this community are weakly interconnected._
+- **Why does `AppError` connect `AppError` to `Card`, `compute-forecast.ts`, `vitest`, `create-room.ts`, `planning-table.test.ts`, `domain/src/index.ts`, `sqlite-persistence.ts`, `record-aggregated-history.test.ts`, `ok`, `application/src/index.ts`, `room-session.ts`, `UserId`, `PlanningTable`, `auth-teams.ts`, `persistence.port.ts`, `postgres-persistence.ts`, `persistence.port.ts`, `HistoryEntryBuilder`, `Card`, `planning-table.ts`, `room.test.ts`, `PlanningTable`, `Room`, `Sprint`, `rooms.ts`, `ref_node_fs`, `item.ts`, `team.ts`, `membership.ts`, `app.ts`, `testing/src/index.ts`, `RoomEvent`, `sprint-commands.ts`, `dev-fake-auth-provider.ts`, `RoomEvent`, `contract.integration.test.ts`, `realtime.contract.ts`, `export-room-summary.ts`, `invite.test.ts`, `import-items.ts`, `issue-tracker.contract.ts`, `list-history.ts`, `realtime.port.ts`, `sprints/estimation-indicators.ts`, `fake-auth-provider.ts`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
+- **Should `compute-forecast.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
+- **Why does `Result` connect `AppError` to `Card`, `compute-forecast.ts`, `vitest`, `create-room.ts`, `planning-table.test.ts`, `domain/src/index.ts`, `sqlite-persistence.ts`, `record-aggregated-history.test.ts`, `ok`, `application/src/index.ts`, `room-session.ts`, `UserId`, `PlanningTable`, `auth-teams.ts`, `persistence.port.ts`, `postgres-persistence.ts`, `persistence.port.ts`, `HistoryEntryBuilder`, `Card`, `planning-table.ts`, `room.test.ts`, `PlanningTable`, `Room`, `Sprint`, `rooms.ts`, `ref_node_fs`, `item.ts`, `team.ts`, `membership.ts`, `app.ts`, `testing/src/index.ts`, `RoomEvent`, `sprint-commands.ts`, `dev-fake-auth-provider.ts`, `RoomEvent`, `contract.integration.test.ts`, `realtime.contract.ts`, `export-room-summary.ts`, `invite.test.ts`, `import-items.ts`, `issue-tracker.contract.ts`, `list-history.ts`, `realtime.port.ts`, `sprints/estimation-indicators.ts`, `fake-auth-provider.ts`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **Should `vitest` be split into smaller, more focused modules?**
-  _Cohesion score 0.0962962962962963 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08648648648648649 - nodes in this community are weakly interconnected._

@@ -1,39 +1,32 @@
 # Community 89
 
-> 9 nodes · cohesion 0.25
+> 8 nodes · cohesion 0.25
 
 ## Key Concepts
 
-- **@fibonaipe/domain** (20 connections) — `apps/web/package.json`
-- **application/package.json** (7 connections) — `packages/application/package.json`
-- **dependencies** (2 connections) — `packages/application/package.json`
-- **@fibonaipe/domain@*** (2 connections) — `packages/application/package.json`
-- **exports** (1 connections) — `packages/application/package.json`
-- **name** (1 connections) — `packages/application/package.json`
-- **private** (1 connections) — `packages/application/package.json`
-- **type** (1 connections) — `packages/application/package.json`
-- **version** (1 connections) — `packages/application/package.json`
+- **UserBuilder** (12 connections) — `packages/domain/src/identity/user.ts`
+- **.withId()** (2 connections) — `packages/domain/src/identity/user.ts`
+- **.withDisplayName()** (1 connections) — `packages/domain/src/identity/user.ts`
+- **.withEmail()** (1 connections) — `packages/domain/src/identity/user.ts`
+- **.withLocale()** (1 connections) — `packages/domain/src/identity/user.ts`
+- **.withStatus()** (1 connections) — `packages/domain/src/identity/user.ts`
+- **.withSuperAdmin()** (1 connections) — `packages/domain/src/identity/user.ts`
+- **.withTheme()** (1 connections) — `packages/domain/src/identity/user.ts`
 
 ## Relationships
 
-- [Community 28](Community_28.md) (2 shared connections)
-- [Community 87](Community_87.md) (2 shared connections)
-- [Community 92](Community_92.md) (2 shared connections)
-- [Community 94](Community_94.md) (2 shared connections)
-- [Community 81](Community_81.md) (2 shared connections)
-- [Community 97](Community_97.md) (2 shared connections)
-- [Community 99](Community_99.md) (2 shared connections)
-- [Community 101](Community_101.md) (2 shared connections)
-- [Community 104](Community_104.md) (2 shared connections)
+- [Community 11](Community_11.md) (2 shared connections)
+- [Community 5](Community_5.md) (2 shared connections)
+- [Community 34](Community_34.md) (1 shared connections)
+- [Community 8](Community_8.md) (1 shared connections)
 
 ## Source Files
 
-- `apps/web/package.json`
-- `packages/application/package.json`
+- `packages/domain/src/identity/user.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 27 (100%)
+- EXTRACTED: 13 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

@@ -142,8 +142,6 @@ function LocaleSelector() {
       }}
     >
       <option value="pt-BR">{t("header.locale.ptBR")}</option>
-      <option value="en-US">{t("header.locale.enUS")}</option>
-      <option value="es-ES">{t("header.locale.esES")}</option>
     </select>
   );
 }

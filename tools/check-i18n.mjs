@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const locales = ["pt-BR", "en-US", "es-ES"];
+const locales = ["pt-BR"];
 const localeDir = join(process.cwd(), "apps/web/src/client/i18n/locales");
 const scanRoots = [
   join(process.cwd(), "apps/web/src/client"),
@@ -84,14 +84,7 @@ function checkCatalogs() {
   }
   const pt = flat["pt-BR"];
   if (!pt) return { problems, keys: new Set() };
-  const ptKeys = Object.keys(pt).sort();
-  for (const locale of ["en-US", "es-ES"]) {
-    const other = flat[locale];
-    if (!other) continue;
-    const keys = Object.keys(other).sort();
-    if (keys.join("\n") !== ptKeys.join("\n")) problems.push(`key parity mismatch ${locale}`);
-  }
-  return { problems, keys: new Set(ptKeys) };
+  return { problems, keys: new Set(Object.keys(pt)) };
 }
 
 function checkSources(keys) {

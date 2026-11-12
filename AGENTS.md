@@ -7,3 +7,7 @@ Fibonaipe is an npm workspaces monorepo. Dependency direction is `domain` ← `a
 Expected errors use `Result` and `AppError`. Aggregates are built with builders.
 
 The gate is `npm run verify`.
+
+Query the graph by the feature symbol, such as `TasksModal` or `QueueDrawer`. `AppError` and `Result` are hubs on purpose, so they are a poor place to start. CSS is outside the graph: after a query names a component, read the `.module.css` beside that file.
+
+New interface copy goes only in `apps/web/src/client/i18n/locales/pt-BR.json`. `en-US` and `es-ES` stay frozen until localization.

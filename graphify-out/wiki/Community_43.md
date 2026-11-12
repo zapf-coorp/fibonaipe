@@ -1,60 +1,45 @@
 # Community 43
 
-> 24 nodes · cohesion 0.13
+> 13 nodes · cohesion 0.24
 
 ## Key Concepts
 
-- **dev-fake-auth-provider.ts** (29 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **Clock** (19 connections) — `packages/application/src/ports/clock.port.ts`
-- **IdGenerator** (19 connections) — `packages/application/src/ports/id-generator.port.ts`
-- **adapter-auth-devfake/src/index.ts** (13 connections) — `packages/adapter-auth-devfake/src/index.ts`
-- **dev-fake-auth-provider.test.ts** (11 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.test.ts`
-- **DevAuthProvider** (9 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **DevFakeAuthOptions** (4 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **isDevAuthProvider()** (4 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **DEV_AUTH_USERS** (3 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **DevAuthSignInResult** (3 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **clock.port.ts** (3 connections) — `packages/application/src/ports/clock.port.ts`
-- **id-generator.port.ts** (3 connections) — `packages/application/src/ports/id-generator.port.ts`
-- **DevAuthMethod** (2 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **DevAuthUser** (2 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **DevUserRole** (2 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **StoredUser** (2 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **.latestMagicLinkToken()** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **.latestSessionToken()** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **.listUsers()** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **GoogleCode** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **MagicLink** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- **NOW** (1 connections) — `packages/adapter-auth-devfake/src/dev-fake-auth-provider.test.ts`
-- **.newRoomCode()** (1 connections) — `packages/application/src/ports/id-generator.port.ts`
-- **.sha256()** (1 connections) — `packages/application/src/ports/id-generator.port.ts`
+- **membership.ts** (25 connections) — `packages/domain/src/identity/membership.ts`
+- **membership.test.ts** (17 connections) — `packages/domain/src/identity/membership.test.ts`
+- **removeMember()** (11 connections) — `packages/domain/src/identity/membership.ts`
+- **changeMemberRole()** (10 connections) — `packages/domain/src/identity/membership.ts`
+- **Invite** (9 connections) — `packages/domain/src/identity/invite.ts`
+- **isTeamRole()** (9 connections) — `packages/domain/src/identity/membership.ts`
+- **.build()** (8 connections) — `packages/domain/src/identity/invite.ts`
+- **.revoke()** (7 connections) — `packages/domain/src/identity/invite.ts`
+- **losesOnlyAdmin()** (4 connections) — `packages/domain/src/identity/membership.ts`
+- **.create()** (3 connections) — `packages/domain/src/identity/invite.ts`
+- **adminCount()** (2 connections) — `packages/domain/src/identity/membership.ts`
+- **.constructor()** (1 connections) — `packages/domain/src/identity/invite.ts`
+- **TEAM_ROLES** (1 connections) — `packages/domain/src/identity/membership.ts`
 
 ## Relationships
 
-- [Community 49](Community_49.md) (12 shared connections)
-- [Community 4](Community_4.md) (6 shared connections)
-- [Community 9](Community_9.md) (6 shared connections)
-- [Community 58](Community_58.md) (5 shared connections)
-- [Community 40](Community_40.md) (5 shared connections)
-- [Community 16](Community_16.md) (4 shared connections)
-- [Community 34](Community_34.md) (3 shared connections)
-- [Community 2](Community_2.md) (3 shared connections)
-- [Community 45](Community_45.md) (3 shared connections)
-- [Community 8](Community_8.md) (2 shared connections)
-- [Community 46](Community_46.md) (2 shared connections)
-- [Community 1](Community_1.md) (2 shared connections)
+- [Community 8](Community_8.md) (22 shared connections)
+- [Community 5](Community_5.md) (16 shared connections)
+- [Community 11](Community_11.md) (13 shared connections)
+- [Community 4](Community_4.md) (8 shared connections)
+- [Community 88](Community_88.md) (3 shared connections)
+- [Community 62](Community_62.md) (2 shared connections)
+- [Community 34](Community_34.md) (2 shared connections)
+- [Community 67](Community_67.md) (1 shared connections)
+- [Community 55](Community_55.md) (1 shared connections)
+- [Community 2](Community_2.md) (1 shared connections)
 
 ## Source Files
 
-- `packages/adapter-auth-devfake/src/dev-fake-auth-provider.test.ts`
-- `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- `packages/adapter-auth-devfake/src/index.ts`
-- `packages/application/src/ports/clock.port.ts`
-- `packages/application/src/ports/id-generator.port.ts`
+- `packages/domain/src/identity/invite.ts`
+- `packages/domain/src/identity/membership.test.ts`
+- `packages/domain/src/identity/membership.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 100 (100%)
+- EXTRACTED: 88 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

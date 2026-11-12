@@ -9,11 +9,11 @@ describe("account locale", () => {
     document.documentElement.lang = "pt-BR";
   });
 
-  it("uses the account locale en-US over a local pt-BR preference after login", () => {
+  it("keeps the account on pt-BR while other locales are paused", () => {
     localStorage.setItem(LOCALE_STORAGE_KEY, "pt-BR");
     applyAccountLocale("en-US");
-    expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("en-US");
-    expect(document.documentElement.lang).toBe("en-US");
-    expect(t("app.skipToMain")).toBe("Skip to main content");
+    expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("pt-BR");
+    expect(document.documentElement.lang).toBe("pt-BR");
+    expect(t("app.skipToMain")).toBe("Pular para o conteúdo principal");
   });
 });

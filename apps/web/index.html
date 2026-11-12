@@ -30,7 +30,7 @@
         var theme = prefersDark ? "dark" : "light";
         if (storedTheme === "light" || storedTheme === "dark") theme = storedTheme;
         var locale = "pt-BR";
-        if (storedLocale === "pt-BR" || storedLocale === "en-US" || storedLocale === "es-ES") locale = storedLocale;
+        if (storedLocale === "pt-BR") locale = storedLocale;
         document.documentElement.lang = locale;
         document.documentElement.setAttribute("data-theme", theme);
         var meta = document.querySelector("meta[name='theme-color']");

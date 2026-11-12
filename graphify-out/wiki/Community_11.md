@@ -1,78 +1,72 @@
 # Community 11
 
-> 52 nodes · cohesion 0.08
+> 42 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **ok()** (262 connections) — `packages/domain/src/shared/result.ts`
+- **UserId** (79 connections) — `packages/domain/src/shared/ids.ts`
 - **access.ts** (42 connections) — `packages/application/src/use-cases/teams/access.ts`
-- **requireTeamAction()** (29 connections) — `packages/application/src/use-cases/teams/access.ts`
+- **TeamRole** (34 connections) — `packages/domain/src/policy/can.ts`
 - **accept-invite.ts** (20 connections) — `packages/application/src/use-cases/teams/accept-invite.ts`
-- **delete-account.ts** (19 connections) — `packages/application/src/use-cases/identity/delete-account.ts`
-- **team-tasks.ts** (18 connections) — `packages/application/src/use-cases/teams/team-tasks.ts`
-- **sprints/estimation-indicators.ts** (17 connections) — `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- **create-invite.ts** (20 connections) — `packages/application/src/use-cases/teams/create-invite.ts`
 - **change-member-role.ts** (17 connections) — `packages/application/src/use-cases/teams/change-member-role.ts`
-- **remove-member.ts** (17 connections) — `packages/application/src/use-cases/teams/remove-member.ts`
-- **add-team-member.ts** (13 connections) — `packages/application/src/use-cases/teams/add-team-member.ts`
-- **rename-team.ts** (13 connections) — `packages/application/src/use-cases/teams/rename-team.ts`
-- **delete-team.ts** (11 connections) — `packages/application/src/use-cases/teams/delete-team.ts`
-- **removeMember()** (11 connections) — `packages/domain/src/identity/membership.ts`
-- **.execute()** (10 connections) — `packages/application/src/use-cases/identity/delete-account.ts`
-- **changeMemberRole()** (10 connections) — `packages/domain/src/identity/membership.ts`
-- **.execute()** (9 connections) — `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- **list-team-members.ts** (14 connections) — `packages/application/src/use-cases/teams/list-team-members.ts`
+- **list-teams.ts** (14 connections) — `packages/application/src/use-cases/teams/list-teams.ts`
+- **MembershipBuilder** (12 connections) — `packages/domain/src/identity/membership.ts`
+- **Membership** (9 connections) — `packages/domain/src/identity/membership.ts`
 - **parseRole()** (9 connections) — `packages/application/src/use-cases/teams/access.ts`
 - **.execute()** (9 connections) — `packages/application/src/use-cases/teams/change-member-role.ts`
-- **.execute()** (9 connections) — `packages/application/src/use-cases/teams/remove-member.ts`
-- **.execute()** (9 connections) — `packages/application/src/use-cases/teams/team-tasks.ts`
-- **isTeamRole()** (9 connections) — `packages/domain/src/identity/membership.ts`
-- **.execute()** (8 connections) — `packages/application/src/use-cases/teams/accept-invite.ts`
-- **membershipFrom()** (8 connections) — `packages/application/src/use-cases/teams/access.ts`
-- **.execute()** (8 connections) — `packages/application/src/use-cases/teams/create-invite.ts`
-- **.build()** (8 connections) — `packages/domain/src/identity/invite.ts`
-- *... and 27 more nodes in this community*
+- **UserRepository** (6 connections) — `packages/application/src/ports/persistence.port.ts`
+- **saveMemberships()** (6 connections) — `packages/application/src/use-cases/teams/access.ts`
+- **ChangeMemberRole** (5 connections) — `packages/application/src/use-cases/teams/change-member-role.ts`
+- **InviteAcceptance** (5 connections) — `packages/domain/src/identity/invite.ts`
+- **.create()** (5 connections) — `packages/domain/src/identity/membership.ts`
+- **RoomHostSeed** (4 connections) — `packages/domain/src/room/room-builder.ts`
+- **JoinInput** (4 connections) — `packages/domain/src/room/room.ts`
+- **.constructor()** (4 connections) — `packages/domain/src/identity/membership.ts`
+- **AcceptInviteResult** (3 connections) — `packages/application/src/use-cases/teams/accept-invite.ts`
+- **ChangeMemberRoleInput** (3 connections) — `packages/application/src/use-cases/teams/change-member-role.ts`
+- **CreateInviteInput** (3 connections) — `packages/application/src/use-cases/teams/create-invite.ts`
+- **CreateInviteResult** (3 connections) — `packages/application/src/use-cases/teams/create-invite.ts`
+- **TeamMemberSummary** (3 connections) — `packages/application/src/use-cases/teams/list-team-members.ts`
+- *... and 17 more nodes in this community*
 
 ## Relationships
 
-- [Community 8](Community_8.md) (88 shared connections)
-- [Community 4](Community_4.md) (73 shared connections)
-- [Community 2](Community_2.md) (33 shared connections)
-- [Community 16](Community_16.md) (29 shared connections)
-- [Community 1](Community_1.md) (21 shared connections)
-- [Community 9](Community_9.md) (20 shared connections)
-- [Community 22](Community_22.md) (20 shared connections)
-- [Community 5](Community_5.md) (20 shared connections)
-- [Community 15](Community_15.md) (19 shared connections)
-- [Community 32](Community_32.md) (14 shared connections)
-- [Community 24](Community_24.md) (12 shared connections)
-- [Community 34](Community_34.md) (11 shared connections)
+- [Community 8](Community_8.md) (46 shared connections)
+- [Community 2](Community_2.md) (20 shared connections)
+- [Community 5](Community_5.md) (18 shared connections)
+- [Community 4](Community_4.md) (18 shared connections)
+- [Community 9](Community_9.md) (15 shared connections)
+- [Community 43](Community_43.md) (13 shared connections)
+- [Community 88](Community_88.md) (10 shared connections)
+- [Community 16](Community_16.md) (9 shared connections)
+- [Community 18](Community_18.md) (8 shared connections)
+- [Community 31](Community_31.md) (8 shared connections)
+- [Community 24](Community_24.md) (7 shared connections)
+- [Community 62](Community_62.md) (7 shared connections)
 
 ## Source Files
 
-- `packages/adapter-auth-devfake/src/dev-fake-auth-provider.ts`
-- `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
-- `packages/application/src/use-cases/identity/delete-account.ts`
-- `packages/application/src/use-cases/rooms/purge-expired-rooms.ts`
-- `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- `packages/application/src/ports/persistence.port.ts`
 - `packages/application/src/use-cases/teams/accept-invite.ts`
 - `packages/application/src/use-cases/teams/access.ts`
-- `packages/application/src/use-cases/teams/add-team-member.ts`
 - `packages/application/src/use-cases/teams/change-member-role.ts`
 - `packages/application/src/use-cases/teams/create-invite.ts`
-- `packages/application/src/use-cases/teams/create-team.ts`
-- `packages/application/src/use-cases/teams/delete-team.ts`
-- `packages/application/src/use-cases/teams/remove-member.ts`
-- `packages/application/src/use-cases/teams/rename-team.ts`
-- `packages/application/src/use-cases/teams/team-tasks.ts`
+- `packages/application/src/use-cases/teams/list-team-members.ts`
+- `packages/application/src/use-cases/teams/list-teams.ts`
 - `packages/domain/src/identity/invite.ts`
+- `packages/domain/src/identity/membership.test.ts`
 - `packages/domain/src/identity/membership.ts`
-- `packages/domain/src/shared/result.ts`
-- `packages/domain/src/stats/estimation-indicators.ts`
-- `packages/testing/src/fakes/fake-auth-provider.ts`
+- `packages/domain/src/policy/can.ts`
+- `packages/domain/src/room/room-builder.ts`
+- `packages/domain/src/room/room.ts`
+- `packages/domain/src/shared/ids.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 597 (99%)
-- INFERRED: 4 (1%)
+- EXTRACTED: 294 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

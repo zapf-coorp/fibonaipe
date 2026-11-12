@@ -1,64 +1,58 @@
 # Community 27
 
-> 32 nodes · cohesion 0.10
+> 22 nodes · cohesion 0.11
 
 ## Key Concepts
 
-- **item.ts** (27 connections) — `packages/domain/src/planning/item.ts`
-- **fake-issue-tracker.ts** (20 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
-- **issue-tracker.contract.ts** (16 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
-- **import-items.test.ts** (15 connections) — `packages/adapter-issuetracker-manual/src/import-items.test.ts`
-- **issue-tracker.port.ts** (13 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **MAX_ITEMS_PER_ROOM** (10 connections) — `packages/domain/src/shared/constants.ts`
-- **.importItems()** (10 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
-- **IssueTrackerImportInput** (9 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **MAX_ITEM_TITLE_LENGTH** (9 connections) — `packages/domain/src/shared/constants.ts`
-- **MAX_ITEM_DESC_LENGTH** (8 connections) — `packages/domain/src/shared/constants.ts`
-- **ImportedBacklogBatch** (7 connections) — `packages/application/src/ports/issue-tracker.port.ts`
+- **planning-table.ts** (70 connections) — `packages/domain/src/planning/planning-table.ts`
+- **.rehydrate()** (16 connections) — `packages/domain/src/planning/planning-table.ts`
 - **ItemProps** (7 connections) — `packages/domain/src/planning/item.ts`
-- **itemsFromCsv()** (7 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
-- **ItemStatus** (6 connections) — `packages/domain/src/planning/item.ts`
-- **describeIssueTrackerContract()** (6 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
-- **validateTitle()** (6 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
-- **ImportedItemCandidate** (5 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **titlesFromText()** (4 connections) — `packages/testing/src/fakes/fake-issue-tracker.ts`
-- **StoredItem** (3 connections) — `packages/application/src/use-cases/room-session.ts`
-- **ExternalEstimateRef** (2 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **ImportRowWarning** (2 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **IssueTrackerProvider** (2 connections) — `packages/application/src/ports/issue-tracker.port.ts`
-- **isHttpUrl()** (2 connections) — `packages/domain/src/planning/item.ts`
-- **isItemStatus()** (2 connections) — `packages/domain/src/planning/item.ts`
-- **expectBatch()** (2 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
-- *... and 7 more nodes in this community*
+- **VoteProps** (7 connections) — `packages/domain/src/planning/vote.ts`
+- **EstimateAudit** (6 connections) — `packages/domain/src/planning/estimate-audit.ts`
+- **.create()** (4 connections) — `packages/domain/src/planning/item.ts`
+- **estimate-audit.ts** (4 connections) — `packages/domain/src/planning/estimate-audit.ts`
+- **GUEST_MAX_ITEMS** (4 connections) — `packages/domain/src/shared/constants.ts`
+- **TableOk** (3 connections) — `packages/domain/src/planning/planning-table.ts`
+- **actorOf()** (3 connections) — `packages/domain/src/planning/planning-table.ts`
+- **.record()** (2 connections) — `packages/domain/src/planning/estimate-audit.ts`
+- **contextOf()** (2 connections) — `packages/domain/src/planning/planning-table.ts`
+- **isOnline()** (2 connections) — `packages/domain/src/planning/planning-table.ts`
+- **numericCard()** (2 connections) — `packages/domain/src/planning/planning-table.ts`
+- **predominantSuit()** (2 connections) — `packages/domain/src/planning/planning-table.ts`
+- **teamRoleOf()** (2 connections) — `packages/domain/src/planning/planning-table.ts`
+- **.constructor()** (1 connections) — `packages/domain/src/planning/estimate-audit.ts`
+- **cardsByScale** (1 connections) — `packages/domain/src/planning/planning-table.ts`
+- **seatsByRoom** (1 connections) — `packages/domain/src/planning/planning-table.ts`
+- **SPECIAL_BY_LABEL** (1 connections) — `packages/domain/src/planning/planning-table.ts`
+- **SUIT_BY_KIND** (1 connections) — `packages/domain/src/planning/planning-table.ts`
+- **TEAM_ROLES** (1 connections) — `packages/domain/src/planning/planning-table.ts`
 
 ## Relationships
 
-- [Community 1](Community_1.md) (14 shared connections)
-- [Community 8](Community_8.md) (14 shared connections)
-- [Community 4](Community_4.md) (12 shared connections)
-- [Community 2](Community_2.md) (10 shared connections)
-- [Community 9](Community_9.md) (10 shared connections)
-- [Community 0](Community_0.md) (8 shared connections)
-- [Community 64](Community_64.md) (7 shared connections)
-- [Community 11](Community_11.md) (6 shared connections)
+- [Community 14](Community_14.md) (19 shared connections)
+- [Community 5](Community_5.md) (19 shared connections)
+- [Community 8](Community_8.md) (10 shared connections)
+- [Community 0](Community_0.md) (9 shared connections)
+- [Community 22](Community_22.md) (5 shared connections)
+- [Community 31](Community_31.md) (5 shared connections)
 - [Community 3](Community_3.md) (5 shared connections)
-- [Community 5](Community_5.md) (5 shared connections)
-- [Community 16](Community_16.md) (4 shared connections)
-- [Community 7](Community_7.md) (4 shared connections)
+- [Community 10](Community_10.md) (4 shared connections)
+- [Community 38](Community_38.md) (4 shared connections)
+- [Community 4](Community_4.md) (4 shared connections)
+- [Community 67](Community_67.md) (4 shared connections)
+- [Community 40](Community_40.md) (2 shared connections)
 
 ## Source Files
 
-- `packages/adapter-issuetracker-manual/src/import-items.test.ts`
-- `packages/application/src/ports/issue-tracker.port.ts`
-- `packages/application/src/use-cases/room-session.ts`
+- `packages/domain/src/planning/estimate-audit.ts`
 - `packages/domain/src/planning/item.ts`
+- `packages/domain/src/planning/planning-table.ts`
+- `packages/domain/src/planning/vote.ts`
 - `packages/domain/src/shared/constants.ts`
-- `packages/testing/src/contracts/issue-tracker.contract.ts`
-- `packages/testing/src/fakes/fake-issue-tracker.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 160 (100%)
+- EXTRACTED: 117 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

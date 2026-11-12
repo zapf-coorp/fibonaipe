@@ -65,13 +65,13 @@ describe("index.html shell", () => {
     expect(document.documentElement.dataset.theme).toBe("dark");
   });
 
-  it("applies a stored dark theme and en-US locale before paint", () => {
+  it("applies a stored dark theme and keeps a paused locale on pt-BR before paint", () => {
     localStorage.setItem("fibonaipe.theme", "dark");
     localStorage.setItem("fibonaipe.locale", "en-US");
     installColorScheme(false);
     runBootstrap();
     expect(document.documentElement.dataset.theme).toBe("dark");
-    expect(document.documentElement.lang).toBe("en-US");
+    expect(document.documentElement.lang).toBe("pt-BR");
   });
 
   it("keeps an explicit light theme when the OS is dark", () => {
@@ -95,6 +95,6 @@ describe("index.html shell", () => {
     installColorScheme(false);
     runBootstrap();
     expect(document.documentElement.dataset.theme).toBe("light");
-    expect(document.documentElement.lang).toBe("es-ES");
+    expect(document.documentElement.lang).toBe("pt-BR");
   });
 });

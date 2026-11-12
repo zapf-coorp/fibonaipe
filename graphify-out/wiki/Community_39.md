@@ -1,6 +1,6 @@
 # Community 39
 
-> 26 nodes · cohesion 0.12
+> 25 nodes · cohesion 0.12
 
 ## Key Concepts
 
@@ -16,34 +16,31 @@
 - **estimatedItemOf()** (2 connections) — `packages/application/src/projections/room-view.ts`
 - **isOnline()** (2 connections) — `packages/application/src/projections/room-view.ts`
 - **latestRound()** (2 connections) — `packages/application/src/projections/room-view.ts`
-- **ProjectedItem** (2 connections) — `packages/application/src/projections/room-view.ts`
 - **queueOf()** (2 connections) — `packages/application/src/projections/room-view.ts`
 - **settingsOf()** (2 connections) — `packages/application/src/projections/room-view.ts`
 - **teamRoleOf()** (2 connections) — `packages/application/src/projections/room-view.ts`
+- **ItemStatus** (1 connections) — `packages/application/src/projections/room-view.ts`
+- **ProjectedRound** (1 connections) — `packages/application/src/projections/room-view.ts`
+- **Viewer** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **ACTIONS** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **currentItemCache** (1 connections) — `packages/application/src/projections/room-view.ts`
-- **ItemStatus** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **permissionCache** (1 connections) — `packages/application/src/projections/room-view.ts`
-- **ProjectedRound** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **queueCache** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **roundCache** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **rowCache** (1 connections) — `packages/application/src/projections/room-view.ts`
 - **settingsCache** (1 connections) — `packages/application/src/projections/room-view.ts`
-- *... and 1 more nodes in this community*
 
 ## Relationships
 
-- [Community 0](Community_0.md) (7 shared connections)
-- [Community 38](Community_38.md) (4 shared connections)
-- [Community 66](Community_66.md) (3 shared connections)
+- [Community 22](Community_22.md) (7 shared connections)
+- [Community 8](Community_8.md) (6 shared connections)
+- [Community 67](Community_67.md) (3 shared connections)
+- [Community 40](Community_40.md) (2 shared connections)
+- [Community 9](Community_9.md) (2 shared connections)
 - [Community 3](Community_3.md) (2 shared connections)
-- [Community 8](Community_8.md) (2 shared connections)
-- [Community 112](Community_112.md) (2 shared connections)
-- [Community 10](Community_10.md) (2 shared connections)
-- [Community 22](Community_22.md) (1 shared connections)
+- [Community 5](Community_5.md) (2 shared connections)
+- [Community 11](Community_11.md) (1 shared connections)
 - [Community 31](Community_31.md) (1 shared connections)
-- [Community 19](Community_19.md) (1 shared connections)
-- [Community 1](Community_1.md) (1 shared connections)
 - [Community 2](Community_2.md) (1 shared connections)
 
 ## Source Files
@@ -52,7 +49,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 65 (100%)
+- EXTRACTED: 64 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

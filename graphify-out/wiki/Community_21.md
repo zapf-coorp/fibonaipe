@@ -1,6 +1,6 @@
 # Community 21
 
-> 42 nodes · cohesion 0.13
+> 55 nodes · cohesion 0.10
 
 ## Key Concepts
 
@@ -10,40 +10,41 @@
 - **Projector.tsx** (17 connections) — `apps/web/src/features/planning/Projector.tsx`
 - **ResultBanner.tsx** (15 connections) — `apps/web/src/features/planning/ResultBanner.tsx`
 - **record()** (13 connections) — `apps/web/src/features/planning/model.ts`
+- **EstimateDialog.tsx** (13 connections) — `apps/web/src/features/planning/EstimateDialog.tsx`
+- **SuitToggle.tsx** (12 connections) — `apps/web/src/features/planning/SuitToggle.tsx`
 - **Projector()** (11 connections) — `apps/web/src/features/planning/Projector.tsx`
 - **ResultBanner()** (11 connections) — `apps/web/src/features/planning/ResultBanner.tsx`
 - **RoomView** (10 connections) — `apps/web/src/features/planning/model.ts`
 - **seatsOf()** (10 connections) — `apps/web/src/features/planning/model.ts`
 - **SettingsSheet.tsx** (10 connections) — `apps/web/src/features/planning/SettingsSheet.tsx`
+- **selfId()** (9 connections) — `apps/web/src/features/planning/model.ts`
+- **QrCode()** (8 connections) — `apps/web/src/client/components/share/QrCode.tsx`
 - **activeCards()** (8 connections) — `apps/web/src/features/planning/model.ts`
+- **can()** (8 connections) — `apps/web/src/features/planning/model.ts`
 - **currentItem()** (8 connections) — `apps/web/src/features/planning/model.ts`
 - **roundStatus()** (8 connections) — `apps/web/src/features/planning/model.ts`
 - **SeatList.tsx** (8 connections) — `apps/web/src/features/planning/SeatList.tsx`
 - **itemsOf()** (7 connections) — `apps/web/src/features/planning/model.ts`
+- **ProjectorPage.tsx** (7 connections) — `apps/web/src/client/pages/ProjectorPage.tsx`
 - **EstimateDialog()** (6 connections) — `apps/web/src/features/planning/EstimateDialog.tsx`
 - **showAverage()** (6 connections) — `apps/web/src/features/planning/model.ts`
-- **room-menu.ts** (6 connections) — `apps/web/src/features/planning/room-menu.ts`
-- **SeatList()** (6 connections) — `apps/web/src/features/planning/SeatList.tsx`
-- **SettingsSheet()** (6 connections) — `apps/web/src/features/planning/SettingsSheet.tsx`
-- **isRecord()** (4 connections) — `apps/web/src/features/planning/model.ts`
-- **ownCard()** (4 connections) — `apps/web/src/features/planning/model.ts`
-- **ownComment()** (4 connections) — `apps/web/src/features/planning/model.ts`
-- **statsOf()** (4 connections) — `apps/web/src/features/planning/model.ts`
-- *... and 17 more nodes in this community*
+- **timerEndsAt()** (6 connections) — `apps/web/src/features/planning/model.ts`
+- *... and 30 more nodes in this community*
 
 ## Relationships
 
-- [Community 37](Community_37.md) (26 shared connections)
-- [Community 25](Community_25.md) (22 shared connections)
-- [Community 26](Community_26.md) (18 shared connections)
-- [Community 42](Community_42.md) (18 shared connections)
-- [Community 12](Community_12.md) (13 shared connections)
-- [Community 74](Community_74.md) (10 shared connections)
-- [Community 13](Community_13.md) (5 shared connections)
-- [Community 23](Community_23.md) (1 shared connections)
+- [Community 37](Community_37.md) (39 shared connections)
+- [Community 26](Community_26.md) (25 shared connections)
+- [Community 25](Community_25.md) (17 shared connections)
+- [Community 23](Community_23.md) (14 shared connections)
+- [Community 74](Community_74.md) (8 shared connections)
+- [Community 12](Community_12.md) (8 shared connections)
+- [Community 13](Community_13.md) (7 shared connections)
 
 ## Source Files
 
+- `apps/web/src/client/components/share/QrCode.tsx`
+- `apps/web/src/client/pages/ProjectorPage.tsx`
 - `apps/web/src/features/planning/EstimateDialog.tsx`
 - `apps/web/src/features/planning/Projector.tsx`
 - `apps/web/src/features/planning/ResultBanner.tsx`
@@ -56,7 +57,7 @@
 
 ## Audit Trail
 
-- EXTRACTED: 227 (99%)
+- EXTRACTED: 267 (99%)
 - INFERRED: 2 (1%)
 - AMBIGUOUS: 0 (0%)
 

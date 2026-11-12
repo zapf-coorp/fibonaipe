@@ -8,17 +8,16 @@
 - **.loadStore()** (18 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **createSqlitePersistence()** (13 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **text()** (12 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
+- **sqlite-persistence.test.ts** (11 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.test.ts`
 - **SqlitePersistenceStore** (10 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **.transaction()** (10 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
-- **src/sprint-repository.test.ts** (9 connections) — `packages/adapter-persistence-sqlite/src/sprint-repository.test.ts`
 - **isRecord()** (9 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
-- **TransactionOptions** (9 connections) — `packages/application/src/ports/persistence.port.ts`
 - **roomFromRow()** (8 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **reviveDates()** (6 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
-- **adapter-persistence-sqlite/src/index.ts** (5 connections) — `packages/adapter-persistence-sqlite/src/index.ts`
 - **historyFromRow()** (5 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **integer()** (5 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **.persist()** (5 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
+- **adapter-persistence-sqlite/src/index.ts** (5 connections) — `packages/adapter-persistence-sqlite/src/index.ts`
 - **cloneData()** (4 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **createRepos()** (4 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **ensureColumn()** (4 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
@@ -29,33 +28,33 @@
 - **asRecords()** (3 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **auditFromRow()** (3 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - **ensureHistorySchema()** (3 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
+- **ensureIdentitySchema()** (3 connections) — `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
 - *... and 34 more nodes in this community*
 
 ## Relationships
 
-- [Community 18](Community_18.md) (18 shared connections)
-- [Community 22](Community_22.md) (5 shared connections)
-- [Community 53](Community_53.md) (5 shared connections)
-- [Community 4](Community_4.md) (4 shared connections)
-- [Community 9](Community_9.md) (4 shared connections)
+- [Community 18](Community_18.md) (11 shared connections)
+- [Community 16](Community_16.md) (8 shared connections)
+- [Community 4](Community_4.md) (5 shared connections)
+- [Community 88](Community_88.md) (5 shared connections)
 - [Community 58](Community_58.md) (3 shared connections)
-- [Community 20](Community_20.md) (3 shared connections)
-- [Community 11](Community_11.md) (3 shared connections)
-- [Community 1](Community_1.md) (3 shared connections)
+- [Community 5](Community_5.md) (3 shared connections)
+- [Community 45](Community_45.md) (2 shared connections)
 - [Community 56](Community_56.md) (2 shared connections)
+- [Community 11](Community_11.md) (2 shared connections)
+- [Community 8](Community_8.md) (2 shared connections)
 - [Community 2](Community_2.md) (2 shared connections)
-- [Community 54](Community_54.md) (2 shared connections)
+- [Community 34](Community_34.md) (2 shared connections)
 
 ## Source Files
 
 - `packages/adapter-persistence-sqlite/src/index.ts`
-- `packages/adapter-persistence-sqlite/src/sprint-repository.test.ts`
+- `packages/adapter-persistence-sqlite/src/sqlite-persistence.test.ts`
 - `packages/adapter-persistence-sqlite/src/sqlite-persistence.ts`
-- `packages/application/src/ports/persistence.port.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 189 (100%)
+- EXTRACTED: 183 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

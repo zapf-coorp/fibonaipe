@@ -8,9 +8,9 @@
 - **installLoopbackGuard()** (3 connections) — `apps/web/src/client/connection/loopback-guard.ts`
 - **isTestLoopback()** (2 connections) — `apps/web/src/client/connection/loopback-guard.ts`
 - **resolveFetchUrl()** (2 connections) — `apps/web/src/client/connection/loopback-guard.ts`
-- **guardedWindows** (1 connections) — `apps/web/src/client/connection/loopback-guard.ts`
 - **HappyDomSettings** (1 connections) — `apps/web/src/client/connection/loopback-guard.ts`
 - **HappyDomWindow** (1 connections) — `apps/web/src/client/connection/loopback-guard.ts`
+- **guardedWindows** (1 connections) — `apps/web/src/client/connection/loopback-guard.ts`
 
 ## Relationships
 

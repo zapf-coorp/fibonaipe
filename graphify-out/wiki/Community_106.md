@@ -1,38 +1,38 @@
 # Community 106
 
-> 8 nodes · cohesion 0.25
+> 7 nodes · cohesion 0.43
 
 ## Key Concepts
 
-- **record-aggregated-history.test.ts** (45 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **forbiddenKeys()** (3 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **reveal()** (2 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **vote()** (2 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **FORBIDDEN_KEYS** (1 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **historyCount()** (1 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **Seat** (1 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
-- **seatsOf()** (1 connections) — `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
+- **sprints/estimation-indicators.ts** (17 connections) — `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- **.execute()** (9 connections) — `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- **computeEstimationIndicators()** (5 connections) — `packages/domain/src/stats/estimation-indicators.ts`
+- **stats/estimation-indicators.ts** (5 connections) — `packages/domain/src/stats/estimation-indicators.ts`
+- **EstimationIndicators** (4 connections) — `packages/domain/src/stats/estimation-indicators.ts`
+- **stats/estimation-indicators.test.ts** (3 connections) — `packages/domain/src/stats/estimation-indicators.test.ts`
+- **FIBONACCI** (1 connections) — `packages/application/src/use-cases/sprints/estimation-indicators.ts`
 
 ## Relationships
 
-- [Community 7](Community_7.md) (15 shared connections)
-- [Community 2](Community_2.md) (11 shared connections)
-- [Community 10](Community_10.md) (4 shared connections)
-- [Community 55](Community_55.md) (3 shared connections)
-- [Community 18](Community_18.md) (2 shared connections)
-- [Community 54](Community_54.md) (1 shared connections)
-- [Community 33](Community_33.md) (1 shared connections)
-- [Community 1](Community_1.md) (1 shared connections)
-- [Community 16](Community_16.md) (1 shared connections)
-- [Community 20](Community_20.md) (1 shared connections)
+- [Community 8](Community_8.md) (8 shared connections)
+- [Community 5](Community_5.md) (5 shared connections)
+- [Community 4](Community_4.md) (4 shared connections)
+- [Community 15](Community_15.md) (2 shared connections)
+- [Community 9](Community_9.md) (2 shared connections)
+- [Community 2](Community_2.md) (2 shared connections)
+- [Community 24](Community_24.md) (1 shared connections)
+- [Community 10](Community_10.md) (1 shared connections)
+- [Community 11](Community_11.md) (1 shared connections)
 
 ## Source Files
 
-- `packages/application/src/use-cases/history/record-aggregated-history.test.ts`
+- `packages/application/src/use-cases/sprints/estimation-indicators.ts`
+- `packages/domain/src/stats/estimation-indicators.test.ts`
+- `packages/domain/src/stats/estimation-indicators.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 48 (100%)
+- EXTRACTED: 35 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

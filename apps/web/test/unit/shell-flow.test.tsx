@@ -8,8 +8,6 @@ import { installColorScheme } from "../support/match-media.js";
 import { readJson } from "../support/read-source.js";
 
 const PT_BR = "apps/web/src/client/i18n/locales/pt-BR.json";
-const EN_US = "apps/web/src/client/i18n/locales/en-US.json";
-const ES_ES = "apps/web/src/client/i18n/locales/es-ES.json";
 
 function readPolite(): string {
   return [...document.querySelectorAll("[aria-live='polite']")].map((node) => node.textContent ?? "").join("");
@@ -191,19 +189,16 @@ describe("mobile-first shell", () => {
     expect(document.documentElement.dataset.theme).toBe("light");
   });
 
-  it("switches the visible shell from pt-BR to en-US to es-ES without a reload", async () => {
+  it("keeps the shell in pt-BR while other locales are paused", async () => {
     await boot();
     expect(document.documentElement.lang).toBe("pt-BR");
-    chooseLabeled("English");
-    expect(document.documentElement.lang).toBe("en-US");
-    expect(localStorage.getItem("fibonaipe.locale")).toBe("en-US");
-    const enSkip = flattenCatalog(readJson(EN_US))["app.skipToMain"];
-    expect(screen.getByRole("link", { name: enSkip })).toBeTruthy();
-    chooseLabeled("Español");
-    expect(document.documentElement.lang).toBe("es-ES");
-    expect(localStorage.getItem("fibonaipe.locale")).toBe("es-ES");
-    const esSkip = flattenCatalog(readJson(ES_ES))["app.skipToMain"];
-    expect(screen.getByRole("link", { name: esSkip })).toBeTruthy();
+    const profile = document.querySelector("[aria-controls='profile-menu']");
+    if (!(profile instanceof HTMLElement)) throw new Error("profile menu missing");
+    fireEvent.click(profile);
+    const locale = screen.getByRole("combobox", { name: "Idioma" });
+    expect(locale.querySelector("option")?.textContent).toBe("Português (BR)");
+    expect(locale.querySelectorAll("option")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: "Pular para o conteúdo principal" })).toBeTruthy();
   });
 
   it("keeps the banner on the room route", async () => {

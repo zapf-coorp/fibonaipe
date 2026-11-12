@@ -1,67 +1,63 @@
 # Community 16
 
-> 47 nodes · cohesion 0.07
+> 39 nodes · cohesion 0.09
 
 ## Key Concepts
 
-- **room-session.ts** (143 connections) — `packages/application/src/use-cases/room-session.ts`
-- **create-team-room.ts** (28 connections) — `packages/application/src/use-cases/teams/create-team-room.ts`
-- **link-guest-to-account.ts** (18 connections) — `packages/application/src/use-cases/identity/link-guest-to-account.ts`
-- **claim-room.ts** (18 connections) — `packages/application/src/use-cases/teams/claim-room.ts`
-- **hydrate()** (14 connections) — `packages/application/src/use-cases/room-session.ts`
-- **list-team-members.ts** (14 connections) — `packages/application/src/use-cases/teams/list-team-members.ts`
-- **list-teams.ts** (14 connections) — `packages/application/src/use-cases/teams/list-teams.ts`
-- **.execute()** (13 connections) — `packages/application/src/use-cases/items/item-commands.ts`
-- **.execute()** (13 connections) — `packages/application/src/use-cases/rooms/create-room.ts`
-- **saveRoom()** (12 connections) — `packages/application/src/use-cases/room-session.ts`
-- **.execute()** (12 connections) — `packages/application/src/use-cases/teams/create-team-room.ts`
-- **.execute()** (10 connections) — `packages/application/src/use-cases/identity/link-guest-to-account.ts`
-- **inLockedRoom()** (10 connections) — `packages/application/src/use-cases/room-session.ts`
-- **.execute()** (10 connections) — `packages/application/src/use-cases/teams/claim-room.ts`
-- **authorize()** (9 connections) — `packages/application/src/use-cases/room-session.ts`
-- **deliver()** (7 connections) — `packages/application/src/use-cases/room-session.ts`
-- **freshItem()** (7 connections) — `packages/application/src/use-cases/room-session.ts`
-- **participantJoined()** (7 connections) — `packages/application/src/use-cases/room-session.ts`
-- **.open()** (7 connections) — `packages/domain/src/planning/planning-table.ts`
-- **defaultRoomSettings()** (7 connections) — `packages/domain/src/room/room-settings-builder.ts`
-- **hydrateIn()** (6 connections) — `packages/application/src/use-cases/room-session.ts`
-- **itemPropsOf()** (6 connections) — `packages/application/src/use-cases/room-session.ts`
-- **LinkGuestToAccount** (5 connections) — `packages/application/src/use-cases/identity/link-guest-to-account.ts`
-- **.execute()** (5 connections) — `packages/application/src/use-cases/items/item-commands.ts`
-- **guestExpiry()** (5 connections) — `packages/application/src/use-cases/room-session.ts`
-- *... and 22 more nodes in this community*
+- **persistence.port.ts** (61 connections) — `packages/application/src/ports/persistence.port.ts`
+- **ParticipantId** (35 connections) — `packages/domain/src/shared/ids.ts`
+- **ItemId** (28 connections) — `packages/domain/src/shared/ids.ts`
+- **events.ts** (23 connections) — `packages/application/src/projections/events.ts`
+- **record-aggregated-history.ts** (22 connections) — `packages/application/src/use-cases/history/record-aggregated-history.ts`
+- **edit-final-estimate.ts** (20 connections) — `packages/application/src/use-cases/history/edit-final-estimate.ts`
+- **RoundId** (17 connections) — `packages/domain/src/shared/ids.ts`
+- **TransactionRepos** (13 connections) — `packages/application/src/ports/persistence.port.ts`
+- **ClientOpId** (11 connections) — `packages/domain/src/shared/ids.ts`
+- **EstimateAuditRecord** (10 connections) — `packages/application/src/ports/persistence.port.ts`
+- **.append()** (10 connections) — `packages/application/src/use-cases/history/record-aggregated-history.ts`
+- **HistoryQuery** (8 connections) — `packages/application/src/ports/persistence.port.ts`
+- **InviteRepository** (6 connections) — `packages/application/src/ports/persistence.port.ts`
+- **ParticipantProps** (5 connections) — `packages/domain/src/room/participant.ts`
+- **EstimateAuditId** (5 connections) — `packages/domain/src/shared/ids.ts`
+- **IdempotencyRepository** (4 connections) — `packages/application/src/ports/persistence.port.ts`
+- **PersistedRoomItem** (4 connections) — `packages/application/src/ports/persistence.port.ts`
+- **RoundStartedPayload** (4 connections) — `packages/application/src/projections/events.ts`
+- **HostTransferredPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **ItemEstimateFinalizedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **ItemQueueUpdatedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **ParticipantDisconnectedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **ParticipantJoinedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **ParticipantUpdatedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- **RoomClaimedPayload** (3 connections) — `packages/application/src/projections/events.ts`
+- *... and 14 more nodes in this community*
 
 ## Relationships
 
-- [Community 10](Community_10.md) (35 shared connections)
-- [Community 8](Community_8.md) (29 shared connections)
-- [Community 11](Community_11.md) (29 shared connections)
-- [Community 4](Community_4.md) (28 shared connections)
-- [Community 9](Community_9.md) (19 shared connections)
-- [Community 7](Community_7.md) (15 shared connections)
-- [Community 19](Community_19.md) (14 shared connections)
-- [Community 31](Community_31.md) (12 shared connections)
-- [Community 1](Community_1.md) (11 shared connections)
-- [Community 38](Community_38.md) (11 shared connections)
-- [Community 2](Community_2.md) (9 shared connections)
-- [Community 24](Community_24.md) (8 shared connections)
+- [Community 9](Community_9.md) (22 shared connections)
+- [Community 18](Community_18.md) (22 shared connections)
+- [Community 5](Community_5.md) (17 shared connections)
+- [Community 20](Community_20.md) (14 shared connections)
+- [Community 10](Community_10.md) (13 shared connections)
+- [Community 8](Community_8.md) (13 shared connections)
+- [Community 2](Community_2.md) (13 shared connections)
+- [Community 88](Community_88.md) (10 shared connections)
+- [Community 11](Community_11.md) (9 shared connections)
+- [Community 31](Community_31.md) (9 shared connections)
+- [Community 6](Community_6.md) (8 shared connections)
+- [Community 4](Community_4.md) (8 shared connections)
 
 ## Source Files
 
-- `packages/application/src/use-cases/identity/link-guest-to-account.ts`
-- `packages/application/src/use-cases/items/item-commands.ts`
-- `packages/application/src/use-cases/room-session.ts`
-- `packages/application/src/use-cases/rooms/create-room.ts`
-- `packages/application/src/use-cases/teams/claim-room.ts`
-- `packages/application/src/use-cases/teams/create-team-room.ts`
-- `packages/application/src/use-cases/teams/list-team-members.ts`
-- `packages/application/src/use-cases/teams/list-teams.ts`
-- `packages/domain/src/planning/planning-table.ts`
-- `packages/domain/src/room/room-settings-builder.ts`
+- `packages/application/src/ports/persistence.port.ts`
+- `packages/application/src/projections/events.ts`
+- `packages/application/src/use-cases/history/edit-final-estimate.ts`
+- `packages/application/src/use-cases/history/record-aggregated-history.ts`
+- `packages/domain/src/room/participant.ts`
+- `packages/domain/src/shared/ids.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 369 (100%)
+- EXTRACTED: 272 (100%)
 - INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 

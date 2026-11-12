@@ -1,48 +1,45 @@
 # Community 69
 
-> 13 nodes · cohesion 0.27
+> 10 nodes · cohesion 0.31
 
 ## Key Concepts
 
-- **ForecastDashboard.tsx** (13 connections) — `apps/web/src/features/forecast/ForecastDashboard.tsx`
-- **ForecastChart.tsx** (8 connections) — `apps/web/src/features/forecast/ForecastChart.tsx`
-- **forecast-ui.test.tsx** (8 connections) — `apps/web/test/unit/forecast-ui.test.tsx`
-- **ForecastCard.tsx** (7 connections) — `apps/web/src/features/forecast/ForecastCard.tsx`
-- **ForecastDashboard()** (7 connections) — `apps/web/src/features/forecast/ForecastDashboard.tsx`
-- **ForecastChart()** (6 connections) — `apps/web/src/features/forecast/ForecastChart.tsx`
-- **ForecastCard()** (5 connections) — `apps/web/src/features/forecast/ForecastCard.tsx`
-- **ForecastResult** (4 connections) — `packages/domain/src/forecast/compute-forecast.ts`
-- **.teamId()** (3 connections) — `packages/domain/src/sprints/sprint.ts`
-- **dashboardRoute** (2 connections) — `apps/web/src/client/router.tsx`
-- **download()** (2 connections) — `apps/web/src/features/forecast/ForecastChart.tsx`
-- **exportFromServer()** (2 connections) — `apps/web/src/features/forecast/ForecastChart.tsx`
-- **submit()** (2 connections) — `apps/web/src/features/sprints/CapacityGrid.tsx`
+- **issue-tracker.contract.ts** (16 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
+- **import-items.test.ts** (15 connections) — `packages/adapter-issuetracker-manual/src/import-items.test.ts`
+- **MAX_ITEMS_PER_ROOM** (10 connections) — `packages/domain/src/shared/constants.ts`
+- **describeIssueTrackerContract()** (6 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
+- **expectBatch()** (2 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
+- **expectError()** (2 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
+- **okBatch()** (2 connections) — `packages/testing/src/contracts/issue-tracker.contract.ts`
+- **expectBatch()** (1 connections) — `packages/adapter-issuetracker-manual/src/import-items.test.ts`
+- **expectError()** (1 connections) — `packages/adapter-issuetracker-manual/src/import-items.test.ts`
+- **fields()** (1 connections) — `packages/adapter-issuetracker-manual/src/import-items.test.ts`
 
 ## Relationships
 
-- [Community 1](Community_1.md) (7 shared connections)
-- [Community 13](Community_13.md) (7 shared connections)
-- [Community 26](Community_26.md) (6 shared connections)
-- [Community 12](Community_12.md) (3 shared connections)
-- [Community 42](Community_42.md) (2 shared connections)
-- [Community 2](Community_2.md) (1 shared connections)
-- [Community 32](Community_32.md) (1 shared connections)
+- [Community 9](Community_9.md) (5 shared connections)
+- [Community 2](Community_2.md) (4 shared connections)
+- [Community 4](Community_4.md) (4 shared connections)
+- [Community 5](Community_5.md) (4 shared connections)
+- [Community 38](Community_38.md) (3 shared connections)
+- [Community 64](Community_64.md) (2 shared connections)
+- [Community 58](Community_58.md) (1 shared connections)
+- [Community 56](Community_56.md) (1 shared connections)
+- [Community 7](Community_7.md) (1 shared connections)
+- [Community 27](Community_27.md) (1 shared connections)
+- [Community 3](Community_3.md) (1 shared connections)
+- [Community 45](Community_45.md) (1 shared connections)
 
 ## Source Files
 
-- `apps/web/src/client/router.tsx`
-- `apps/web/src/features/forecast/ForecastCard.tsx`
-- `apps/web/src/features/forecast/ForecastChart.tsx`
-- `apps/web/src/features/forecast/ForecastDashboard.tsx`
-- `apps/web/src/features/sprints/CapacityGrid.tsx`
-- `apps/web/test/unit/forecast-ui.test.tsx`
-- `packages/domain/src/forecast/compute-forecast.ts`
-- `packages/domain/src/sprints/sprint.ts`
+- `packages/adapter-issuetracker-manual/src/import-items.test.ts`
+- `packages/domain/src/shared/constants.ts`
+- `packages/testing/src/contracts/issue-tracker.contract.ts`
 
 ## Audit Trail
 
-- EXTRACTED: 46 (96%)
-- INFERRED: 2 (4%)
+- EXTRACTED: 42 (100%)
+- INFERRED: 0 (0%)
 - AMBIGUOUS: 0 (0%)
 
 ---

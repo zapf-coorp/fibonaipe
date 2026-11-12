@@ -18,3 +18,4 @@ data/*.sqlite-*
 .zteam/config.json
 
 graphify-out/cache/
+.cursor/mcp.json

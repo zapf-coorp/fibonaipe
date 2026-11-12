@@ -227,6 +227,7 @@
 
 .panel h2,
 .feature h2,
+.sheet h1,
 .sheet h2,
 .lede {
   margin: 0;
@@ -267,6 +268,13 @@
   font-family: var(--font-display);
 }
 
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
 .code {
   margin: 0;
   padding: var(--space-3) var(--space-4);
@@ -277,6 +285,42 @@
   font-family: var(--font-display);
   font-size: 1.75rem;
   letter-spacing: 0.08em;
+}
+
+.copyIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+}
+
+.enterRow {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: var(--space-3);
+}
+
+.enterRoom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.35rem;
+  color: var(--ink);
+  background: var(--ribbon);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.enterRoom:hover {
+  background: var(--accent-primary-hover);
 }
 
 @media (min-width: 768px) {

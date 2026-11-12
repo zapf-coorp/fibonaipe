@@ -113,17 +113,20 @@ describe("room entry UI", () => {
     fireEvent.click(screen.getByRole("button", { name: "Criar sala" }));
     fireEvent.change(control(/nome da sala|nome/i), { target: { value: "Sprint" } });
     fireEvent.click(screen.getByRole("button", { name: "Criar sala" }));
-    expect(await screen.findByRole("link", { name: new RegExp(ROOM_CODE) })).toHaveAttribute("href", `/r/${ROOM_CODE}`);
-    expect(document.body.textContent).toContain(ROOM_CODE);
-    expect(screen.getByRole("button", { name: /copiar/i })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /qr/i }));
-    const dialog = screen.getByRole("dialog", { name: /qr/i });
-    expect(dialog.querySelector("svg, canvas")).not.toBeNull();
-    expect(dialog.querySelector("img[src^='http']")).toBeNull();
+    expect(await screen.findByRole("heading", { name: "Criar sala" })).toBeTruthy();
+    expect(screen.getByText("Envie o código da sala para entrar com o código.")).toBeTruthy();
+    expect(screen.getByText(ROOM_CODE).closest("a")).toBeNull();
+    expect(screen.getByRole("button", { name: "Copiar" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copiar link de convite" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Entrar com QR Code" })).toBeTruthy();
+    const qr = document.querySelector("svg");
+    expect(qr).not.toBeNull();
+    expect(document.querySelector("img[src^='http']")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Entrar com código" })).toBeNull();
+    expect(screen.getByRole("link", { name: `Entrar na sala ${ROOM_CODE}` })).toHaveAttribute("href", `/r/${ROOM_CODE}`);
     expect(document.body.innerHTML).not.toMatch(/qrserver|quickchart|chart\.googleapis/i);
     expect(requested.some((url) => /qrserver|quickchart|chart\.googleapis/i.test(url))).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: /entrar com código/i }));
-    expect(screen.queryByRole("dialog", { name: /qr/i })).toBeNull();
   });
 
   it("prefills the room code on the join screen at 360px without horizontal scroll", async () => {

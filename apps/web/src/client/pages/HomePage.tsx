@@ -33,7 +33,6 @@ export function HomePage() {
   const [timer, setTimer] = useState(60);
   const [average, setAverage] = useState(true);
   const [createdCode, setCreatedCode] = useState("");
-  const [qrOpen, setQrOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState<readonly AccountTeam[]>([]);
@@ -54,39 +53,43 @@ export function HomePage() {
 
   if (phase === "share") {
     const href = `/r/${createdCode}`;
+    const absolute = `${window.location.origin}${href}`;
     return (
       <div className={styles.stage}>
         <div className={styles.sheet + " surface"}>
-        <a href={href}>{createdCode}</a>
-        <p className={styles.code + " surface tabular-nums"}>{createdCode}</p>
-        <button
-          type="button"
-          style={touchTargetStyle}
-          onClick={() => {
-            const absolute = `${window.location.origin}${href}`;
-            void navigator.clipboard?.writeText(absolute);
-          }}
-        >
-          {t("share.copy")}
-        </button>
-        <button type="button" style={touchTargetStyle} onClick={() => setQrOpen(true)}>
-          {t("share.showQr")}
-        </button>
-        {qrOpen ? (
-          <div role="dialog" aria-label={t("share.qrTitle")}>
-            <QrCode value={`${window.location.origin}${href}`} />
+          <h1>{t("share.title")}</h1>
+          <p>{t("share.sendCode")}</p>
+          <div className={styles.codeRow}>
+            <p className={styles.code + " surface tabular-nums"}>{createdCode}</p>
+            <button
+              type="button"
+              className={styles.copyIcon}
+              style={touchTargetStyle}
+              aria-label={t("share.copy")}
+              onClick={() => {
+                void navigator.clipboard?.writeText(createdCode);
+              }}
+            >
+              <CopyIcon />
+            </button>
           </div>
-        ) : null}
-        <button
-          type="button"
-          style={touchTargetStyle}
-          onClick={() => {
-            setQrOpen(false);
-            setPhase("landing");
-          }}
-        >
-          {t("home.enterWithCode")}
-        </button>
+          <p>{t("share.inviteByLink")}</p>
+          <button
+            type="button"
+            style={touchTargetStyle}
+            onClick={() => {
+              void navigator.clipboard?.writeText(absolute);
+            }}
+          >
+            {t("share.copyLink")}
+          </button>
+          <h2>{t("share.qrHeading")}</h2>
+          <QrCode value={absolute} />
+          <div className={styles.enterRow}>
+            <a className={styles.enterRoom} href={href}>
+              {t("share.enterRoom", { code: createdCode })}
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -214,7 +217,6 @@ export function HomePage() {
               }).then((code) => {
                 if (!code) return;
                 setCreatedCode(code);
-                setQrOpen(false);
                 setPhase("share");
               });
             }}
@@ -353,4 +355,13 @@ async function createRoom(input: {
     }),
   });
   return body.code;
+}
+
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <rect x="2" y="2" width="13" height="13" rx="1.5" fill="var(--card-face)" stroke="currentColor" strokeWidth="1.75" />
+      <rect x="9" y="9" width="13" height="13" rx="1.5" fill="var(--card-face)" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  );
 }

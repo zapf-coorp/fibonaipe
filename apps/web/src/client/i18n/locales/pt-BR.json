@@ -73,7 +73,13 @@
     "average": "Média"
   },
   "share": {
+    "title": "Criar sala",
+    "sendCode": "Envie o código da sala para entrar com o código.",
     "copy": "Copiar",
+    "inviteByLink": "Convide pessoas diretamente pelo link da sala.",
+    "copyLink": "Copiar link de convite",
+    "qrHeading": "Entrar com QR Code",
+    "enterRoom": "Entrar na sala {code}",
     "showQr": "Mostrar QR",
     "qrTitle": "QR da sala"
   },

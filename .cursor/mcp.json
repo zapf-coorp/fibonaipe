@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "graphify": {
+      "command": "C:/Users/htzc/.local/bin/graphify-mcp.exe",
+      "args": ["C:/GIT/ZAPFCOOORP/fibonaipe/graphify-out/graph.json"]
+    }
+  }
+}

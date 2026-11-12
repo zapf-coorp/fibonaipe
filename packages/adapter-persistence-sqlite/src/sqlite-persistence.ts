@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS team_tasks (
   team_id TEXT NOT NULL,
   title TEXT NOT NULL,
   sprint_name TEXT NOT NULL,
+  link TEXT NOT NULL DEFAULT '',
   task_number INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS users (
@@ -130,6 +131,7 @@ export function createSqlitePersistence(filename: string = ":memory:"): SqlitePe
   ensureSprintStateColumn(db);
   ensureIdentitySchema(db);
   ensureHistorySchema(db);
+  ensureTeamTaskLink(db);
   return new SqlitePersistenceStore(db);
 }
 
@@ -220,6 +222,7 @@ class SqlitePersistenceStore implements Persistence {
         teamId: text(row, "team_id") as TeamId,
         title: text(row, "title"),
         sprintName: text(row, "sprint_name"),
+        link: text(row, "link"),
         number: integer(row, "task_number"),
       };
       store.teamTasks.set(task.id, task);
@@ -299,7 +302,7 @@ class SqlitePersistenceStore implements Persistence {
       }
       for (const id of dirty.teamTasks) {
         const task = working.teamTasks.get(id);
-        if (task) this.statements.upsertTeamTask.run(task.id, task.teamId, task.title, task.sprintName, task.number);
+        if (task) this.statements.upsertTeamTask.run(task.id, task.teamId, task.title, task.sprintName, task.link, task.number);
         else this.statements.deleteTeamTask.run(id);
       }
       for (const key of dirty.memberships) {
@@ -440,10 +443,10 @@ function prepare(db: DatabaseSync): Statements {
          from_label = excluded.from_label,
          to_label = excluded.to_label`,
     ),
-    teamTasksAll: db.prepare("SELECT id, team_id, title, sprint_name, task_number FROM team_tasks"),
+    teamTasksAll: db.prepare("SELECT id, team_id, title, sprint_name, link, task_number FROM team_tasks"),
     upsertTeamTask: db.prepare(
-      `INSERT INTO team_tasks (id, team_id, title, sprint_name, task_number) VALUES (?, ?, ?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, title = excluded.title, sprint_name = excluded.sprint_name, task_number = excluded.task_number`,
+      `INSERT INTO team_tasks (id, team_id, title, sprint_name, link, task_number) VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET team_id = excluded.team_id, title = excluded.title, sprint_name = excluded.sprint_name, link = excluded.link, task_number = excluded.task_number`,
     ),
     deleteTeamTask: db.prepare("DELETE FROM team_tasks WHERE id = ?"),
     teamsAll: db.prepare("SELECT id, name, organization_id FROM teams"),
@@ -873,6 +876,12 @@ function inviteRepos(working: MemoryStore, dirty: DirtySet): InviteRepository {
       return null;
     },
   };
+}
+
+function ensureTeamTaskLink(db: DatabaseSync): void {
+  const columns = db.prepare("PRAGMA table_info(team_tasks)").all();
+  const present = columns.some((column) => isRecord(column) && column.name === "link");
+  if (!present) db.exec("ALTER TABLE team_tasks ADD COLUMN link TEXT NOT NULL DEFAULT ''");
 }
 
 function ensurePlanningColumn(db: DatabaseSync): void {

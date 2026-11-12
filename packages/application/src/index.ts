@@ -137,4 +137,4 @@ export { RemoveMember, type RemoveMemberInput } from "./use-cases/teams/remove-m
 export { RenameTeam, type RenameTeamInput } from "./use-cases/teams/rename-team.js";
 export { DeleteTeam, type DeleteTeamInput } from "./use-cases/teams/delete-team.js";
 export { AddTeamMember, type AddTeamMemberInput } from "./use-cases/teams/add-team-member.js";
-export { ListTeamTasks, CreateTeamTask, type TeamTaskSummary, type CreateTeamTaskInput } from "./use-cases/teams/team-tasks.js";
+export { ListTeamTasks, CreateTeamTask, DeleteTeamTask, type TeamTaskSummary, type CreateTeamTaskInput } from "./use-cases/teams/team-tasks.js";

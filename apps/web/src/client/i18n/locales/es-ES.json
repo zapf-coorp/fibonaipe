@@ -7,7 +7,7 @@
   "sprintScope": { "title": "Alcance del sprint", "available": "Elementos estimados", "add": "Añadir {name}", "remove": "Eliminar {name}", "done": "Completar {name}", "addedLate": "Añadido tras el inicio", "completed": "Completado", "loadMore": "Cargar más", "noAvailable": "No hay ningún elemento estimado disponible para vincular." },
   "sprintOverrun": { "label": "Se superó la estimación de {name}" },
   "sprintClosure": { "carryOver": "Elementos que vuelven al backlog: {count}", "unestimated": "Elementos sin estimación: {count}" },
-  "teams": { "title": "Mis equipos", "subtitle": "Crea el equipo, invita a quien tiene cuenta y organiza las tareas por sprint.", "loading": "Cargando equipos...", "empty": "Todavía no participas en ningún equipo.", "error": "No se pudo cargar o crear el equipo.", "signInRequired": "Inicia sesión para ver y crear equipos.", "devLogin": "Iniciar sesión en modo Dev (fake)", "name": "Nombre del equipo", "create": "Crear equipo", "rename": "Editar nombre", "save": "Guardar nombre", "members": "Miembros", "membersOf": "Miembros de {name}", "tasks": "Tareas", "tasksOf": "Tareas de {name}", "email": "Correo de la cuenta", "send": "Enviar invitación", "copyLink": "Copiar enlace de invitación", "invited": "Enlace copiado", "remove": "Quitar", "delete": "Eliminar equipo", "close": "Cerrar", "filter": "Filtrar por sprint o tarea", "sprintHint": "Sprint...", "taskHint": "Tarea...", "include": "Incluir tarea", "roles": { "teamAdmin": "Administrador", "pm": "PM", "po": "PO", "dev": "Dev", "qa": "QA", "observer": "Observador" } },
+  "teams": { "title": "Mis equipos", "subtitle": "Crea el equipo, invita a quien tiene cuenta y organiza las tareas por sprint.", "loading": "Cargando equipos...", "empty": "Todavía no participas en ningún equipo.", "error": "No se pudo cargar o crear el equipo.", "signInRequired": "Inicia sesión para ver y crear equipos.", "devLogin": "Iniciar sesión en modo Dev (fake)", "name": "Nombre del equipo", "create": "Crear equipo", "rename": "Editar nombre", "save": "Guardar nombre", "members": "Miembros", "membersOf": "Miembros de {name}", "tasks": "Tareas", "tasksOf": "Tareas de {name}", "email": "Correo de la cuenta", "send": "Enviar invitación", "copyLink": "Copiar enlace de invitación", "invited": "Enlace copiado", "remove": "Quitar", "delete": "Eliminar equipo", "close": "Cerrar", "filter": "Filtrar por sprint o tarea", "sprintHint": "Sprint...", "taskHint": "Tarea...", "include": "Incluir tarea", "link": "Enlace", "addSprint": "Agregar {name}", "roles": { "teamAdmin": "Administrador", "pm": "PM", "po": "PO", "dev": "Dev", "qa": "QA", "observer": "Observador" } },
   "devAuth": { "title": "Inicio de sesión de desarrollo", "subtitle": "Elige un usuario fake para entrar. No se usan credenciales reales.", "note": "Este inicio de sesión solo existe en desarrollo. Usa correo (enlace mágico) o Google para simular la autenticación real.", "loading": "Cargando usuarios...", "disabled": "El inicio de sesión de desarrollo no está disponible. Define AUTH_DRIVER=dev-fake en desarrollo.", "error": "No se pudo iniciar sesión. Inténtalo de nuevo.", "email": "Entrar con correo", "google": "Entrar con Google", "signingIn": "Entrando...", "back": "Volver a mis equipos" },
   "app": {
     "title": "Fibonaipe",
@@ -107,6 +107,9 @@
     "import": "Importar",
     "importJson": "Importar JSON",
     "exportJson": "Exportar JSON",
+    "loadTeamTasks": "Cargar tareas del equipo",
+    "teamTasksEmpty": "No hay tareas del equipo sin votación.",
+    "team": "Equipo",
     "close": "Cerrar",
     "remove": "Quitar",
     "timerLabel": "Tiempo",

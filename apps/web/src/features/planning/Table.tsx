@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { QrCode } from "../../client/components/share/QrCode.js";
 import { useI18n } from "../../client/i18n/index.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
+import { loadTeams, useAccount } from "../auth/account.js";
 import { castVote, revealRound, startRoundTimer } from "./commands.js";
 import { Deck } from "./Deck.js";
 import { EstimateDialog } from "./EstimateDialog.js";
@@ -35,10 +36,26 @@ type DialogName = "queue" | "settings" | "estimate" | "qr";
 
 export function Table({ code, view }: { readonly code: string; readonly view: RoomView }) {
   const { t } = useI18n();
+  const { user, ready } = useAccount();
   const dismissedQueue = useRef(false);
   const [dialog, setDialog] = useState<DialogName | null>(null);
+  const [teamCheck, setTeamCheck] = useState<"pending" | "yes" | "no">("pending");
   const needsQueue = can(view, "manageQueue") && !itemsOf(view).some((row) => row.status === "current");
-  if (!dismissedQueue.current && needsQueue && dialog === null) setDialog("queue");
+  useEffect(() => {
+    if (!ready) return;
+    if (!user) {
+      setTeamCheck("no");
+      return;
+    }
+    let active = true;
+    void loadTeams().then((rows) => {
+      if (active) setTeamCheck(rows.length > 0 ? "yes" : "no");
+    });
+    return () => {
+      active = false;
+    };
+  }, [ready, user]);
+  if (teamCheck === "no" && !dismissedQueue.current && needsQueue && dialog === null) setDialog("queue");
   const closeDialog = () => {
     if (dialog === "queue") dismissedQueue.current = true;
     setDialog(null);

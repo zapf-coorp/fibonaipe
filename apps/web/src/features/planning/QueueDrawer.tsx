@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
+import { loadTeams, useAccount, type AccountTeam } from "../auth/account.js";
 import { addQueueItem, addQueueItems, queueSnapshot, removeQueueItem, reorderQueue } from "./commands.js";
 import { can, isHttp, type ItemRow, type RoomView } from "./model.js";
 import { setRoomError } from "./room-store.js";
@@ -19,10 +20,32 @@ export function QueueDrawer({
   readonly onClose: () => void;
 }) {
   const { t } = useI18n();
+  const { user } = useAccount();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const [teams, setTeams] = useState<readonly AccountTeam[]>([]);
+  const [pickedTeam, setPickedTeam] = useState("");
+  const roomTeamId = typeof view.teamId === "string" ? view.teamId : "";
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    void loadTeams().then((rows) => {
+      if (!active) return;
+      setTeams(rows);
+      setPickedTeam((current) => {
+        if (rows.some((team) => team.teamId === current)) return current;
+        if (roomTeamId && rows.some((team) => team.teamId === roomTeamId)) return roomTeamId;
+        return rows[0]?.teamId ?? "";
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [user, roomTeamId]);
+  const teamId = pickedTeam || roomTeamId;
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -119,47 +142,138 @@ export function QueueDrawer({
             );
           })}
         </ul>
-        {can(view, "exportOwnRoomSummary") ? (
-        <div className={styles.files}>
-          <button type="button" style={touchTargetStyle} onClick={() => exportTasks(items)}>
-            {t("planning.exportJson")}
-          </button>
-          <label style={touchTargetStyle}>
-            {t("planning.importJson")}
-            <input
-              type="file"
-              accept="application/json,.json"
-              aria-label={t("planning.importJson")}
+        {teamId || can(view, "exportOwnRoomSummary") ? (
+        <div className={styles.actions}>
+            {teams.length > 0 ? (
+              <select aria-label={t("planning.team")} value={pickedTeam} onChange={(event) => setPickedTeam(event.target.value)}>
+                {teams.map((team) => (
+                  <option key={team.teamId} value={team.teamId}>
+                    {team.name}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <div className={styles.actionButtons}>
+            {teamId ? (
+            <button
+              type="button"
+              style={touchTargetStyle}
               aria-busy={busy ? "true" : "false"}
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-                if (!file) return;
+              onClick={() => {
                 flushSync(() => setBusy(true));
-                void readTasks(file)
+                void unvotedTeamTasks(teamId, items)
                   .then((rows) => {
-                    const valid: { title: string; link: string }[] = [];
-                    let invalid = false;
-                    for (const row of rows) {
-                      if (row.link && !isHttp(row.link)) {
-                        invalid = true;
-                        continue;
-                      }
-                      valid.push(row);
-                    }
-                    addQueueItems(code, valid);
-                    if (invalid) setRoomError(t("planning.invalidLink"));
+                    if (rows.length === 0) setNotice(t("planning.teamTasksEmpty"));
+                    else addQueueItems(code, rows);
                   })
                   .catch(() => setRoomError(t("errors.VALIDATION")))
                   .finally(() => flushSync(() => setBusy(false)));
               }}
-            />
-          </label>
+            >
+              {t("planning.loadTeamTasks")}
+            </button>
+            ) : null}
+        {can(view, "exportOwnRoomSummary") ? (
+        <>
+          <button type="button" style={touchTargetStyle} onClick={() => exportTasks(items)}>
+            {t("planning.exportJson")}
+          </button>
+          <button
+            type="button"
+            style={touchTargetStyle}
+            aria-busy={busy ? "true" : "false"}
+            onClick={() => fileRef.current?.click()}
+          >
+            {t("planning.importJson")}
+          </button>
+          <input
+            ref={fileRef}
+            className="sr-only"
+            type="file"
+            accept="application/json,.json"
+            aria-label={t("planning.importJson")}
+            aria-busy={busy ? "true" : "false"}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) return;
+              flushSync(() => setBusy(true));
+              void readTasks(file)
+                .then((rows) => {
+                  const valid: { title: string; link: string }[] = [];
+                  let invalid = false;
+                  for (const row of rows) {
+                    if (row.link && !isHttp(row.link)) {
+                      invalid = true;
+                      continue;
+                    }
+                    valid.push(row);
+                  }
+                  addQueueItems(code, valid);
+                  if (invalid) setRoomError(t("planning.invalidLink"));
+                })
+                .catch(() => setRoomError(t("errors.VALIDATION")))
+                .finally(() => flushSync(() => setBusy(false)));
+            }}
+          />
+        </>
+        ) : null}
+            </div>
         </div>
         ) : null}
       </div>
     </div>
   );
+}
+
+function normalizeTitle(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function taskLabel(sprintName: string, title: string): string {
+  return sprintName.length > 0 ? `${sprintName} - ${title}` : title;
+}
+
+async function unvotedTeamTasks(
+  teamId: string,
+  items: readonly ItemRow[],
+): Promise<{ title: string; link: string }[]> {
+  const listed = await fetch(`/api/teams/${teamId}/tasks`, { credentials: "include" });
+  if (!listed.ok) throw new Error("tasks");
+  const body = (await listed.json()) as { tasks?: readonly { title?: string; sprintName?: string; link?: string }[] };
+  const voted = new Set<string>();
+  const present = new Set<string>();
+  for (const item of items) {
+    const title = normalizeTitle(item.title);
+    if (!title) continue;
+    present.add(title);
+    if (item.status === "estimated" || item.finalEstimate) voted.add(title);
+  }
+  let cursor: string | null = null;
+  for (let pageIndex = 0; pageIndex < 20; pageIndex += 1) {
+    const query = cursor ? `?limit=100&cursor=${encodeURIComponent(cursor)}` : "?limit=100";
+    const history = await fetch(`/api/teams/${teamId}/history${query}`, { credentials: "include" });
+    if (!history.ok) break;
+    const page = (await history.json()) as { rows?: readonly { title?: string }[]; nextCursor?: string | null };
+    for (const row of page.rows ?? []) {
+      if (typeof row.title === "string" && row.title.trim()) voted.add(normalizeTitle(row.title));
+    }
+    const nextCursor = page.nextCursor ?? null;
+    if (!nextCursor || nextCursor === cursor) break;
+    cursor = nextCursor;
+  }
+  const rows: { title: string; link: string }[] = [];
+  for (const task of body.tasks ?? []) {
+    const title = typeof task.title === "string" ? task.title.trim() : "";
+    const sprintName = typeof task.sprintName === "string" ? task.sprintName.trim() : "";
+    const link = typeof task.link === "string" ? task.link.trim() : "";
+    if (!title) continue;
+    const label = taskLabel(sprintName, title);
+    const keys = [normalizeTitle(label), normalizeTitle(title)];
+    if (keys.some((key) => voted.has(key) || present.has(key))) continue;
+    rows.push({ title: label, link: isHttp(link) ? link : "" });
+  }
+  return rows;
 }
 
 function exportTasks(items: readonly ItemRow[]): void {

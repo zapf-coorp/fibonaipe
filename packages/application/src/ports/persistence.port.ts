@@ -172,6 +172,7 @@ export interface PersistedTeamTaskRecord {
   readonly teamId: TeamId;
   readonly title: string;
   readonly sprintName: string;
+  readonly link: string;
   readonly number: number;
 }
 

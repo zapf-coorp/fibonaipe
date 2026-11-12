@@ -76,10 +76,15 @@ function ProfileMenu({ seat: place }: { readonly seat: ReturnType<typeof useOwnS
       </button>
       {open ? (
         <div id="profile-menu" className={styles.menu}>
-          {user ? <a href="/teams" style={touchTargetStyle}>{t("teams.title")}</a> : <a href="/dev/login" style={touchTargetStyle}>{t("profile.signIn")}</a>}
+          {user ? (
+            <a className={styles.menuAction} href="/teams" style={touchTargetStyle}>{t("teams.title")}</a>
+          ) : (
+            <a className={styles.menuAction} href="/dev/login" style={touchTargetStyle}>{t("profile.signIn")}</a>
+          )}
           {user ? (
             <button
               type="button"
+              className={styles.menuAction}
               style={touchTargetStyle}
               onClick={() => {
                 void signOut().then(() => {
@@ -93,17 +98,17 @@ function ProfileMenu({ seat: place }: { readonly seat: ReturnType<typeof useOwnS
           <LocaleSelector />
           <ThemeToggle />
           {view && can(view, "updateRoomSettings") ? (
-            <button type="button" style={touchTargetStyle} onClick={() => requestRoomMenu("settings")}>
+            <button type="button" className={styles.menuAction} style={touchTargetStyle} onClick={() => requestRoomMenu("settings")}>
               {t("planning.settings")}
             </button>
           ) : null}
           {view && can(view, "setFinalEstimate") ? (
-            <button type="button" style={touchTargetStyle} onClick={() => requestRoomMenu("estimate")}>
+            <button type="button" className={styles.menuAction} style={touchTargetStyle} onClick={() => requestRoomMenu("estimate")}>
               {t("planning.estimate")}
             </button>
           ) : null}
           {view ? (
-            <button type="button" style={touchTargetStyle} onClick={() => requestRoomMenu("qr")}>
+            <button type="button" className={styles.menuAction} style={touchTargetStyle} onClick={() => requestRoomMenu("qr")}>
               {t("share.showQr")}
             </button>
           ) : null}
@@ -145,14 +150,19 @@ function LocaleSelector() {
 
 function ThemeToggle() {
   const { t } = useI18n();
-  const { setMode } = useTheme();
+  const { mode, setMode } = useTheme();
   return (
-    <div role="group" aria-label={t("header.theme.label")} className={styles.group}>
-      {THEME_CHOICES.map((mode) => (
-        <button key={mode} type="button" className={styles.hit} style={touchTargetStyle} onClick={() => setMode(mode)}>
-          {t(mode === "light" ? "header.theme.light" : mode === "dark" ? "header.theme.dark" : "header.theme.system")}
-        </button>
+    <select
+      aria-label={t("header.theme.label")}
+      value={mode}
+      style={touchTargetStyle}
+      onChange={(event) => setMode(event.target.value as ThemeMode)}
+    >
+      {THEME_CHOICES.map((choice) => (
+        <option key={choice} value={choice}>
+          {t(choice === "light" ? "header.theme.light" : choice === "dark" ? "header.theme.dark" : "header.theme.system")}
+        </option>
       ))}
-    </div>
+    </select>
   );
 }

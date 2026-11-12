@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { beginErrorFlash, showErrorFlash } from "../../client/error-flash.js";
 import { useI18n, type TranslationKey } from "../../client/i18n/index.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useAccount } from "../auth/account.js";
+import { isHttp } from "../planning/model.js";
 import styles from "./TeamsPage.module.css";
 
 interface TeamRow {
@@ -20,6 +22,7 @@ interface TaskRow {
   readonly id: string;
   readonly title: string;
   readonly sprintName: string;
+  readonly link: string;
 }
 
 type TeamRole = "teamAdmin" | "pm" | "po" | "dev" | "qa" | "observer";
@@ -34,8 +37,28 @@ const ROLE_KEYS: Record<TeamRole, TranslationKey> = {
   observer: "teams.roles.observer",
 };
 
+async function sendAction(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const flash = beginErrorFlash();
+  try {
+    const response = await fetch(input, init);
+    if (!response.ok) showErrorFlash(flash);
+    return response;
+  } catch (error) {
+    showErrorFlash(flash);
+    throw error;
+  }
+}
+
 async function readJson<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
+}
+
+function sameTasks(current: readonly TaskRow[], next: readonly TaskRow[]): boolean {
+  if (current.length !== next.length) return false;
+  return current.every((task, index) => {
+    const other = next[index];
+    return other !== undefined && task.id === other.id && task.title === other.title && task.sprintName === other.sprintName && task.link === other.link;
+  });
 }
 
 export function TeamsPage() {
@@ -93,7 +116,7 @@ export function TeamsPage() {
     if (trimmed.length === 0) return;
     setSaving(true);
     try {
-      const response = await fetch("/api/teams", {
+      const response = await sendAction("/api/teams", {
         method: "POST",
         credentials: "include",
         headers: { "content-type": "application/json" },
@@ -169,7 +192,7 @@ function TeamLine({
       setDraft(team.name);
       return;
     }
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}`, {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}`, {
       method: "PATCH",
       credentials: "include",
       headers: { "content-type": "application/json" },
@@ -285,7 +308,7 @@ function MembersModal({
 
   async function addMember(event: FormEvent) {
     event.preventDefault();
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}/members`, {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}/members`, {
       method: "POST",
       credentials: "include",
       headers: { "content-type": "application/json" },
@@ -299,7 +322,7 @@ function MembersModal({
   }
 
   async function copyLink() {
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}/invites`, {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}/invites`, {
       method: "POST",
       credentials: "include",
     });
@@ -315,7 +338,7 @@ function MembersModal({
   }
 
   async function remove(userId: string) {
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}/members/${encodeURIComponent(userId)}`, {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}/members/${encodeURIComponent(userId)}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -324,7 +347,7 @@ function MembersModal({
   }
 
   async function removeTeam() {
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}`, {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -383,7 +406,10 @@ function TasksModal({
   const { t } = useI18n();
   const [tasks, setTasks] = useState<readonly TaskRow[]>([]);
   const [sprint, setSprint] = useState("");
+  const [sprintQuery, setSprintQuery] = useState("");
+  const [sprintOpen, setSprintOpen] = useState(false);
   const [title, setTitle] = useState("");
+  const [link, setLink] = useState("");
   const [filter, setFilter] = useState("");
   const [version, setVersion] = useState(0);
   const titleId = `tasks-${team.teamId}`;
@@ -395,33 +421,83 @@ function TasksModal({
 
   useEffect(() => {
     let active = true;
-    void fetch(`/api/teams/${encodeURIComponent(team.teamId)}/tasks`, { credentials: "include" }).then(async (response) => {
-      if (!active) return;
-      if (!response.ok) {
-        onError();
-        return;
+    async function load() {
+      try {
+        const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}/tasks`, { credentials: "include" });
+        if (!active || !response.ok) return;
+        const data = await readJson<{ tasks?: readonly TaskRow[] }>(response);
+        const next = (data.tasks ?? []).map((task) => ({ ...task, link: task.link ?? "" }));
+        setTasks((current) => (sameTasks(current, next) ? current : next));
+      } catch {
+        // The next poll retries. A missed beat must not clear the list.
       }
-      const data = await readJson<{ tasks?: readonly TaskRow[] }>(response);
-      setTasks(data.tasks ?? []);
-    });
+    }
+    void load();
+    const poll = window.setInterval(() => {
+      void load();
+    }, 1_500);
     return () => {
       active = false;
+      window.clearInterval(poll);
     };
-  }, [onError, team.teamId, version]);
+  }, [team.teamId, version]);
+
+  const sprintNames = [...new Set(tasks.map((task) => task.sprintName).filter((name) => name.length > 0))];
+  const typed = sprintQuery.trim();
+  const folded = typed.toLowerCase();
+  const matches = sprintNames.filter((name) => folded.length === 0 || name.toLowerCase().includes(folded));
+  const exact = sprintNames.find((name) => name.toLowerCase() === folded);
+
+  function chooseSprint(name: string) {
+    setSprint(name);
+    setSprintQuery("");
+    setSprintOpen(false);
+  }
+
+  function sprintForTask(): string | null {
+    if (typed.length === 0) return sprint;
+    if (exact) return exact;
+    if (matches.length === 1) return matches[0] ?? typed;
+    if (matches.length === 0) return typed;
+    return null;
+  }
 
   async function addTask(event: FormEvent) {
     event.preventDefault();
-    const response = await fetch(`/api/teams/${encodeURIComponent(team.teamId)}/tasks`, {
+    const sprintName = sprintForTask();
+    if (sprintName === null) {
+      setSprintOpen(true);
+      return;
+    }
+    const nextLink = link.trim();
+    if (nextLink && !isHttp(nextLink)) {
+      showErrorFlash(beginErrorFlash());
+      onError();
+      return;
+    }
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}/tasks`, {
       method: "POST",
       credentials: "include",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ title, sprintName: sprint }),
+      body: JSON.stringify({ title, sprintName, link: nextLink }),
     });
     if (!response.ok) onError();
     else {
       setTitle("");
+      setLink("");
+      setSprintQuery("");
+      setSprint(sprintName);
       setVersion((current) => current + 1);
     }
+  }
+
+  async function removeTask(taskId: string) {
+    const response = await sendAction(`/api/teams/${encodeURIComponent(team.teamId)}/tasks/${encodeURIComponent(taskId)}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (!response.ok) onError();
+    else setVersion((current) => current + 1);
   }
 
   return (
@@ -433,13 +509,51 @@ function TasksModal({
         onChange={(event) => setFilter(event.target.value)}
       />
       <form className={styles.taskRow} onSubmit={(event) => { void addTask(event); }}>
-        <input
-          aria-label={t("teams.sprintHint")}
-          placeholder={t("teams.sprintHint")}
-          maxLength={80}
-          value={sprint}
-          onChange={(event) => setSprint(event.target.value)}
-        />
+        <div className={styles.sprintField}>
+          {sprint ? (
+            <button type="button" className={styles.tag} onClick={() => setSprint("")}>
+              {sprint}
+            </button>
+          ) : null}
+          <input
+            aria-label={t("teams.sprintHint")}
+            placeholder={sprint || t("teams.sprintHint")}
+            maxLength={80}
+            value={sprintQuery}
+            onFocus={() => setSprintOpen(true)}
+            onBlur={() => setSprintOpen(false)}
+            onChange={(event) => {
+              setSprint("");
+              setSprintQuery(event.target.value);
+              setSprintOpen(true);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" || typed.length === 0) return;
+              const chosen = sprintForTask();
+              if (chosen === null) return;
+              event.preventDefault();
+              chooseSprint(chosen);
+            }}
+          />
+          {sprintOpen && typed.length > 0 && (matches.length > 0 || !exact) ? (
+            <ul className={styles.suggestions}>
+              {matches.map((name) => (
+                <li key={name}>
+                  <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => chooseSprint(name)}>
+                    {name}
+                  </button>
+                </li>
+              ))}
+              {!exact && matches.length === 0 ? (
+                <li>
+                  <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => chooseSprint(typed)}>
+                    {t("teams.addSprint", { name: typed })}
+                  </button>
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
+        </div>
         <span aria-hidden="true">-</span>
         <input
           aria-label={t("teams.taskHint")}
@@ -449,13 +563,31 @@ function TasksModal({
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
+        <input
+          aria-label={t("teams.link")}
+          placeholder={t("teams.link")}
+          maxLength={2000}
+          value={link}
+          onChange={(event) => setLink(event.target.value)}
+        />
         <button type="submit" className={styles.iconButton} style={touchTargetStyle} aria-label={t("teams.include")}>
           <PlusIcon />
         </button>
       </form>
       <ul className={styles.plainList}>
         {visible.map((task) => (
-          <li key={task.id}>{task.sprintName.length > 0 ? `${task.sprintName} - ${task.title}` : task.title}</li>
+          <li key={task.id} className={styles.taskLine}>
+            {task.link && isHttp(task.link) ? (
+              <a href={task.link} rel="noopener noreferrer" target="_blank">
+                {task.sprintName.length > 0 ? `${task.sprintName} - ${task.title}` : task.title}
+              </a>
+            ) : (
+              <span>{task.sprintName.length > 0 ? `${task.sprintName} - ${task.title}` : task.title}</span>
+            )}
+            <button type="button" className={styles.iconButton} style={touchTargetStyle} aria-label={t("teams.remove")} onClick={() => { void removeTask(task.id); }}>
+              <CloseIcon />
+            </button>
+          </li>
         ))}
       </ul>
     </Modal>

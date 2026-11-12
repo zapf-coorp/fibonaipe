@@ -12,8 +12,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  width: min(40rem, 100%);
-  max-height: min(80vh, 40rem);
+  width: min(80vw, 100%);
+  max-height: 80vh;
   overflow: auto;
 }
 
@@ -26,11 +26,29 @@
 
 .composer,
 .row,
-.files {
+.actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+}
+
+.actions {
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.actions select {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-left: auto;
 }
 
 .composer input {

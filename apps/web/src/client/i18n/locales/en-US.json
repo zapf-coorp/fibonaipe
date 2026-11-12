@@ -7,7 +7,7 @@
   "sprintScope": { "title": "Sprint scope", "available": "Estimated items", "add": "Add {name}", "remove": "Remove {name}", "done": "Complete {name}", "addedLate": "Added after start", "completed": "Completed", "loadMore": "Load more", "noAvailable": "No estimated item is available to link." },
   "sprintOverrun": { "label": "Estimate exceeded for {name}" },
   "sprintClosure": { "carryOver": "Items returning to backlog: {count}", "unestimated": "Items without estimates: {count}" },
-  "teams": { "title": "My teams", "subtitle": "Create the team, invite people who have an account, and group tasks by sprint.", "loading": "Loading teams...", "empty": "You are not part of any team yet.", "error": "Could not load or create the team.", "signInRequired": "Sign in to see and create teams.", "devLogin": "Sign in with dev mode (fake)", "name": "Team name", "create": "Create team", "rename": "Edit name", "save": "Save name", "members": "Members", "membersOf": "Members of {name}", "tasks": "Tasks", "tasksOf": "Tasks of {name}", "email": "Account email", "send": "Send invite", "copyLink": "Copy invite link", "invited": "Link copied", "remove": "Remove", "delete": "Delete team", "close": "Close", "filter": "Filter by sprint or task", "sprintHint": "Sprint...", "taskHint": "Task...", "include": "Add task", "roles": { "teamAdmin": "Administrator", "pm": "PM", "po": "PO", "dev": "Dev", "qa": "QA", "observer": "Observer" } },
+  "teams": { "title": "My teams", "subtitle": "Create the team, invite people who have an account, and group tasks by sprint.", "loading": "Loading teams...", "empty": "You are not part of any team yet.", "error": "Could not load or create the team.", "signInRequired": "Sign in to see and create teams.", "devLogin": "Sign in with dev mode (fake)", "name": "Team name", "create": "Create team", "rename": "Edit name", "save": "Save name", "members": "Members", "membersOf": "Members of {name}", "tasks": "Tasks", "tasksOf": "Tasks of {name}", "email": "Account email", "send": "Send invite", "copyLink": "Copy invite link", "invited": "Link copied", "remove": "Remove", "delete": "Delete team", "close": "Close", "filter": "Filter by sprint or task", "sprintHint": "Sprint...", "taskHint": "Task...", "include": "Add task", "link": "Link", "addSprint": "Add {name}", "roles": { "teamAdmin": "Administrator", "pm": "PM", "po": "PO", "dev": "Dev", "qa": "QA", "observer": "Observer" } },
   "devAuth": { "title": "Development sign-in", "subtitle": "Pick a fake user to sign in. No real credentials are used.", "note": "This sign-in only exists in development. Use email (magic link) or Google to simulate real authentication.", "loading": "Loading users...", "disabled": "Development sign-in is unavailable. Set AUTH_DRIVER=dev-fake in development.", "error": "Could not sign in. Try again.", "email": "Sign in with email", "google": "Sign in with Google", "signingIn": "Signing in...", "back": "Back to my teams" },
   "app": {
     "title": "Fibonaipe",
@@ -107,6 +107,9 @@
     "import": "Import",
     "importJson": "Import JSON",
     "exportJson": "Export JSON",
+    "loadTeamTasks": "Load team tasks",
+    "teamTasksEmpty": "No unvoted team tasks.",
+    "team": "Team",
     "close": "Close",
     "remove": "Remove",
     "timerLabel": "Time",

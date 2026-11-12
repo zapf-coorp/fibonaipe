@@ -89,8 +89,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  width: min(36rem, 100%);
-  max-height: min(80vh, 40rem);
+  width: min(80vw, 100%);
+  max-height: 80vh;
   overflow: auto;
 }
 
@@ -131,4 +131,59 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.taskLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sprintField {
+  position: relative;
+  display: flex;
+  flex: 1 1 12rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.sprintField input {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+.tag {
+  padding: 0.2rem 0.55rem;
+  background: var(--ribbon);
+  border: var(--stroke-thin);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+}
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  max-height: 12rem;
+  margin: 0;
+  padding: var(--space-2);
+  overflow: auto;
+  list-style: none;
+  background: var(--card-face);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.suggestions button {
+  width: 100%;
+  text-align: start;
 }

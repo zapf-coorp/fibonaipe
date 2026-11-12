@@ -28,6 +28,7 @@ import {
   RemoveMember,
   ListTeamTasks,
   CreateTeamTask,
+  DeleteTeamTask,
   SendMagicLink,
   type AuthProvider,
   type PersistedUserRecord,
@@ -46,7 +47,11 @@ const emailSchema = z.object({ email: z.string().trim().min(3).max(320) });
 const callbackSchema = z.object({ token: z.string().trim().min(1).max(512) });
 const teamSchema = z.object({ name: z.string().trim().min(1).max(80) });
 const memberSchema = z.object({ email: z.string().trim().min(3).max(320) });
-const taskSchema = z.object({ title: z.string().trim().min(1).max(120), sprintName: z.string().trim().max(80).optional() });
+const taskSchema = z.object({
+  title: z.string().trim().min(1).max(120),
+  sprintName: z.string().trim().max(80).optional(),
+  link: z.string().trim().max(2000).optional(),
+});
 const inviteSchema = z.object({ token: z.string().trim().min(1).max(512) });
 const sprintSchema = z.object({ name: z.string().trim().min(1).max(80), startDate: z.string(), endDate: z.string(), goal: z.string().nullable().optional() });
 const holidaySchema = z.object({ date: z.string(), name: z.string().trim().min(1).max(80) });
@@ -196,8 +201,20 @@ export function registerAuthTeamRoutes(app: Hono, container: AppContainer): void
       actorUserId: user.id,
       title: parsed.value.title,
       sprintName: parsed.value.sprintName ?? "",
+      link: parsed.value.link ?? "",
     });
     return result.ok ? okJson(container, result.value, 201) : fail(container, result.error);
+  });
+
+  app.delete("/api/teams/:id/tasks/:taskId", async (c) => {
+    const user = await sessionUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const result = await new DeleteTeamTask(deps).execute({
+      teamId: c.req.param("id"),
+      actorUserId: user.id,
+      taskId: c.req.param("taskId"),
+    });
+    return result.ok ? okJson(container, result.value) : fail(container, result.error);
   });
 
   app.post("/api/teams/:id/sprints", async (c) => {

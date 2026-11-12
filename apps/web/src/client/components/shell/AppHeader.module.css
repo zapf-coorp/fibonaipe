@@ -11,21 +11,13 @@
   border-bottom: var(--stroke);
 }
 
-.control,
-.group {
+.control {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-2);
-}
-
-.control,
-.hit {
   min-width: var(--touch-min);
   min-height: var(--touch-min);
-}
-
-.control {
-  position: relative;
   padding: 0 var(--space-2);
   color: var(--ink);
   background: var(--card-face);
@@ -76,30 +68,6 @@
   color: var(--title-red);
   font-family: var(--font-display);
   font-size: 1rem;
-}
-
-.group {
-  flex-wrap: wrap;
-  min-width: 0;
-  max-width: 100%;
-  padding: 2px;
-  background: var(--card-dark);
-  border: var(--stroke);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-card);
-}
-
-.hit {
-  padding-inline: var(--space-2);
-  color: var(--card-face);
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.hit:hover {
-  color: var(--ink);
-  background: var(--ribbon);
 }
 
 .profile {
@@ -160,6 +128,29 @@
   border: var(--stroke);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
+}
+
+.menu a,
+.menuAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.35rem 0.75rem;
+  color: var(--ink);
+  background: var(--ribbon);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+}
+
+.menu select {
+  width: 100%;
 }
 
 @media (min-width: 768px) {

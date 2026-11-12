@@ -1,3 +1,4 @@
+import { beginErrorFlash, showErrorFlash } from "../../client/error-flash.js";
 import { messageKeyFor } from "../../client/i18n/error-keys.js";
 import { t } from "../../client/i18n/index.js";
 import { enqueueVote, nextClientOpId } from "../../client/connection/outbox.js";
@@ -163,6 +164,7 @@ export function startRoundTimer(code: string): void {
 }
 
 async function send(code: string, path: string, body: unknown, queueOffline: boolean, method = "POST"): Promise<void> {
+  const flash = beginErrorFlash();
   if (queueOffline && navigator.onLine === false) {
     enqueueVote(code, body);
     return;
@@ -179,6 +181,7 @@ async function send(code: string, path: string, body: unknown, queueOffline: boo
       const error = json && typeof json === "object" && "error" in json ? json.error : null;
       const codeName = error && typeof error === "object" && "code" in error ? error.code : null;
       setRoomError(t(messageKeyFor(typeof codeName === "string" ? codeName : "VALIDATION")));
+      showErrorFlash(flash);
       return;
     }
     const json: unknown = await response.json();
@@ -187,6 +190,7 @@ async function send(code: string, path: string, body: unknown, queueOffline: boo
     setRoomError(null);
   } catch {
     setRoomError(t("errors.SERVICE_UNAVAILABLE"));
+    showErrorFlash(flash);
   }
 }
 

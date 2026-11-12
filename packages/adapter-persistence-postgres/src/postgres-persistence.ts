@@ -323,22 +323,23 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
     },
     teamTasks: {
       async listByTeam(teamId) {
-        const rows = await tx<{ id: string; team_id: string; title: string; sprint_name: string; task_number: number }[]>`
-          select id, team_id, title, sprint_name, task_number from team_tasks where team_id = ${teamId} order by sprint_name, task_number
+        const rows = await tx<{ id: string; team_id: string; title: string; sprint_name: string; link: string; task_number: number }[]>`
+          select id, team_id, title, sprint_name, link, task_number from team_tasks where team_id = ${teamId} order by sprint_name, task_number
         `;
         return rows.map((row) => ({
           id: row.id,
           teamId: row.team_id as TeamId,
           title: row.title,
           sprintName: row.sprint_name,
+          link: row.link,
           number: Number(row.task_number),
         }));
       },
       async save(task) {
         await tx`
-          insert into team_tasks (id, team_id, title, sprint_name, task_number)
-          values (${task.id}, ${task.teamId}, ${task.title}, ${task.sprintName}, ${task.number})
-          on conflict (id) do update set title = excluded.title, sprint_name = excluded.sprint_name, task_number = excluded.task_number
+          insert into team_tasks (id, team_id, title, sprint_name, link, task_number)
+          values (${task.id}, ${task.teamId}, ${task.title}, ${task.sprintName}, ${task.link}, ${task.number})
+          on conflict (id) do update set title = excluded.title, sprint_name = excluded.sprint_name, link = excluded.link, task_number = excluded.task_number
         `;
       },
       async delete(id) { await tx`delete from team_tasks where id = ${id}`; },

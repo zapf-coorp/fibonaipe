@@ -55,6 +55,57 @@ export function describePersistenceContract(name: string, factory: () => Persist
       expect(await readByCode(persistence, missingCode)).toBeNull();
     });
 
+    it("round-trips room.planning snapshot with nested Dates by id and code", async () => {
+      const persistence = factory();
+      const id = must(RoomId.create("room-planning"));
+      const code = must(RoomCode.create("2345678P"));
+      const joinedAt = new Date("2026-10-26T14:00:00.000Z");
+      const room = roomRecord({
+        id,
+        code,
+        name: "Planning",
+        version: 2,
+        planning: {
+          hostParticipantId: "part-1",
+          scaleId: "scale-fib",
+          scaleName: "Fibonacci",
+          settings: {
+            maxParticipants: 30,
+            suitAxisEnabled: true,
+            suitAxisLabelKey: "risk",
+            autoReveal: false,
+            showAverage: true,
+            allowObserverComments: false,
+            timerSeconds: null,
+          },
+          participants: [
+            {
+              id: "part-1",
+              userId: null,
+              guestSessionId: "hash-1",
+              nickname: "Ana",
+              role: "dev",
+              mode: "voter",
+              isFacilitator: false,
+              joinedAt,
+              lastSeenAt: joinedAt,
+              afk: false,
+            },
+          ],
+          items: [],
+          rounds: [],
+          votes: [],
+        },
+      });
+
+      await saveUnlocked(persistence, room);
+      const byId = await readRoom(persistence, id);
+      const byCode = await readByCode(persistence, code);
+      expect(byId?.planning).toEqual(room.planning);
+      expect(byCode?.planning).toEqual(room.planning);
+      expect(byId?.planning?.participants[0]?.joinedAt).toBeInstanceOf(Date);
+    });
+
     it("preserves the inserted version and then increments a locked save by exactly 1", async () => {
       const persistence = factory();
       const id = must(RoomId.create("room-version"));

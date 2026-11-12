@@ -23,6 +23,12 @@ Single entry point. PRDs say what and why; specs say how. Requirement IDs (`RF-*
 | [specs/integrations-and-auth.md](specs/integrations-and-auth.md) | Issue trackers, import and export rules, authentication, credentials. |
 | [specs/operations.md](specs/operations.md) | `npm run verify`, running locally, environment variables, security, deployment and quotas. |
 
+## Implementation Tasks (for Smaller LLMs)
+
+| Document | Contents |
+| :--- | :--- |
+| [tasks/README.md](tasks/README.md) | Ordered micro-tasks (`T1`–`T9`) for production auth, persistence, data linking, and Clean Code modularization. |
+
 ## Where to look
 
 | Question | Start at |

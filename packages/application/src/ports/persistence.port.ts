@@ -1,5 +1,6 @@
 import type {
   AppError,
+  Card,
   ClientOpId,
   EstimateAuditId,
   HistoryEntryId,
@@ -7,12 +8,15 @@ import type {
   Holiday,
   InviteId,
   ItemId,
+  ItemStatus,
   OrganizationId,
   ParticipantId,
   Result,
   RoomCode,
   RoomId,
+  RoomSettings,
   RoundId,
+  RoundStats,
   SprintId,
   SprintProps,
   TeamId,
@@ -23,6 +27,63 @@ import type {
 export interface PersistedRoomItem {
   readonly id: ItemId;
   readonly title: string;
+}
+
+export interface PersistedParticipantSnapshot {
+  readonly id: string;
+  readonly userId: string | null;
+  readonly guestSessionId: string | null;
+  readonly nickname: string;
+  readonly role: string;
+  readonly mode: "voter" | "observer";
+  readonly isFacilitator: boolean;
+  readonly joinedAt: Date;
+  readonly lastSeenAt: Date;
+  readonly afk: boolean;
+}
+
+export interface PersistedItemSnapshot {
+  readonly id: string;
+  readonly roomId: string;
+  readonly teamId: string | null;
+  readonly title: string;
+  readonly description: string;
+  readonly externalUrl: string | null;
+  readonly externalKey: string | null;
+  readonly position: number;
+  readonly status: ItemStatus;
+  readonly figureTag: string | null;
+  readonly finalEstimate: Card | null;
+  readonly finalSuit: string | null;
+}
+
+export interface PersistedRoundSnapshot {
+  readonly id: string;
+  readonly roomId: string;
+  readonly itemId: string;
+  readonly number: number;
+  readonly status: "voting" | "revealed";
+  readonly timerEndsAt: Date | null;
+  readonly stats: RoundStats | null;
+}
+
+export interface PersistedVoteSnapshot {
+  readonly roundId: string;
+  readonly participantId: string;
+  readonly cardLabel: string;
+  readonly suitKind: string;
+  readonly comment: string | null;
+}
+
+export interface PersistedRoomPlanning {
+  readonly hostParticipantId: string;
+  readonly scaleId: string;
+  readonly scaleName: string;
+  readonly settings: RoomSettings;
+  readonly participants: readonly PersistedParticipantSnapshot[];
+  readonly items: readonly PersistedItemSnapshot[];
+  readonly rounds: readonly PersistedRoundSnapshot[];
+  readonly votes: readonly PersistedVoteSnapshot[];
 }
 
 export interface PersistedRoomRecord {
@@ -36,6 +97,7 @@ export interface PersistedRoomRecord {
   readonly items: readonly PersistedRoomItem[];
   readonly expiresAt: Date | null;
   readonly lastActivityAt: Date;
+  readonly planning?: PersistedRoomPlanning;
 }
 
 export interface IdempotencyRecord {

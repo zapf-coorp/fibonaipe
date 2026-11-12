@@ -42,6 +42,7 @@ interface RoomRow {
   team_id: string | null;
   status: string;
   version: number | string;
+  planning_json: unknown;
   expires_at: Date | string | null;
   last_activity_at: Date | string;
 }
@@ -393,7 +394,7 @@ function createRepos(tx: postgres.TransactionSql, lockRoomId: RoomId | undefined
 
 async function findRoom(tx: Sql, id: RoomId): Promise<PersistedRoomRecord | null> {
   const rows = await tx<RoomRow[]>`
-    select id, code, name, kind, team_id, status, version, expires_at, last_activity_at
+    select id, code, name, kind, team_id, status, version, planning_json::text as planning_json, expires_at, last_activity_at
     from rooms where id = ${id}
   `;
   const row = rows[0];
@@ -406,7 +407,7 @@ async function findRoom(tx: Sql, id: RoomId): Promise<PersistedRoomRecord | null
 
 async function findRoomByCode(tx: Sql, code: RoomCode): Promise<PersistedRoomRecord | null> {
   const rows = await tx<RoomRow[]>`
-    select id, code, name, kind, team_id, status, version, expires_at, last_activity_at
+    select id, code, name, kind, team_id, status, version, planning_json::text as planning_json, expires_at, last_activity_at
     from rooms where code = ${code}
   `;
   const row = rows[0];
@@ -428,9 +429,10 @@ async function saveRoom(
     lockRoomId !== undefined && snapshot.id === lockRoomId && lockedVersion !== null
       ? lockedVersion + 1
       : snapshot.version;
+  const planningText = snapshot.planning === undefined ? null : JSON.stringify(snapshot.planning);
   await tx`
     insert into rooms (
-      id, code, name, kind, team_id, status, version, expires_at, last_activity_at
+      id, code, name, kind, team_id, status, version, planning_json, expires_at, last_activity_at
     ) values (
       ${snapshot.id},
       ${snapshot.code},
@@ -439,6 +441,7 @@ async function saveRoom(
       ${snapshot.teamId},
       ${snapshot.status},
       ${version},
+      ${planningText}::jsonb,
       ${snapshot.expiresAt},
       ${snapshot.lastActivityAt}
     )
@@ -449,6 +452,7 @@ async function saveRoom(
       team_id = excluded.team_id,
       status = excluded.status,
       version = excluded.version,
+      planning_json = excluded.planning_json,
       expires_at = excluded.expires_at,
       last_activity_at = excluded.last_activity_at
   `;
@@ -671,6 +675,7 @@ async function saveInvite(tx: Sql, invite: PersistedInviteRecord): Promise<void>
 }
 
 function mapRoom(row: RoomRow, items: readonly ItemRow[]): PersistedRoomRecord {
+  const planning = parsePlanningJson(row.planning_json);
   return {
     id: row.id as RoomId,
     code: row.code as RoomCode,
@@ -682,7 +687,28 @@ function mapRoom(row: RoomRow, items: readonly ItemRow[]): PersistedRoomRecord {
     items: items.map((item) => ({ id: item.id as ItemId, title: item.title })),
     expiresAt: row.expires_at === null ? null : asDate(row.expires_at),
     lastActivityAt: asDate(row.last_activity_at),
+    ...(planning === undefined ? {} : { planning }),
   };
+}
+
+function parsePlanningJson(value: unknown): PersistedRoomRecord["planning"] {
+  if (typeof value !== "string" || value.length === 0) return undefined;
+  return reviveIsoDates(JSON.parse(value) as unknown) as PersistedRoomRecord["planning"];
+}
+
+function reviveIsoDates(value: unknown): unknown {
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
+    return new Date(value);
+  }
+  if (Array.isArray(value)) return value.map((entry) => reviveIsoDates(entry));
+  if (typeof value === "object" && value !== null) {
+    const copy: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value)) {
+      copy[key] = reviveIsoDates(child);
+    }
+    return copy;
+  }
+  return value;
 }
 
 function mapHistory(row: HistoryRow): AggregatedHistoryRecord {

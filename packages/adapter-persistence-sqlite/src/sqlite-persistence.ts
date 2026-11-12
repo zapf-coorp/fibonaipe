@@ -891,13 +891,12 @@ function ensurePlanningColumn(db: DatabaseSync): void {
 }
 
 function planningJson(room: PersistedRoomRecord): string | null {
-  const planning = (room as PersistedRoomRecord & { planning?: unknown }).planning;
-  return planning === undefined ? null : JSON.stringify(planning);
+  return room.planning === undefined ? null : JSON.stringify(room.planning);
 }
 
-function planningOf(value: unknown): { planning: unknown } | Record<string, never> {
+function planningOf(value: unknown): { planning: PersistedRoomRecord["planning"] } | Record<string, never> {
   if (typeof value !== "string" || value.length === 0) return {};
-  return { planning: reviveDates(JSON.parse(value) as unknown) };
+  return { planning: reviveDates(JSON.parse(value) as unknown) as PersistedRoomRecord["planning"] };
 }
 
 function reviveDates(value: unknown): unknown {

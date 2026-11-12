@@ -50,6 +50,8 @@ graph TD
 
 ## Completion plan
 
+Detailed, self-contained micro-tasks (`T1`–`T9`) for smaller LLMs to execute step by step live in [`docs/tasks/README.md`](../tasks/README.md).
+
 1. **Foundation and diagnosis.** Run the gate, fix existing failures, re-check the foundation slice, and record any external-service limits.
 2. **Finish R2.** Close the pending items above: real auth, deferred routes and screens, privacy and end-to-end tests.
 3. **Sprint domain and application (R3).** Sprint aggregate, persistence, transactions, holidays, capacity, item linking and immutable closure; verify contracts and concurrency.

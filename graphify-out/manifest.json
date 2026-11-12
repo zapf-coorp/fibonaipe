@@ -632,10 +632,10 @@
     "semantic_hash": "ef5b0de7e30464fd9362e33764cf3831"
   },
   "packages/adapter-persistence-postgres/src/postgres-persistence.ts": {
-    "mtime": 1794442576.0828898,
-    "seen": 1794444110.4455352,
-    "ast_hash": "c42cf6584f8e7d9744be696aa530fcd7",
-    "semantic_hash": "c42cf6584f8e7d9744be696aa530fcd7"
+    "mtime": 1794508165.430852,
+    "seen": 1794508620.191969,
+    "ast_hash": "43f374f496b78f3bbc252e2b75419341",
+    "semantic_hash": ""
   },
   "packages/adapter-persistence-postgres/src/sprint-migration.test.ts": {
     "mtime": 1793923137.4490905,
@@ -680,10 +680,10 @@
     "semantic_hash": "14884d31564b3abaa5aa417077855820"
   },
   "packages/adapter-persistence-sqlite/src/sqlite-persistence.ts": {
-    "mtime": 1794442576.0909085,
-    "seen": 1794444110.4725523,
-    "ast_hash": "36f057dbef18c64d699944d145b37df7",
-    "semantic_hash": "36f057dbef18c64d699944d145b37df7"
+    "mtime": 1794508265.063243,
+    "seen": 1794508620.191969,
+    "ast_hash": "41ff6b3542c525de67c22ee36f920c07",
+    "semantic_hash": ""
   },
   "packages/adapter-persistence-sqlite/tsconfig.json": {
     "mtime": 1793121293.8362079,
@@ -794,10 +794,10 @@
     "semantic_hash": "ef1fa20b221255eec3b3789598a60b9c"
   },
   "packages/application/src/index.ts": {
-    "mtime": 1794270490.925457,
-    "seen": 1794444110.5403578,
-    "ast_hash": "2c229a66cfe7c19ad9cb5edfdf29d22f",
-    "semantic_hash": "2c229a66cfe7c19ad9cb5edfdf29d22f"
+    "mtime": 1794508363.0043418,
+    "seen": 1794508620.191969,
+    "ast_hash": "b999ef31fe83b6186192ddb1a3dec591",
+    "semantic_hash": ""
   },
   "packages/application/src/ports/auth-provider.port.ts": {
     "mtime": 1793069834.5653496,
@@ -842,10 +842,10 @@
     "semantic_hash": "cb1654055f3454ecad94c23db89ba612"
   },
   "packages/application/src/ports/persistence.port.ts": {
-    "mtime": 1794442576.0828898,
-    "seen": 1794444110.5668852,
-    "ast_hash": "c7f73db4e0710a5f13518ff7c77c0ab8",
-    "semantic_hash": "c7f73db4e0710a5f13518ff7c77c0ab8"
+    "mtime": 1794508136.0793061,
+    "seen": 1794508620.191969,
+    "ast_hash": "822157f607b297b6a314b90fc3febd84",
+    "semantic_hash": ""
   },
   "packages/application/src/ports/rate-limiter.port.ts": {
     "mtime": 1793069830.981596,
@@ -986,10 +986,10 @@
     "semantic_hash": "41ca294d1e4da204a15bfabec87228f4"
   },
   "packages/application/src/use-cases/room-session.ts": {
-    "mtime": 1794019059.4754686,
-    "seen": 1794444110.684596,
-    "ast_hash": "65940edf7007fd4a1d0f0384f2da6e3d",
-    "semantic_hash": "65940edf7007fd4a1d0f0384f2da6e3d"
+    "mtime": 1794508295.934722,
+    "seen": 1794508620.191969,
+    "ast_hash": "da346e99201aafb295b9b01419828587",
+    "semantic_hash": ""
   },
   "packages/application/src/use-cases/rooms/create-room.test.ts": {
     "mtime": 1793116384.8113396,
@@ -1616,10 +1616,10 @@
     "semantic_hash": "5824e6e3cf364562a8f61c9fb6db5f33"
   },
   "packages/testing/src/contracts/persistence.contract.ts": {
-    "mtime": 1793063775.627576,
-    "seen": 1794018626.190837,
-    "ast_hash": "a2e6e213a71a89405c64945573632f70",
-    "semantic_hash": "a2e6e213a71a89405c64945573632f70"
+    "mtime": 1794508216.354836,
+    "seen": 1794508620.191969,
+    "ast_hash": "b92705592fd7f996433f8af3925fd9b8",
+    "semantic_hash": ""
   },
   "packages/testing/src/contracts/rate-limiter.contract.ts": {
     "mtime": 1793063584.9577785,
@@ -2018,9 +2018,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1794504345.2707603,
-    "seen": 1794504408.157689,
-    "ast_hash": "247a919167b8af37e2a09025595fc75c",
+    "mtime": 1794508500.0938046,
+    "seen": 1794508620.191969,
+    "ast_hash": "260653eb0f939fd1eada6bc315f42040",
     "semantic_hash": ""
   },
   "docs/prd/functional-requirements.md": {
@@ -2042,9 +2042,9 @@
     "semantic_hash": ""
   },
   "docs/prd/roadmap.md": {
-    "mtime": 1794504183.3920505,
-    "seen": 1794504408.157689,
-    "ast_hash": "cbdeb7692a95e2dd70fe98053c7645ef",
+    "mtime": 1794508500.5761878,
+    "seen": 1794508620.191969,
+    "ast_hash": "588c5d9bac4b73aff698070f63867143",
     "semantic_hash": ""
   },
   "docs/specs/api-and-realtime.md": {
@@ -2087,6 +2087,72 @@
     "mtime": 1794504306.9353771,
     "seen": 1794504408.157689,
     "ast_hash": "61ddcd271733beefa02bd392bdae696e",
+    "semantic_hash": ""
+  },
+  "packages/adapter-persistence-postgres/migrations/007_room_planning_json.sql": {
+    "mtime": 1794508138.7543368,
+    "seen": 1794508620.191969,
+    "ast_hash": "a4fce3df6f7ae5713c6ed4ca50c714c3",
+    "semantic_hash": ""
+  },
+  "docs/tasks/README.md": {
+    "mtime": 1794508367.1626492,
+    "seen": 1794508620.191969,
+    "ast_hash": "bc38980528708a10e22f9a7ed4b9eeda",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T1-postgres-planning.md": {
+    "mtime": 1794508379.872671,
+    "seen": 1794508620.191969,
+    "ast_hash": "6edc4d4f49159ba27ac289bdd3ec2632",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T2-dev-sqlite-and-env.md": {
+    "mtime": 1794508395.2411344,
+    "seen": 1794508620.191969,
+    "ast_hash": "4a0faafb036622eac2c42d487960ac0f",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T3-auth-contract-session-token.md": {
+    "mtime": 1794508417.422042,
+    "seen": 1794508620.191969,
+    "ast_hash": "3898ae70f4ccc3e3c601984a19e62ee2",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T4-supabase-auth-adapter.md": {
+    "mtime": 1794508435.4684565,
+    "seen": 1794508620.191969,
+    "ast_hash": "d7671df22d364040db7afea63fbe83f4",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T5-auth-routes-and-login-ui.md": {
+    "mtime": 1794508449.615945,
+    "seen": 1794508620.191969,
+    "ast_hash": "54b2618dd466f06d746e1567689555d5",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T6-data-linking-and-room-claim.md": {
+    "mtime": 1794508450.2774136,
+    "seen": 1794508620.191969,
+    "ast_hash": "5dcb12e7f3f2166084048857495a0902",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T7-cleancode-modularization.md": {
+    "mtime": 1794508485.3470063,
+    "seen": 1794508620.191969,
+    "ast_hash": "b0d4aa791cdefef48981a96c571a0f33",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T8-production-server-entrypoint.md": {
+    "mtime": 1794508491.4670062,
+    "seen": 1794508620.191969,
+    "ast_hash": "9954e01517f0966dd268278890a82bda",
+    "semantic_hash": ""
+  },
+  "docs/tasks/T9-docs-and-final-verify.md": {
+    "mtime": 1794508498.2475846,
+    "seen": 1794508620.191969,
+    "ast_hash": "7b32334d6f26bf709be88b7594ca73fc",
     "semantic_hash": ""
   },
   "package-lock.json": {

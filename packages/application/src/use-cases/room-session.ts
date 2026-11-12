@@ -28,9 +28,7 @@ import {
   type PolicyActor,
   type Result,
   UserId,
-  type RoomSettings,
   type RoundProps,
-  type RoundStats,
   type VoteProps,
 } from "@fibonaipe/domain";
 import type { Clock } from "../ports/clock.port.js";
@@ -38,7 +36,12 @@ import type { Exporter } from "../ports/exporter.port.js";
 import type { IdGenerator } from "../ports/id-generator.port.js";
 import type { IssueTracker } from "../ports/issue-tracker.port.js";
 import type { LogEntry, StructuredLogger } from "../ports/logger.port.js";
-import type { PersistedRoomRecord, Persistence, TransactionRepos } from "../ports/persistence.port.js";
+import type {
+  PersistedRoomPlanning,
+  PersistedRoomRecord,
+  Persistence,
+  TransactionRepos,
+} from "../ports/persistence.port.js";
 import type { RateLimitRule, RateLimiter } from "../ports/rate-limiter.port.js";
 import type { RealtimePublisher } from "../ports/realtime.port.js";
 import type { RoomEvent } from "../projections/events.js";
@@ -73,63 +76,6 @@ export const MUTATION_RULE: RateLimitRule = {
 };
 
 const MINUTE_MS = 60_000;
-
-interface StoredParticipant {
-  readonly id: string;
-  readonly userId: string | null;
-  readonly guestSessionId: string | null;
-  readonly nickname: string;
-  readonly role: string;
-  readonly mode: "voter" | "observer";
-  readonly isFacilitator: boolean;
-  readonly joinedAt: Date;
-  readonly lastSeenAt: Date;
-  readonly afk: boolean;
-}
-
-interface StoredItem {
-  readonly id: string;
-  readonly roomId: string;
-  readonly teamId: string | null;
-  readonly title: string;
-  readonly description: string;
-  readonly externalUrl: string | null;
-  readonly externalKey: string | null;
-  readonly position: number;
-  readonly status: ItemStatus;
-  readonly figureTag: string | null;
-  readonly finalEstimate: Card | null;
-  readonly finalSuit: string | null;
-}
-
-interface StoredRound {
-  readonly id: string;
-  readonly roomId: string;
-  readonly itemId: string;
-  readonly number: number;
-  readonly status: "voting" | "revealed";
-  readonly timerEndsAt: Date | null;
-  readonly stats: RoundStats | null;
-}
-
-interface StoredVote {
-  readonly roundId: string;
-  readonly participantId: string;
-  readonly cardLabel: string;
-  readonly suitKind: string;
-  readonly comment: string | null;
-}
-
-interface StoredPlanning {
-  readonly hostParticipantId: string;
-  readonly scaleId: string;
-  readonly scaleName: string;
-  readonly settings: RoomSettings;
-  readonly participants: readonly StoredParticipant[];
-  readonly items: readonly StoredItem[];
-  readonly rounds: readonly StoredRound[];
-  readonly votes: readonly StoredVote[];
-}
 
 export interface LoadedRoom {
   readonly room: Room;
@@ -551,13 +497,12 @@ export function hydrate(record: PersistedRoomRecord): Result<LoadedRoom, AppErro
   return ok({ room, table: table.value });
 }
 
-function planningOf(record: PersistedRoomRecord): StoredPlanning | null {
-  const extra = record as PersistedRoomRecord & { planning?: StoredPlanning };
-  return extra.planning ?? null;
+function planningOf(record: PersistedRoomRecord): PersistedRoomPlanning | null {
+  return record.planning ?? null;
 }
 
 function toPersisted(room: Room, table: PlanningTable): PersistedRoomRecord {
-  const planning: StoredPlanning = {
+  const planning: PersistedRoomPlanning = {
     hostParticipantId: room.hostParticipantId,
     scaleId: room.scale.id,
     scaleName: room.scale.name,
@@ -592,7 +537,7 @@ function toPersisted(room: Room, table: PlanningTable): PersistedRoomRecord {
       comment: vote.comment,
     })),
   };
-  const record = {
+  return {
     id: room.id,
     code: room.code,
     name: room.name,
@@ -605,7 +550,6 @@ function toPersisted(room: Room, table: PlanningTable): PersistedRoomRecord {
     lastActivityAt: room.lastActivityAt,
     planning,
   };
-  return record as PersistedRoomRecord;
 }
 
 function mapPlanningEvent(event: PlanningEvent, roomId: RoomId, version: number): RoomEvent | null {

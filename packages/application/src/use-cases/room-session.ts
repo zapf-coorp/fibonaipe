@@ -1,50 +1,15 @@
-import {
-  ANON_ROOM_TTL_MINUTES,
-  ClientOpId,
-  ItemBuilder,
-  ItemId,
-  Participant,
-  ParticipantId,
-  PlanningTable,
-  RATE_LIMIT_CREATE_ROOM,
-  RATE_LIMIT_JOIN_ATTEMPTS,
-  RATE_LIMIT_MUTATIONS,
-  Room,
-  RoomCode,
-  RoomId,
-  RoundId,
-  ScaleBuilder,
-  can,
-  createAppError,
-  err,
-  ok,
-  parseSuit,
-  type AppError,
-  type Card,
-  type ItemProps,
-  type ItemStatus,
-  type PlanningEvent,
-  type PolicyAction,
-  type PolicyActor,
-  type Result,
-  UserId,
-  type RoundProps,
-  type VoteProps,
-} from "@fibonaipe/domain";
+import { ANON_ROOM_TTL_MINUTES, ClientOpId, ParticipantId, PlanningTable, RATE_LIMIT_CREATE_ROOM, RATE_LIMIT_JOIN_ATTEMPTS, RATE_LIMIT_MUTATIONS, Room, RoomCode, RoomId, can, createAppError, err, ok, type AppError, type PlanningEvent, type PolicyAction, type PolicyActor, type Result } from "@fibonaipe/domain";
 import type { Clock } from "../ports/clock.port.js";
 import type { Exporter } from "../ports/exporter.port.js";
 import type { IdGenerator } from "../ports/id-generator.port.js";
 import type { IssueTracker } from "../ports/issue-tracker.port.js";
 import type { LogEntry, StructuredLogger } from "../ports/logger.port.js";
-import type {
-  PersistedRoomPlanning,
-  PersistedRoomRecord,
-  Persistence,
-  TransactionRepos,
-} from "../ports/persistence.port.js";
+import type { Persistence, TransactionRepos } from "../ports/persistence.port.js";
 import type { RateLimitRule, RateLimiter } from "../ports/rate-limiter.port.js";
 import type { RealtimePublisher } from "../ports/realtime.port.js";
 import type { RoomEvent } from "../projections/events.js";
+import { LoadedRoom, hydrate, toPersisted } from "./room-hydration.js";
+import { mapPlanning } from "./room-events.js";
 
 export interface UseCaseDependencies {
   readonly persistence: Persistence;
@@ -76,11 +41,6 @@ export const MUTATION_RULE: RateLimitRule = {
 };
 
 const MINUTE_MS = 60_000;
-
-export interface LoadedRoom {
-  readonly room: Room;
-  readonly table: PlanningTable;
-}
 
 export interface RoomContext {
   readonly deps: UseCaseDependencies;
@@ -307,43 +267,6 @@ export async function finishMutation<T extends object>(
   return deliver(deps, result.value);
 }
 
-export function mapPlanning(events: readonly PlanningEvent[], roomId: RoomId, version: number): RoomEvent[] {
-  const wired: RoomEvent[] = [];
-  for (const event of events) {
-    const mapped = mapPlanningEvent(event, roomId, version);
-    if (mapped) wired.push(mapped);
-  }
-  return wired;
-}
-
-export function participantJoined(roomId: RoomId, version: number, at: string, participantId: ParticipantId): RoomEvent {
-  return { type: "participant.joined", roomId, version, at, payload: { participantId } };
-}
-
-export function participantUpdated(roomId: RoomId, version: number, at: string, participantId: ParticipantId): RoomEvent {
-  return { type: "participant.updated", roomId, version, at, payload: { participantId } };
-}
-
-export function hostTransferred(
-  roomId: RoomId,
-  version: number,
-  at: string,
-  fromParticipantId: ParticipantId,
-  toParticipantId: ParticipantId,
-): RoomEvent {
-  return {
-    type: "host.transferred",
-    roomId,
-    version,
-    at,
-    payload: { fromParticipantId, toParticipantId },
-  };
-}
-
-export function settingsUpdated(roomId: RoomId, version: number, at: string, name: string): RoomEvent {
-  return { type: "room.settings_updated", roomId, version, at, payload: { name } };
-}
-
 export function authorize(
   room: Room,
   actorParticipantId: string,
@@ -355,57 +278,6 @@ export function authorize(
     return err(createAppError("FORBIDDEN"));
   }
   return ok(participant);
-}
-
-export function itemPropsOf(item: {
-  readonly id: string;
-  readonly roomId: string;
-  readonly teamId: string | null;
-  readonly title: string;
-  readonly description: string;
-  readonly externalUrl: string | null;
-  readonly externalKey: string | null;
-  readonly position: number;
-  readonly status: ItemStatus;
-  readonly figureTag: string | null;
-  readonly finalEstimate: Card | null;
-  readonly finalSuit: string | null;
-}): ItemProps {
-  return {
-    id: item.id,
-    roomId: item.roomId,
-    teamId: item.teamId,
-    title: item.title,
-    description: item.description,
-    externalUrl: item.externalUrl,
-    externalKey: item.externalKey,
-    position: item.position,
-    status: item.status,
-    figureTag: item.figureTag,
-    finalEstimate: item.finalEstimate,
-    finalSuit: item.finalSuit,
-  };
-}
-
-export function freshItem(
-  room: Room,
-  title: string,
-  description: string,
-  position: number,
-  id: string,
-  externalUrl: string | null = null,
-): Result<ItemProps, AppError> {
-  const built = new ItemBuilder()
-    .withId(id)
-    .withRoomId(room.id)
-    .withTeamId(room.teamId)
-    .withTitle(title)
-    .withDescription(description)
-    .withExternalUrl(externalUrl)
-    .withPosition(position)
-    .build();
-  if (!built.ok) return built;
-  return ok(itemPropsOf(built.value));
 }
 
 function opIds(actorId: string, clientOpId: string): Result<{ actorId: ParticipantId; clientOpId: ClientOpId }, AppError> {
@@ -420,204 +292,6 @@ async function hydrateIn(repos: TransactionRepos, code: RoomCode): Promise<Resul
   const record = await repos.rooms.findByCode(code);
   if (record === null) return err(createAppError("NOT_FOUND"));
   return hydrate(record);
-}
-
-export function hydrate(record: PersistedRoomRecord): Result<LoadedRoom, AppError> {
-  const planning = planningOf(record);
-  if (planning === null) return err(createAppError("VALIDATION"));
-  const scale = ScaleBuilder.fibonacci().withId(planning.scaleId).withName(planning.scaleName).build();
-  if (!scale.ok) return scale;
-  const hostId = ParticipantId.create(planning.hostParticipantId);
-  if (!hostId.ok) return hostId;
-  const participants = [];
-  for (const stored of planning.participants) {
-    const id = ParticipantId.create(stored.id);
-    if (!id.ok) return id;
-    const userId = stored.userId === null ? null : UserId.create(stored.userId);
-    if (userId !== null && !userId.ok) return userId;
-    participants.push(
-      Participant.create({
-        id: id.value,
-        roomId: record.id,
-        userId: userId === null ? null : userId.value,
-        guestSessionId: stored.guestSessionId,
-        nickname: stored.nickname,
-        role: stored.role,
-        mode: stored.mode,
-        isFacilitator: stored.isFacilitator,
-        joinedAt: stored.joinedAt,
-        lastSeenAt: stored.lastSeenAt,
-        afk: stored.afk,
-      }),
-    );
-  }
-  const room = Room.create({
-    id: record.id,
-    code: record.code,
-    name: record.name,
-    kind: record.kind,
-    teamId: record.teamId,
-    hostParticipantId: hostId.value,
-    scale: scale.value,
-    settings: planning.settings,
-    status: record.status,
-    version: record.version,
-    lastActivityAt: record.lastActivityAt,
-    expiresAt: record.expiresAt,
-    participants,
-  });
-  const votes: VoteProps[] = [];
-  for (const stored of planning.votes) {
-    const suit = parseSuit(stored.suitKind);
-    if (!suit.ok) return suit;
-    votes.push({
-      roundId: stored.roundId,
-      participantId: stored.participantId,
-      card: { label: stored.cardLabel, numeric: null, kind: "special" },
-      suit: suit.value,
-      comment: stored.comment,
-    });
-  }
-  const rounds: RoundProps[] = planning.rounds.map((round) => ({
-    id: round.id,
-    roomId: round.roomId,
-    itemId: round.itemId,
-    number: round.number,
-    status: round.status,
-    timerEndsAt: round.timerEndsAt,
-    stats: round.stats,
-  }));
-  const table = PlanningTable.rehydrate({
-    room,
-    items: planning.items.map((item) => itemPropsOf(item)),
-    rounds,
-    votes,
-  });
-  if (!table.ok) return table;
-  return ok({ room, table: table.value });
-}
-
-function planningOf(record: PersistedRoomRecord): PersistedRoomPlanning | null {
-  return record.planning ?? null;
-}
-
-function toPersisted(room: Room, table: PlanningTable): PersistedRoomRecord {
-  const planning: PersistedRoomPlanning = {
-    hostParticipantId: room.hostParticipantId,
-    scaleId: room.scale.id,
-    scaleName: room.scale.name,
-    settings: room.settings,
-    participants: room.participants.map((participant) => ({
-      id: participant.id,
-      userId: participant.userId,
-      guestSessionId: participant.guestSessionId,
-      nickname: participant.nickname,
-      role: participant.role,
-      mode: participant.mode,
-      isFacilitator: participant.isFacilitator,
-      joinedAt: participant.joinedAt,
-      lastSeenAt: participant.lastSeenAt,
-      afk: participant.afk,
-    })),
-    items: table.items.map((item) => itemPropsOf(item)),
-    rounds: table.rounds.map((round) => ({
-      id: round.id,
-      roomId: round.roomId,
-      itemId: round.itemId,
-      number: round.number,
-      status: round.status,
-      timerEndsAt: round.timerEndsAt,
-      stats: round.stats,
-    })),
-    votes: table.votes.map((vote) => ({
-      roundId: vote.roundId,
-      participantId: vote.participantId,
-      cardLabel: vote.card.label,
-      suitKind: vote.suit.kind,
-      comment: vote.comment,
-    })),
-  };
-  return {
-    id: room.id,
-    code: room.code,
-    name: room.name,
-    kind: room.kind,
-    teamId: room.teamId,
-    status: room.status,
-    version: room.version,
-    items: table.items.map((item) => ({ id: item.id as PersistedRoomRecord["items"][number]["id"], title: item.title })),
-    expiresAt: room.expiresAt,
-    lastActivityAt: room.lastActivityAt,
-    planning,
-  };
-}
-
-function mapPlanningEvent(event: PlanningEvent, roomId: RoomId, version: number): RoomEvent | null {
-  const at = event.at;
-  if (event.type === "vote.changed") {
-    const participantId = ParticipantId.create(stringField(event.payload, "participantId") ?? "");
-    if (!participantId.ok) return null;
-    return {
-      type: "vote.changed",
-      roomId,
-      version,
-      at,
-      payload: { participantId: participantId.value, hasVoted: event.payload.hasVoted === true },
-    };
-  }
-  if (event.type === "round.revealed") {
-    const roundId = RoundId.create(stringField(event.payload, "roundId") ?? "");
-    if (!roundId.ok) return null;
-    return { type: "round.revealed", roomId, version, at, payload: { roundId: roundId.value } };
-  }
-  if (event.type === "round.started") {
-    const roundId = RoundId.create(stringField(event.payload, "roundId") ?? "");
-    const itemId = ItemId.create(stringField(event.payload, "itemId") ?? "");
-    if (!roundId.ok || !itemId.ok) return null;
-    return { type: "round.started", roomId, version, at, payload: { roundId: roundId.value, itemId: itemId.value } };
-  }
-  if (event.type === "timer.updated") {
-    const endsAt = event.payload.endsAt;
-    return {
-      type: "timer.updated",
-      roomId,
-      version,
-      at,
-      payload: { endsAt: endsAt === null || typeof endsAt === "string" ? endsAt : null },
-    };
-  }
-  if (event.type === "item.queue_updated") {
-    const rawIds = stringList(event.payload.itemIds);
-    if (rawIds === null) return null;
-    const itemIds = [];
-    for (const raw of rawIds) {
-      const itemId = ItemId.create(raw);
-      if (!itemId.ok) return null;
-      itemIds.push(itemId.value);
-    }
-    return { type: "item.queue_updated", roomId, version, at, payload: { itemIds } };
-  }
-  if (event.type === "item.estimate_finalized") {
-    const itemId = ItemId.create(stringField(event.payload, "itemId") ?? "");
-    if (!itemId.ok) return null;
-    return { type: "item.estimate_finalized", roomId, version, at, payload: { itemId: itemId.value } };
-  }
-  return null;
-}
-
-function stringField(payload: Readonly<Record<string, unknown>>, key: string): string | null {
-  const value = payload[key];
-  return typeof value === "string" ? value : null;
-}
-
-function stringList(value: unknown): string[] | null {
-  if (!Array.isArray(value)) return null;
-  const ids: string[] = [];
-  for (const entry of value) {
-    if (typeof entry !== "string") return null;
-    ids.push(entry);
-  }
-  return ids;
 }
 
 function actorOf(room: Room, participant: Room["participants"][number]): PolicyActor {
@@ -643,3 +317,6 @@ function contextOf(room: Room, participantId: string): { roomKind: Room["kind"];
     actorCreatedRoom: room.kind === "guest" && room.hostParticipantId === participantId,
   };
 }
+
+export * from "./room-hydration.js";
+export * from "./room-events.js";

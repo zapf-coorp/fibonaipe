@@ -86,7 +86,7 @@ function useElapsed(endsAt: string | null): number {
     setElapsed(0);
     if (!endsAt) return undefined;
     const bridge = timerBridge();
-    let id: ReturnType<typeof setInterval> | null = null;
+    let id: number | null = null;
     const arm = () => {
       if (id !== null) bridge.clear(id);
       id = window.setInterval(() => {

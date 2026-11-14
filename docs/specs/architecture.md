@@ -25,10 +25,18 @@ packages/domain  ←  packages/application  ←  packages/adapter-*  ←  apps/w
 | `adapter-persistence-postgres` | `postgres.js`, SQL migrations, room lock, RLS. |
 | `adapter-persistence-sqlite` | `node:sqlite` stand-in for local dev when Postgres is absent. Never imports the Postgres adapter. |
 | `adapter-realtime-supabase` | WebSocket plus 2–3 s HTTP polling fallback. |
-| `adapter-auth-devfake` | Dev-only fake login (stand-in until `adapter-auth-supabase` ships). |
+| `adapter-auth-supabase` | Supabase GoTrue over native `fetch`: Magic Link (`verifyMagicLink` with documented fallbacks), Google OAuth code exchange, session tokens. Selected by `AUTH_DRIVER=supabase`. |
+| `adapter-auth-devfake` | Dev-only fake login for `AUTH_DRIVER=dev-fake` (local simulator at `/login`). |
 | `adapter-issuetracker-manual` | Free text and RFC 4180 CSV. ClickUp and Jira adapters are planned for R4. |
 | `adapter-exporter-csvjson` | UTF-8 BOM, injection-safe CSV and JSON. |
-| `apps/web` | `src/server` (composition, env, app, routes) and `src/client` (router, query client, i18n, styles, components, pages). |
+| `apps/web` | `src/server` (composition, env, app, routes, `main.ts` production entry) and `src/client` (router, query client, i18n, styles, components, pages). |
+
+Large modules are split by responsibility without changing behavior. Public import paths are unchanged; the new files are internal:
+
+- `apps/web/src/server/routes/`: `auth-teams.ts` is a facade over `auth-routes.ts`, `team-routes.ts`, `sprint-routes.ts`, with shared helpers in `http-helpers.ts`.
+- `packages/application/src/use-cases/`: `room-session.ts` re-exports `room-hydration.ts` (load, hydrate and persist room records) and `room-events.ts` (planning and room event mapping), so existing importers keep working.
+- `packages/adapter-persistence-sqlite/src/`: `sqlite-schema.ts` (DDL and column guards) and `sqlite-mappers.ts` (row mappers).
+- `packages/adapter-persistence-postgres/src/`: `postgres-mappers.ts` (row types and mappers).
 
 Component folders in `apps/web/src/client/components`: `deck`, `table`, `queue`, `charts`, `status`. Each component keeps a `.module.css` beside it.
 

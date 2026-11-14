@@ -1,10 +1,12 @@
 import { MAX_ITEM_DESC_LENGTH, MAX_ITEM_TITLE_LENGTH, MAX_ITEMS_PER_ROOM, ok } from "@fibonaipe/domain";
 import type { IssueTracker, IssueTrackerImportInput } from "@fibonaipe/application";
 import { describe, expect, it } from "vitest";
-import { FakeIssueTracker } from "@fibonaipe/testing";
-import { CreateRoom } from "../rooms/create-room.js";
+import { FakeAuthProvider, FakeIssueTracker } from "@fibonaipe/testing";
 import { JoinRoom } from "../rooms/join-room.js";
 import { GetRoomSnapshot } from "../rooms/room-commands.js";
+import { CompleteSignIn } from "../identity/complete-sign-in.js";
+import { CreateTeam } from "../teams/create-team.js";
+import { CreateTeamRoom } from "../teams/create-team-room.js";
 import { AddItem, DeferItem, ImportItems, RemoveItem, ReorderItems, SetCurrentItem, SkipItem } from "./item-commands.js";
 import { asOk, asView, createPorts, readRoomByCode, type Harness } from "../__tests__/harness.js";
 
@@ -116,7 +118,7 @@ describe("item commands", () => {
     const afterRemove = await viewOf(ports, created.code, created.participantId);
     expect(afterRemove.queue.map((item) => item.id)).not.toContain(gamma.id);
     expect((await titles(ports, created.code)).map((item) => item.title)).toEqual(["Beta", "Alpha"]);
-    expect((await readRoomByCode(ports.store, created.code))?.teamId).toBeNull();
+    expect((await readRoomByCode(ports.store, created.code))?.kind).toBe("team");
 
     const facilitator = asOk(
       await new JoinRoom(ports.deps).execute({
@@ -216,14 +218,27 @@ describe("item commands", () => {
   }, 20_000);
 });
 
+// Team rooms have no item cap (MAX_ITEMS_PER_ROOM) and let the host import items.
+// Guest rooms are capped at GUEST_MAX_ITEMS and cannot import, so tests use a team room.
 async function openRoom(ports: Harness): Promise<{ code: string; participantId: string }> {
-  return asOk(
-    await new CreateRoom(ports.deps).execute({
-      name: "Sprint",
-      ip: "203.0.113.10",
-      hostNickname: "Ada",
+  const auth = new FakeAuthProvider();
+  await auth.sendMagicLink("ada@example.com", "https://app.example/callback");
+  const admin = asOk(
+    await new CompleteSignIn(ports.deps, auth).execute({
+      token: auth.latestMagicLinkToken(),
+      superAdminEmails: [],
     }),
   );
+  const team = asOk(await new CreateTeam(ports.deps).execute({ name: "Bridge", creatorUserId: admin.userId }));
+  const created = asOk(
+    await new CreateTeamRoom(ports.deps).execute({
+      teamId: team.teamId,
+      actorUserId: admin.userId,
+      name: "Sprint",
+      mode: "voter",
+    }),
+  );
+  return { code: created.code, participantId: created.participantId };
 }
 
 async function titles(ports: Harness, code: string): Promise<readonly { id: string; title: string }[]> {

@@ -1,6 +1,6 @@
 # T7 — Clean Code Modularization for Human & Small-LLM Readability
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T6  
 **Max files per sub-step:** 4
 

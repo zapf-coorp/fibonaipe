@@ -31,8 +31,10 @@ Tracker tokens are stored per team, encrypted at rest with AES-256-GCM (unique 9
 
 ## Authentication (`AuthProvider` port)
 
-- Release 2 target: Supabase Auth with Magic Link and Google OAuth (`adapter-auth-supabase`, pending), plus the guest cookie session.
-- Today, `adapter-auth-devfake` and `FakeAuthProvider` stand in. The dev fake login at `/dev/login` is enabled by the Vite dev server and is ignored when `NODE_ENV=production`. Without provider keys the app stays on the unavailable auth driver.
+- Production: `AUTH_DRIVER=supabase` wires `adapter-auth-supabase`, which talks to Supabase GoTrue over `fetch`. Magic links redirect to `${PUBLIC_APP_URL}/login`, and the `/login` page posts the `token` (or Google `code`) to `POST /api/auth/callback`. Google starts at `GET /api/auth/google`. The account session cookie is `HttpOnly; Secure; SameSite=Lax`.
+- Local development: `AUTH_DRIVER=dev-fake` (`adapter-auth-devfake`) backs the simulator shown on `/login`. It is enabled by the Vite dev server and ignored when `NODE_ENV=production`. Without provider keys the app stays on the unavailable auth driver.
+- Guest rooms keep the `fib_session` cookie. Linking a guest seat to an account (`POST /api/rooms/:code/link-account`) and claiming a room (`POST /api/rooms/:code/claim`, team members only) are shipped (T6).
+- Open item: the Google OAuth `state` value is generated but not yet checked on the callback.
 - Revoked sessions return `AUTH_LINK_INVALID`. The deterministic fake Google identity email is `google.user@example.com`. Magic-link and OAuth tokens are observed through the contract harness (`latestMagicLinkToken`, `latestGoogleCode`, `latestSessionToken`, `suspendCurrentUser`), not through `AuthProvider`.
 - Sessions for accounts: planned sliding 7-day session. Invites last 7 days and are revocable. SuperAdmin emails come from `SUPERADMIN_EMAILS` (lowercased at login).
 - Account deletion (RF-05) revokes the session, removes personal data and keeps team aggregated history.

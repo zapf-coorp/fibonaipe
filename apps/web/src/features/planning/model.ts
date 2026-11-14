@@ -75,6 +75,13 @@ export function roundStatus(view: RoomView): string | null {
   return round && typeof round.status === "string" ? round.status : null;
 }
 
+/** True when the viewing participant is the room host (the guest seat that created the room). */
+export function isHostSeat(view: RoomView): boolean {
+  const me = selfId(view);
+  if (!me || !Array.isArray(view.participants)) return false;
+  return view.participants.some((row) => isRecord(row) && row.id === me && row.isHost === true);
+}
+
 export function selfId(view: RoomView): string | null {
   const viewer = record(view.viewer);
   if (!viewer || viewer.kind === "screen") return null;

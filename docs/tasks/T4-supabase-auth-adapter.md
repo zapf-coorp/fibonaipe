@@ -1,6 +1,6 @@
 # T4 — Create `@fibonaipe/adapter-auth-supabase` (Production Email & Google Auth)
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T3  
 **Max files to touch:** 6 (`packages/adapter-auth-supabase/*`, `apps/web/package.json`, `apps/web/src/server/composition.ts`, `tsconfig.json`)
 

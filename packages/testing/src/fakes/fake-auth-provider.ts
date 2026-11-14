@@ -52,8 +52,8 @@ export class FakeAuthProvider implements AuthProvider {
     link.used = true;
     const user = this.ensureUser(link.email);
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
-    this.issueSession(link.email);
-    return ok(this.identityFor(user));
+    const sessionToken = this.issueSession(link.email);
+    return ok(this.identityFor(user, sessionToken));
   }
 
   getGoogleAuthUrl(state: string, redirectUrl: string): Result<{ url: string }, AppError> {
@@ -75,8 +75,8 @@ export class FakeAuthProvider implements AuthProvider {
     this.googleCodes.set(code, true);
     const user = this.ensureUser(GOOGLE_EMAIL);
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
-    this.issueSession(GOOGLE_EMAIL);
-    return ok(this.identityFor(user));
+    const sessionToken = this.issueSession(GOOGLE_EMAIL);
+    return ok(this.identityFor(user, sessionToken));
   }
 
   async verifySessionToken(token: string): Promise<Result<AuthenticatedIdentity, AppError>> {
@@ -86,7 +86,7 @@ export class FakeAuthProvider implements AuthProvider {
     if (!user) return err(createAppError("AUTH_LINK_INVALID"));
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
     this.currentEmail = email;
-    return ok(this.identityFor(user));
+    return ok(this.identityFor(user, token));
   }
 
   async revokeUserSessions(userId: UserIdValue): Promise<Result<void, AppError>> {
@@ -131,19 +131,21 @@ export class FakeAuthProvider implements AuthProvider {
     return user;
   }
 
-  private issueSession(email: string): void {
+  private issueSession(email: string): string {
     const token = this.next("session");
     this.sessions.set(token, email);
     this.latestSession = token;
     this.currentEmail = email;
+    return token;
   }
 
-  private identityFor(user: StoredUser): AuthenticatedIdentity {
+  private identityFor(user: StoredUser, sessionToken?: string): AuthenticatedIdentity {
     return {
       userId: user.userId,
       email: user.email,
       displayName: user.displayName,
       emailVerifiedAt: new Date(user.emailVerifiedAt.getTime()),
+      ...(sessionToken === undefined ? {} : { sessionToken }),
     };
   }
 

@@ -19,7 +19,8 @@
     "check:i18n": "node tools/check-i18n.mjs",
     "check:licenses": "node tools/check-licenses.mjs",
     "test:unit": "vitest run --coverage",
-    "build": "tsc -b",
+    "build": "tsc -b && npm run build --workspace=@fibonaipe/web",
+    "start": "npm run start --workspace=@fibonaipe/web",
     "check:bundle": "node tools/check-bundle-budget.mjs",
     "test:e2e": "node tools/check-e2e.mjs",
     "verify": "npm run lint && npm run typecheck && npm run check:boundaries && npm run check:i18n && npm run check:licenses && npm run test:unit && npm run build && npm run check:bundle && npm run test:e2e"

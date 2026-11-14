@@ -13,6 +13,13 @@ export interface CompleteSignInResult {
   readonly userId: string;
   readonly email: string;
   readonly isSuperAdmin: boolean;
+  readonly sessionToken: string;
+}
+
+export interface CompleteGoogleSignInInput {
+  readonly code: string;
+  readonly redirectUrl: string;
+  readonly superAdminEmails: readonly string[];
 }
 
 export async function persistSignedInUser(
@@ -58,6 +65,22 @@ export class CompleteSignIn {
   }
 }
 
+export class CompleteGoogleSignIn {
+  constructor(
+    private readonly deps: UseCaseDependencies,
+    private readonly auth: AuthProvider,
+  ) {}
+
+  async execute(input: CompleteGoogleSignInInput): Promise<Result<CompleteSignInResult, AppError>> {
+    const exchanged = await this.auth.exchangeGoogleCode(input.code, input.redirectUrl);
+    if (!exchanged.ok) {
+      warn(this.deps, "CompleteGoogleSignIn", exchanged.error);
+      return exchanged;
+    }
+    return completeIdentity(this.deps, exchanged.value, input.superAdminEmails);
+  }
+}
+
 export class CompleteIdentitySignIn {
   constructor(private readonly deps: UseCaseDependencies) {}
 
@@ -79,5 +102,10 @@ async function completeIdentity(
     warn(deps, "CompleteSignIn", stored.error);
     return stored;
   }
-  return ok({ userId: stored.value.id, email: stored.value.email, isSuperAdmin: stored.value.isSuperAdmin === true });
+  return ok({
+    userId: stored.value.id,
+    email: stored.value.email,
+    isSuperAdmin: stored.value.isSuperAdmin === true,
+    sessionToken: identity.sessionToken ?? "",
+  });
 }

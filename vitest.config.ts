@@ -44,7 +44,7 @@ export default defineConfig({
     alias: Object.fromEntries([
       "domain", "application", "testing", "adapter-auth-devfake", "adapter-exporter-csvjson",
       "adapter-issuetracker-manual", "adapter-persistence-postgres", "adapter-persistence-sqlite",
-      "adapter-realtime-supabase", "adapter-system",
+      "adapter-auth-supabase", "adapter-realtime-supabase", "adapter-system",
     ].map((name) => [`@fibonaipe/${name}`, resolve(root, `packages/${name}/src/index.ts`)])),
   },
   test: {

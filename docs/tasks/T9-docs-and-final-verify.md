@@ -1,6 +1,6 @@
 # T9 — Documentation Sync & Full Verification Gate
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T1 through T8  
 **Max files to touch:** 5 (`docs/prd/roadmap.md`, `docs/specs/architecture.md`, `docs/specs/integrations-and-auth.md`, `docs/specs/operations.md`, `docs/tasks/README.md`)
 

@@ -7,7 +7,7 @@
     "jsx": "react-jsx",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "resolveJsonModule": true,
-    "types": []
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json", "src/**/*.d.ts"],
   "references": [
@@ -18,7 +18,9 @@
     { "path": "../../packages/adapter-persistence-sqlite" },
     { "path": "../../packages/adapter-issuetracker-manual" },
     { "path": "../../packages/adapter-auth-devfake" },
+    { "path": "../../packages/adapter-auth-supabase" },
     { "path": "../../packages/adapter-exporter-csvjson" },
     { "path": "../../packages/adapter-system" }
   ]
 }
+

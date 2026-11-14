@@ -1,6 +1,6 @@
 # T5 — Unified Auth HTTP Routes (`/api/auth/google`, `/api/auth/callback`) & `/login` UI
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T3, T4  
 **Max files to touch:** 5 (`apps/web/src/server/session-cookie.ts`, `apps/web/src/server/routes/auth-teams.ts`, `apps/web/src/features/auth/LoginPage.tsx`, `apps/web/src/client/router.tsx`, `apps/web/src/client/i18n/locales/pt-BR.json`)
 

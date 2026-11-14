@@ -27,7 +27,17 @@ npm ci
 npm run dev --workspace=@fibonaipe/web -- --strictPort
 ```
 
-Open `http://localhost:5173`. Vite serves the UI and the API at the same address. The default configuration uses in-memory SQLite and needs no credentials. Restarting the server drops the in-memory rooms.
+Open `http://localhost:5173`. Vite serves the UI and the API at the same address. The dev gateway uses `PERSISTENCE_DRIVER=sqlite` with the file `data/local.sqlite` (created on first run), so rooms survive a restart. Tests use `:memory:`. No credentials are needed. The server reads only process environment variables; it does not load a `.env` file.
+
+### Production build and start
+
+```sh
+npm ci
+npm run build
+npm start
+```
+
+`npm run build` runs `tsc -b`, the Vite client build (`apps/web/dist/client`) and a server bundle (`apps/web/dist/server/main.js`, produced by `vite build --ssr`). `npm start` runs that bundle. Set `NODE_ENV=production`, `PORT`, `PUBLIC_APP_URL`, `PERSISTENCE_DRIVER=postgres` with `DATABASE_URL`, and the Supabase variables. On startup the server applies pending Postgres migrations, serves `/healthz` and `/api/*`, and serves the client with an SPA fallback for client routes such as `/r/:code`, `/teams` and `/login`.
 
 To test a room with several users on one machine, use separate cookie contexts, because `fib_session` is shared by tabs of the same browser profile (including private windows of that profile). For example: a normal Chrome window, an incognito Chrome window and an Edge InPrivate window, all on `localhost:5173`. Create the room in the first, copy the invite link, join from the others, vote in each, and confirm that others show only "voted" until reveal.
 
@@ -41,11 +51,12 @@ Validated at server start in `apps/web/src/server/env.ts` with Zod. `.env.exampl
 | `PORT` | Server port (template: 8787). |
 | `PUBLIC_APP_URL` | Public origin. Mutating requests must send this exact `Origin`; also used for magic-link redirects. |
 | `DATABASE_URL` | Postgres connection string (server only, Supabase or Neon free). |
-| `AUTH_SECRET` | Server secret for session handling. Opaque tokens are stored as SHA-256. Generate with Node crypto. |
+| `SESSION_SECRET` | Server secret for session handling (`AUTH_SECRET` is accepted as an alias). Opaque tokens are stored as SHA-256. Generate with Node crypto. |
+| `PERSISTENCE_DRIVER` | `in-memory` (default), `sqlite` (dev gateway, file `data/local.sqlite`) or `postgres` (requires `DATABASE_URL`). |
 | `CRON_SECRET` | Value of the `x-cron-secret` header for `POST /api/internal/cron/purge-expired-rooms`. |
 | `INTEGRATION_KEY` | 32 raw bytes, base64. AES-256-GCM key for ClickUp and Jira tokens at rest. |
 | `SUPERADMIN_EMAILS` | Comma-separated emails granted SuperAdmin, lowercased at login. |
-| `AUTH_DRIVER` | `dev-fake` (default under Vite, so `/dev/login` works without Supabase) or `unavailable`. Always ignored when `NODE_ENV=production`. |
+| `AUTH_DRIVER` | `dev-fake` (default under Vite, so `/dev/login` works without Supabase) `supabase` (production auth, needs `SUPABASE_URL` and keys) or `unavailable`. `dev-fake` is ignored when `NODE_ENV=production`. |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_REALTIME_URL` | Auth and realtime provider (R2). Leave empty until configured. If realtime is unset the client uses HTTP polling. |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth. |
 

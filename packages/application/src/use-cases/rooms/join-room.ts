@@ -1,4 +1,4 @@
-import { ParticipantId, type AppError, type ParticipantMode, type Result } from "@fibonaipe/domain";
+import { ParticipantId, UserId, type AppError, type ParticipantMode, type Result } from "@fibonaipe/domain";
 import {
   JOIN_ATTEMPT_RULE,
   commitAggregate,
@@ -17,6 +17,8 @@ export interface JoinRoomInput {
   readonly clientOpId: string;
   readonly isFacilitator?: boolean;
   readonly afk?: boolean;
+  /** Authenticated account joining the room; null or absent for a guest. */
+  readonly userId?: string | null;
 }
 
 export interface JoinRoomResult {
@@ -36,10 +38,17 @@ export class JoinRoom {
     const tokenHash = this.deps.ids.sha256(sessionToken);
     const participantId = ParticipantId.create(this.deps.ids.newId());
     if (!participantId.ok) return participantId;
+    let userId: UserId | null = null;
+    if (input.userId) {
+      const parsedUserId = UserId.create(input.userId);
+      if (!parsedUserId.ok) return parsedUserId;
+      userId = parsedUserId.value;
+    }
 
     return mutate(this.deps, input.code, "JoinRoom", async (ctx) => {
       const joined = ctx.loaded.room.join({
         participantId: participantId.value,
+        userId,
         nickname: input.nickname,
         role: input.role,
         mode: input.mode,

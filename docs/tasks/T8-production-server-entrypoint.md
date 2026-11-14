@@ -1,6 +1,6 @@
 # T8 — Production Node/Hono Server Entrypoint & Auto-Migrate
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T2, T4, T7  
 **Max files to touch:** 4 (`apps/web/src/server/main.ts`, `apps/web/package.json`, `package.json`, `apps/web/tsconfig.json`)
 
@@ -88,3 +88,14 @@ npm run lint
 npm run typecheck
 npx vitest run
 ```
+
+## Notes on the delivered implementation
+
+- The start script is not 
+ode --experimental-strip-types. Strip-only mode rejects constructor parameter properties, which the application and adapter code use, and it does not map .js import specifiers to .ts. Workspace packages also export TypeScript sources. The server is therefore bundled with ite build --ssr src/server/main.ts --outDir dist/server (no new runtime dependency), and 
+pm start runs 
+ode dist/server/main.js.
+- @types/node is declared in pps/web and enabled in its tsconfig (	ypes: ["node"]) so main.ts can use 
+ode:fs, 
+ode:path and process.
+- pps/web/test/unit/production-server.test.ts covers the /healthz and /api/* dispatch, the SPA fallback, asset headers and traversal refusal.

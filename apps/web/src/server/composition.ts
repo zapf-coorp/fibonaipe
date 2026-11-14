@@ -1,8 +1,9 @@
 import { createDevFakeAuthProvider } from "@fibonaipe/adapter-auth-devfake";
+import { createSupabaseAuthProvider } from "@fibonaipe/adapter-auth-supabase";
 import { createCsvJsonExporter } from "@fibonaipe/adapter-exporter-csvjson";
 import { createManualIssueTracker } from "@fibonaipe/adapter-issuetracker-manual";
 import { createPostgresPersistence } from "@fibonaipe/adapter-persistence-postgres";
-import { createSqlitePersistence } from "@fibonaipe/adapter-persistence-sqlite";
+import { createSqlitePersistence, localSqlitePath } from "@fibonaipe/adapter-persistence-sqlite";
 import {
   createIdGenerator,
   createInMemoryRateLimiter,
@@ -54,19 +55,31 @@ export function createAppContainer(overrides?: Partial<ServerEnv>): AppContainer
 }
 
 function authProviderFor(env: ServerEnv, clock: Clock, idGenerator: IdGenerator): AuthProvider {
-  const driver = env.AUTH_DRIVER ?? (env.NODE_ENV === "development" ? "dev-fake" : "unavailable");
+  const driver =
+    env.AUTH_DRIVER ??
+    (env.NODE_ENV === "development" ? "dev-fake" : env.SUPABASE_URL ? "supabase" : "unavailable");
   if (env.NODE_ENV !== "production" && driver === "dev-fake") {
     return createDevFakeAuthProvider({ clock, ids: idGenerator });
+  }
+  if (driver === "supabase" && env.SUPABASE_URL && env.SUPABASE_ANON_KEY) {
+    return createSupabaseAuthProvider({
+      supabaseUrl: env.SUPABASE_URL,
+      anonKey: env.SUPABASE_ANON_KEY,
+      serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+    });
   }
   return unavailableAuth();
 }
 
 function persistenceFor(env: ServerEnv): Persistence {
-  const databaseUrl = readDatabaseUrl();
+  const databaseUrl = env.DATABASE_URL ?? readDatabaseUrl();
   if (env.PERSISTENCE_DRIVER === "postgres" && databaseUrl.length > 0) {
     return createPostgresPersistence({ DATABASE_URL: databaseUrl });
   }
-  return createSqlitePersistence();
+  if (env.PERSISTENCE_DRIVER === "sqlite" && env.NODE_ENV !== "test") {
+    return createSqlitePersistence(localSqlitePath);
+  }
+  return createSqlitePersistence(":memory:");
 }
 
 function readDatabaseUrl(): string {

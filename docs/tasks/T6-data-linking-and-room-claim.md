@@ -1,6 +1,6 @@
 # T6 — Data Linking & Room Claiming (Guest ↔ Account ↔ Room ↔ Team)
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T5  
 **Max files to touch:** 4 (`apps/web/src/server/routes/rooms.ts`, `packages/application/src/use-cases/rooms/join-room.ts`, `apps/web/src/client/pages/RoomPage.tsx`, `apps/web/src/client/i18n/locales/pt-BR.json`)
 

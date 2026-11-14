@@ -80,6 +80,7 @@ export interface RoomView {
     readonly online: boolean;
     readonly afk: boolean;
     readonly hasVoted: boolean;
+    readonly isHost: boolean;
   }[];
   readonly queue: readonly {
     readonly id: string;
@@ -190,9 +191,10 @@ function participantRow(
   participant: Room["participants"][number],
   hasVoted: boolean,
   now: Date,
+  isHost: boolean,
 ): RoomView["participants"][number] {
   const online = isOnline(participant.lastSeenAt, now);
-  const key = `${online ? 1 : 0}${hasVoted ? 1 : 0}`;
+  const key = `${online ? 1 : 0}${hasVoted ? 1 : 0}${isHost ? 1 : 0}`;
   let rows = rowCache.get(participant);
   if (!rows) {
     rows = new Map();
@@ -208,6 +210,7 @@ function participantRow(
     online,
     afk: participant.afk,
     hasVoted,
+    isHost,
   });
   rows.set(key, row);
   return row;
@@ -327,7 +330,9 @@ export function projectRoomForViewer(
     version: room.version,
     serverTime: now,
     settings: settingsOf(room),
-    participants: room.participants.map((participant) => participantRow(participant, voted.has(participant.id), now)),
+    participants: room.participants.map((participant) =>
+      participantRow(participant, voted.has(participant.id), now, room.hostParticipantId === participant.id),
+    ),
     queue: queueOf(items),
     currentItem,
     currentRound,

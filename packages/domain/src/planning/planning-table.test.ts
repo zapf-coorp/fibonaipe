@@ -1321,6 +1321,7 @@ describe("projectRoomForViewer", () => {
       "afk",
       "hasVoted",
       "id",
+      "isHost",
       "mode",
       "nickname",
       "online",

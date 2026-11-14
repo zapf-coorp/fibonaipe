@@ -1,13 +1,22 @@
 import {
   MAX_ITEM_TITLE_LENGTH,
   MAX_NICKNAME_LENGTH,
+  UserId,
   createAppError,
   err,
   ok as success,
   type AppError,
   type Result,
 } from "@fibonaipe/domain";
-import { CreateTeam, CreateTeamRoom, ListTeams, type IssueTrackerImportInput, type PersistedUserRecord } from "@fibonaipe/application";
+import {
+  ClaimRoom,
+  CreateTeam,
+  CreateTeamRoom,
+  LinkGuestToAccount,
+  ListTeams,
+  type IssueTrackerImportInput,
+  type PersistedUserRecord,
+} from "@fibonaipe/application";
 import type { Context, Hono } from "hono";
 import { z } from "zod";
 import type { AppContainer } from "../composition.js";
@@ -36,6 +45,8 @@ const joinSchema = z.object({
 });
 
 const opSchema = z.object({ clientOpId });
+
+const claimSchema = z.object({ teamId: z.string().trim().min(1).max(64) });
 
 const addItemSchema = opSchema.extend({
   title: z.string().trim().min(1).max(MAX_ITEM_TITLE_LENGTH),
@@ -110,6 +121,7 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
   app.post("/api/rooms/:code/join", async (c) => {
     const parsed = await parseBody(c, joinSchema);
     if (!parsed.ok) return fail(container, parsed.error);
+    const account = await accountUser(c, container);
     const joined = await useCases.joinRoom.execute({
       code: c.req.param("code"),
       nickname: parsed.value.nickname,
@@ -117,9 +129,46 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
       mode: parsed.value.mode,
       clientOpId: parsed.value.clientOpId,
       ip: clientIp(c),
+      userId: account?.id ?? null,
     });
     if (!joined.ok) return fail(container, joined.error);
     return jsonWithSession(container, { participantId: joined.value.participantId }, 201, joined.value.sessionToken);
+  });
+
+  // Host turns a guest room into a persistent team room. Requires the host's guest
+  // cookie and membership in the target team (ClaimRoom only checks the team exists).
+  app.post("/api/rooms/:code/claim", async (c) => {
+    const user = await accountUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const hostToken = readSessionToken(c.req.header("cookie"));
+    if (!hostToken) return fail(container, createAppError("FORBIDDEN"));
+    const parsed = await parseBody(c, claimSchema);
+    if (!parsed.ok) return fail(container, parsed.error);
+    if (!(await isTeamMember(container, user.id, parsed.value.teamId))) {
+      return fail(container, createAppError("FORBIDDEN"));
+    }
+    const claimed = await new ClaimRoom(useCases.deps).execute({
+      roomCode: c.req.param("code"),
+      hostToken,
+      teamId: parsed.value.teamId,
+    });
+    if (!claimed.ok) return fail(container, claimed.error);
+    return ok(container, claimed.value);
+  });
+
+  // Binds the caller's guest seat in this room to their account.
+  app.post("/api/rooms/:code/link-account", async (c) => {
+    const user = await accountUser(c, container);
+    if (!user) return fail(container, createAppError("FORBIDDEN"));
+    const sessionToken = readSessionToken(c.req.header("cookie"));
+    if (!sessionToken) return fail(container, createAppError("FORBIDDEN"));
+    const linked = await new LinkGuestToAccount(useCases.deps).execute({
+      roomCode: c.req.param("code"),
+      sessionToken,
+      userId: user.id,
+    });
+    if (!linked.ok) return fail(container, linked.error);
+    return ok(container, linked.value);
   });
 
   app.get("/api/rooms/:code/state", async (c) => {
@@ -389,6 +438,16 @@ async function openDurableRoom(
     mode: "voter",
     hostNickname: input.hostNickname,
   });
+}
+
+async function isTeamMember(container: AppContainer, userId: string, teamId: string): Promise<boolean> {
+  const userIdValue = UserId.create(userId);
+  if (!userIdValue.ok) return false;
+  const loaded = await container.persistence.transaction({}, async (repos) =>
+    success(await repos.memberships.listByUser(userIdValue.value)),
+  );
+  if (!loaded.ok) return false;
+  return loaded.value.some((membership) => membership.teamId === teamId);
 }
 
 function clientIp(c: Context): string {

@@ -129,8 +129,8 @@ export class DevFakeAuthProvider implements DevAuthProvider {
     link.used = true;
     const user = this.ensureUser(link.email);
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
-    this.issueSession(link.email);
-    return ok(this.identityFor(user));
+    const sessionToken = this.issueSession(link.email);
+    return ok(this.identityFor(user, sessionToken));
   }
 
   getGoogleAuthUrl(state: string, redirectUrl: string): Result<{ url: string }, AppError> {
@@ -151,8 +151,8 @@ export class DevFakeAuthProvider implements DevAuthProvider {
     entry.used = true;
     const user = this.ensureUser(entry.email);
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
-    this.issueSession(entry.email);
-    return ok(this.identityFor(user));
+    const sessionToken = this.issueSession(entry.email);
+    return ok(this.identityFor(user, sessionToken));
   }
 
   async verifySessionToken(token: string): Promise<Result<AuthenticatedIdentity, AppError>> {
@@ -161,7 +161,7 @@ export class DevFakeAuthProvider implements DevAuthProvider {
     const user = this.usersByEmail.get(email);
     if (!user) return err(createAppError("AUTH_LINK_INVALID"));
     if (user.suspended) return err(createAppError("ACCOUNT_SUSPENDED"));
-    return ok(this.identityFor(user));
+    return ok(this.identityFor(user, token));
   }
 
   async revokeUserSessions(userId: UserIdValue): Promise<Result<void, AppError>> {
@@ -238,12 +238,13 @@ export class DevFakeAuthProvider implements DevAuthProvider {
     return user;
   }
 
-  private identityFor(user: StoredUser): AuthenticatedIdentity {
+  private identityFor(user: StoredUser, sessionToken?: string): AuthenticatedIdentity {
     return {
       userId: user.userId,
       email: user.email,
       displayName: user.displayName,
       emailVerifiedAt: new Date(this.clock.now().getTime()),
+      ...(sessionToken === undefined ? {} : { sessionToken }),
     };
   }
 

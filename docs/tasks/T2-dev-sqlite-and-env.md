@@ -1,6 +1,6 @@
 # T2 — Disk SQLite in Local Dev (`data/local.sqlite`) & Environment Config
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T1  
 **Max files to touch:** 3 (`apps/web/src/server/env.ts`, `apps/web/src/server/composition.ts`, `apps/web/src/server/dev-gateway.ts`)
 

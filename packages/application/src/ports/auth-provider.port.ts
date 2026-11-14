@@ -5,6 +5,8 @@ export interface AuthenticatedIdentity {
   readonly email: string;
   readonly displayName: string;
   readonly emailVerifiedAt: Date;
+  /** Session token issued for this identity. Optional so existing fixtures keep compiling. */
+  readonly sessionToken?: string;
 }
 
 export interface AuthProvider {

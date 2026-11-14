@@ -33,7 +33,9 @@ graph TD
 | R1 | Adapters: system, SQLite stand-in, Postgres, realtime, manual/CSV, CSV/JSON exporter | Done |
 | R1 | API and room-entry UI | Done |
 | R1 | Poker table and projector UI | Done |
-| R2 | Auth, teams and claiming | Partly done (see pending) |
+| R2 | Auth: `adapter-auth-supabase`, `/api/auth/google`, `/login`, dev simulator | Done (T4, T5) |
+| R2 | Room claiming and guest-to-account linking (`ClaimRoom`, `LinkGuestToAccount`) | Done (T6) |
+| R2 | Teams and invites | Partly done (see pending) |
 | R2 | Aggregated history and audit | Partly done (see pending) |
 | R3 | Sprint domain and application | Open |
 | R3 | Sprint and observability UI | Open |
@@ -42,9 +44,8 @@ graph TD
 
 ### Pending work in R2
 
-- `@fibonaipe/adapter-auth-supabase` (live Magic Link and Google OAuth). A dev fake adapter is the stand-in today.
-- Screens `/login`, `/teams`, `/teams/:id`, `/admin`, `/privacy`, the team switcher and the delete-account modal.
-- HTTP routes for claim, link-guest, invites, suspend and delete; the superadmin success path and usage counts; a sliding 7-day session.
+- Screens `/teams`, `/teams/:id`, `/admin`, `/privacy`, the team switcher and the delete-account modal. `/login` is shipped (T5).
+- HTTP routes for invites, suspend and delete; the superadmin success path and usage counts; a sliding 7-day session. Claim and link-guest routes are shipped (T6).
 - Hono `/api/teams/:id/history*` routes and the history screen (loading, empty, results, error states; sort and pagination; edit dialog).
 - The full route-by-role authorization matrix, plus Playwright and axe coverage.
 

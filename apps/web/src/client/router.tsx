@@ -10,6 +10,7 @@ import { SprintDetail } from "../features/sprints/SprintDetail.js";
 import { ForecastDashboard } from "../features/forecast/ForecastDashboard.js";
 import { TeamsPage } from "../features/teams/TeamsPage.js";
 import { DevLoginPage } from "../features/auth/DevLoginPage.js";
+import { LoginPage } from "../features/auth/LoginPage.js";
 
 const rootRoute = createRootRoute({
   component: AppShell,
@@ -60,6 +61,12 @@ const devLoginRoute = createRoute({
   component: DevLoginPage,
 });
 
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/login",
+  component: LoginPage,
+});
+
 const sprintsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/teams/$teamId/sprints",
@@ -76,7 +83,7 @@ const dashboardRoute = createRoute({
   component: () => <ForecastDashboard teamId={dashboardRoute.useParams().teamId} />,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, joinRoute, roomRoute, screenRoute, teamsRoute, devLoginRoute, sprintsRoute, sprintDetailRoute, dashboardRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, joinRoute, roomRoute, screenRoute, teamsRoute, devLoginRoute, loginRoute, sprintsRoute, sprintDetailRoute, dashboardRoute]);
 
 export const router = createRouter({
   routeTree,

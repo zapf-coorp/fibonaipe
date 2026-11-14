@@ -125,7 +125,7 @@ export type {
   TimerUpdatedPayload,
   VoteChangedPayload,
 } from "./projections/events.js";
-export { CompleteIdentitySignIn, CompleteSignIn, persistSignedInUser, type CompleteSignInInput, type CompleteSignInResult } from "./use-cases/identity/complete-sign-in.js";
+export { CompleteGoogleSignIn, CompleteIdentitySignIn, CompleteSignIn, persistSignedInUser, type CompleteGoogleSignInInput, type CompleteSignInInput, type CompleteSignInResult } from "./use-cases/identity/complete-sign-in.js";
 export { DeleteAccount, type DeleteAccountInput } from "./use-cases/identity/delete-account.js";
 export { LinkGuestToAccount, type LinkGuestToAccountInput, type LinkGuestToAccountResult } from "./use-cases/identity/link-guest-to-account.js";
 export { SendMagicLink, type SendMagicLinkInput } from "./use-cases/identity/send-magic-link.js";

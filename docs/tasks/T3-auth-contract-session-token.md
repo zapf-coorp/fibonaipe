@@ -1,6 +1,6 @@
 # T3 — Explicit `sessionToken` in `AuthProvider` and `CompleteSignIn`
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends on:** T2  
 **Max files to touch:** 5
 

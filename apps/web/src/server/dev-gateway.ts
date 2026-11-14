@@ -8,6 +8,7 @@ const devApp = createApp(
   createAppContainer({
     NODE_ENV: "development",
     AUTH_DRIVER: "dev-fake",
+    PERSISTENCE_DRIVER: "sqlite",
   }),
 );
 

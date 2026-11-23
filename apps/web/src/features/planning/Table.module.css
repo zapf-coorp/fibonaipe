@@ -56,6 +56,23 @@
   gap: var(--space-2);
 }
 
+.errorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  margin-block: var(--space-2);
+  padding: var(--space-3);
+  color: var(--card-face);
+  background: var(--title-red);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  text-align: start;
+  cursor: pointer;
+}
+
 .card,
 .cardDark {
   display: inline-flex;
@@ -63,11 +80,11 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  width: 9.5rem;
-  min-width: 9.5rem;
+  width: 5.5rem;
+  min-width: 5.5rem;
   max-width: 100%;
-  height: 13rem;
-  min-height: 13rem;
+  height: 7.5rem;
+  min-height: 7.5rem;
   padding: var(--space-2);
   border: var(--stroke);
   border-radius: var(--radius-sm);
@@ -89,27 +106,38 @@
 
 .pip {
   align-self: flex-start;
-  font-size: 40px;
+  font-size: 22px;
 }
 
 .rank {
-  font-size: 44px;
+  font-size: 30px;
   text-align: center;
 }
 
 .icon {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 .suitFace {
-  font-size: 72px;
+  font-size: 44px;
   line-height: 1;
 }
 
 .card[data-suit="hearts"] .suitFace,
 .card[data-suit="diamonds"] .suitFace {
   color: var(--title-red);
+}
+
+.cardError {
+  color: var(--title-red);
+  background: color-mix(in srgb, var(--title-red) 28%, var(--card-face));
+  box-shadow: inset 0 0 0 3px var(--title-red);
+}
+
+.card:global(.errorFlash)::after,
+.cardDark:global(.errorFlash)::after {
+  font-size: 6rem;
 }
 
 .card[aria-pressed="true"],
@@ -123,4 +151,12 @@
   .cardDark[aria-pressed="true"] {
     transform: translateY(-6px);
   }
+}
+
+.card:disabled,
+.cardDark:disabled,
+.actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }

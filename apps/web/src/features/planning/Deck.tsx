@@ -1,11 +1,13 @@
+import { useEffect, useState } from "react";
 import { castVote, retractOwnVote } from "./commands.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
+import { useActionFault } from "./room-store.js";
 import styles from "./Table.module.css";
 
 const SPECIALS = ["?", "Coringa", "AFK"] as const;
 
-const SUIT_GLYPH: Record<string, string> = {
+export const SUIT_GLYPH: Record<string, string> = {
   clubs: "♣",
   hearts: "♥",
   spades: "♠",
@@ -18,13 +20,18 @@ export function Deck({
   cards,
   selected,
   suit,
+  disabled = false,
 }: {
   readonly code: string;
   readonly cards: readonly string[];
   readonly selected: string | null;
   readonly suit: string;
+  /** True when no round accepts votes: a click would fail, so it is not offered. */
+  readonly disabled?: boolean;
 }) {
   const { t } = useI18n();
+  const fault = useActionFault();
+  const pulse = useFaultPulse(fault.card ? fault.cardTick : 0);
   const labels = [...cards, ...SPECIALS];
   const glyph = SUIT_GLYPH[suit] ?? SUIT_GLYPH.joker;
   return (
@@ -32,12 +39,15 @@ export function Deck({
       {labels.map((card) => {
         const special = SPECIALS.some((item) => item === card);
         const face = special ? styles.cardDark : styles.card;
+        const failed = fault.card === card;
         const name = card === "Coringa" ? t("planning.joker") : card === "AFK" ? t("planning.afk") : card;
         return (
           <button
             key={card}
             type="button"
-            className={face}
+            className={[face, failed ? styles.cardError : "", failed && pulse ? "errorFlash" : ""].filter(Boolean).join(" ")}
+            aria-invalid={failed || undefined}
+            disabled={disabled}
             style={touchTargetStyle}
             aria-label={special ? name : undefined}
             aria-pressed={selected === card}
@@ -55,6 +65,18 @@ export function Deck({
       })}
     </div>
   );
+}
+
+/** True while the rejection cross is on screen. The control stays red after this ends. */
+export function useFaultPulse(tick: number): boolean {
+  const [pulse, setPulse] = useState(0);
+  useEffect(() => {
+    if (tick === 0) return undefined;
+    setPulse(tick);
+    const id = window.setTimeout(() => setPulse(0), 700);
+    return () => window.clearTimeout(id);
+  }, [tick]);
+  return pulse === tick && tick !== 0;
 }
 
 function SpecialIcon({ card }: { readonly card: string }) {

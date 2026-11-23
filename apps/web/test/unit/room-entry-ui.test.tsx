@@ -207,6 +207,8 @@ describe("room entry UI", () => {
         return jsonResponse(
           {
             participants: [{ id: "ada", nickname: "Ada", hasVoted: true }],
+            queue: [{ id: "item-1", title: "Tarefa", status: "current", link: null, finalEstimate: null }],
+            currentRound: { status: "voting" },
             ownVote: { card: { label: "13", kind: "numeric" }, suit: { kind: "clubs" }, comment: OWN_VOTE },
             votes: null,
           },

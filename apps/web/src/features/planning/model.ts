@@ -14,6 +14,8 @@ export interface ItemRow {
   readonly status: string;
   readonly link: string | null;
   readonly finalEstimate: string | null;
+  /** Mean of the item's latest revealed round, once it has been voted. */
+  readonly average: number | null;
 }
 
 export interface RoomView {
@@ -49,7 +51,30 @@ export function itemsOf(view: RoomView): ItemRow[] {
     status: typeof row.status === "string" ? row.status : "pending",
     link: typeof row.link === "string" ? row.link : null,
     finalEstimate: typeof row.finalEstimate === "string" ? row.finalEstimate : null,
+    average: typeof row.average === "number" ? row.average : null,
   }));
+}
+
+/** An item can be picked for voting until it has been voted. */
+export function isVotable(item: ItemRow): boolean {
+  return item.status !== "estimated";
+}
+
+/** Reveal only makes sense while a round is collecting votes. */
+export function canRevealNow(view: RoomView): boolean {
+  return can(view, "revealRound") && roundStatus(view) === "voting";
+}
+
+/** The timer needs an item that is open for voting and not yet revealed. */
+export function canStartTimerNow(view: RoomView): boolean {
+  return currentItem(view) !== null && roundStatus(view) !== "revealed" && timerEndsAt(view) === null;
+}
+
+/** Cards are only clickable while the current round accepts votes. */
+export function canVoteNow(view: RoomView): boolean {
+  const state = roundStateOf(view);
+  if (state === "revealed" || state === "estimated" || roundStatus(view) === "revealed") return false;
+  return currentItem(view) !== null;
 }
 
 export function activeCards(view: RoomView): readonly string[] {
@@ -96,6 +121,46 @@ export function ownCard(view: RoomView): string | null {
   return card && typeof card.label === "string" ? card.label : null;
 }
 
+export interface MiniCard {
+  readonly faceUp: boolean;
+  readonly card: string;
+  readonly suit: string;
+}
+
+function cardLabel(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  const card = record(value);
+  return card && typeof card.label === "string" ? card.label : null;
+}
+
+function suitKind(value: unknown): string {
+  if (typeof value === "string") return value;
+  const suit = record(value);
+  return suit && typeof suit.kind === "string" ? suit.kind : "joker";
+}
+
+/**
+ * Mini card per seat. Your own card is always face up. Others show a face-down card once
+ * they voted, and turn face up with value and suit only after the reveal.
+ */
+export function miniCards(view: RoomView): Record<string, MiniCard> {
+  const result: Record<string, MiniCard> = {};
+  const mine = selfId(view);
+  const revealedVotes = Array.isArray(view.votes) ? view.votes.filter(isRecord) : [];
+  for (const seat of seatsOf(view)) {
+    if (seat.id === mine) {
+      const own = ownCard(view);
+      if (own !== null) result[seat.id] = { faceUp: true, card: own, suit: suitKind(record(view.ownVote)?.suit) };
+      continue;
+    }
+    const vote = revealedVotes.find((row) => row.participantId === seat.id);
+    const label = vote ? cardLabel(vote.card) : null;
+    if (vote && label !== null) result[seat.id] = { faceUp: true, card: label, suit: suitKind(vote.suit) };
+    else if (seat.hasVoted) result[seat.id] = { faceUp: false, card: "", suit: "joker" };
+  }
+  return result;
+}
+
 export function ownComment(view: RoomView): string | null {
   const vote = record(view.ownVote);
   return vote && typeof vote.comment === "string" && vote.comment.length > 0 ? vote.comment : null;
@@ -118,8 +183,15 @@ export function serverTime(view: RoomView): string | null {
 }
 
 export function timerEndsAt(view: RoomView): string | null {
+  const round = record(view.currentRound);
+  if (round && typeof round.timerEndsAt === "string") return round.timerEndsAt;
   const timer = record(view.timer);
   return timer && typeof timer.endsAt === "string" ? timer.endsAt : null;
+}
+
+export function roomNotice(view: RoomView): string | null {
+  const notice = record(view.notice);
+  return notice && typeof notice.messageKey === "string" ? notice.messageKey : null;
 }
 
 export function timerSeconds(view: RoomView): number {

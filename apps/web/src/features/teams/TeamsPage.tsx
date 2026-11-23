@@ -204,6 +204,9 @@ function TeamLine({
       <div className={styles.actions}>
         <button type="button" style={touchTargetStyle} onClick={() => setPanel("members")}>{t("teams.members")}</button>
         <button type="button" style={touchTargetStyle} onClick={() => setPanel("tasks")}>{t("teams.tasks")}</button>
+        <a className={styles.createRoom} style={touchTargetStyle} href={`/?team=${encodeURIComponent(team.teamId)}`}>
+          {t("teams.createRoom")}
+        </a>
       </div>
       {panel === "members" ? (
         <MembersModal team={team} roleLabel={role} onClose={() => setPanel(null)} onChanged={onChanged} onError={onError} />

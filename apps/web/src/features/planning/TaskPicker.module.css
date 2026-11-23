@@ -1,0 +1,31 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-family: var(--font-display);
+}
+
+.label select {
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  color: var(--ink);
+  background: var(--card-face);
+  border: var(--stroke);
+  box-shadow: var(--shadow-card);
+}

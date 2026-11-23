@@ -13,8 +13,20 @@ retained.__fibonaipeRoomSnapshots ??= new Map();
 
 const listeners = new Set<() => void>();
 const errorListeners = new Set<() => void>();
+const faultListeners = new Set<() => void>();
 let requestSerial = 0;
 let roomError: string | null = null;
+
+export interface ActionFault {
+  readonly card: string | null;
+  readonly cardTick: number;
+  readonly timer: boolean;
+  readonly timerTick: number;
+}
+
+const noFault: ActionFault = { card: null, cardTick: 0, timer: false, timerTick: 0 };
+let actionFault: ActionFault = noFault;
+const dismissedNotices = new Map<string, string>();
 
 export function readRoomView(code: string): RoomView | undefined {
   const cached = memory.get(code);
@@ -71,13 +83,53 @@ export function setRoomError(message: string | null): void {
   for (const listener of errorListeners) listener();
 }
 
+export function useActionFault(): ActionFault {
+  return useSyncExternalStore(subscribeFault, () => actionFault, () => actionFault);
+}
+
+export function markVoteFailed(card: string): void {
+  actionFault = { ...actionFault, card, cardTick: actionFault.cardTick + 1 };
+  emitFault();
+}
+
+export function markTimerFailed(): void {
+  actionFault = { ...actionFault, timer: true, timerTick: actionFault.timerTick + 1 };
+  emitFault();
+}
+
+export function clearVoteFault(): void {
+  if (actionFault.card === null) return;
+  actionFault = { ...actionFault, card: null };
+  emitFault();
+}
+
+export function dismissNotice(code: string): void {
+  const current = readRoomView(code);
+  const key =
+    current?.notice && typeof current.notice === "object" && "messageKey" in current.notice
+      ? current.notice.messageKey
+      : null;
+  if (typeof key === "string") dismissedNotices.set(code, key);
+  setRoomError(null);
+  if (current) writeRoomView(code, { ...current, notice: null });
+}
+
+export function clearTimerFault(): void {
+  if (!actionFault.timer) return;
+  actionFault = { ...actionFault, timer: false };
+  emitFault();
+}
+
 export async function refreshRoom(code: string): Promise<void> {
   const version = viewVersion(readRoomView(code));
   try {
     const response = await fetch(`/api/rooms/${code}/state?since=${version}`, { credentials: "include" });
     if (!response.ok) return;
     const body: unknown = await response.json();
-    if (isUnchanged(body)) return;
+    if (isUnchanged(body)) {
+      applyNotice(code, noticeKey(body));
+      return;
+    }
     if (isRoomView(body)) mergeRoomView(code, body);
   } catch {
     // The next tick retries. A failed poll must not wipe the table.
@@ -156,8 +208,38 @@ function subscribeError(listener: () => void): () => void {
   return () => errorListeners.delete(listener);
 }
 
+function subscribeFault(listener: () => void): () => void {
+  faultListeners.add(listener);
+  return () => faultListeners.delete(listener);
+}
+
+function emitFault(): void {
+  for (const listener of faultListeners) listener();
+}
+
 function viewVersion(view: RoomView | undefined): number {
   return view && typeof view.version === "number" ? view.version : 0;
+}
+
+function noticeKey(value: unknown): string | null {
+  if (!value || typeof value !== "object" || !("notice" in value)) return null;
+  const notice = (value as { notice?: unknown }).notice;
+  if (!notice || typeof notice !== "object" || !("messageKey" in notice)) return null;
+  const key = (notice as { messageKey?: unknown }).messageKey;
+  return typeof key === "string" ? key : null;
+}
+
+function applyNotice(code: string, key: string | null): void {
+  if (key === null) dismissedNotices.delete(code);
+  else if (dismissedNotices.get(code) === key) return;
+  const current = readRoomView(code);
+  if (!current) return;
+  const existing = current.notice;
+  const same =
+    existing && typeof existing === "object" && "messageKey" in existing && existing.messageKey === key;
+  if (key === null && !existing) return;
+  if (same) return;
+  writeRoomView(code, { ...current, notice: key === null ? null : { messageKey: key } });
 }
 
 function isUnchanged(value: unknown): boolean {

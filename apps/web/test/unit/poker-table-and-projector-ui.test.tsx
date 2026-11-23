@@ -239,7 +239,7 @@ function installFetch(): void {
       }
       if (method === "POST" && url.pathname.includes("reveal")) onReveal?.();
       if (method === "POST" && /vote/.test(url.pathname)) onVote?.(bodyText);
-      if (method === "POST" && url.pathname.includes("timer")) onTimer?.();
+      if (method === "POST" && url.pathname.endsWith("/voting")) onTimer?.();
       if (method === "POST" && url.pathname.includes("reorder")) onReorder?.();
       if (method === "POST" && url.pathname.includes("estimate")) onEstimate?.(bodyText);
       const importing = method === "POST" && (url.pathname.includes("import") || bodyText.includes("Linha 01"));
@@ -503,12 +503,10 @@ describe("poker table and projector screens", () => {
     expect(result.textContent).toContain("Alto");
     expect(result.textContent).toContain("Baixo");
     expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(within(mesa).getByRole("button", { name: "8" }));
-    expect(within(mesa).getByRole("button", { name: "8" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "false");
-    fireEvent.click(within(mesa).getByRole("button", { name: "8" }));
-    expect(within(mesa).getByRole("button", { name: "8" })).toHaveAttribute("aria-pressed", "false");
-    expect(network.some((entry) => entry.startsWith("DELETE "))).toBe(true);
+    // After the reveal no round accepts votes, so the cards are not clickable.
+    expect(within(mesa).getByRole("button", { name: "8" })).toHaveProperty("disabled", true);
+    expect(within(mesa).getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "true");
+    expect(network.some((entry) => entry.startsWith("DELETE "))).toBe(false);
     expect(mesa.textContent).toMatch(/revelad/i);
     await waitFor(() => {
       expect(readPolite()).toMatch(/Alto/);
@@ -735,7 +733,7 @@ describe("poker table and projector screens", () => {
     await boot(`/r/${CODE}`, base({ selfId: "host", permissions: permissions("host") }));
     const mesa = await screen.findByRole("region", { name: "Mesa" });
     expect(mesa).toHaveAttribute("data-round-state", "voting-empty");
-    expect(screen.queryByRole("timer")).toBeNull();
+    expect(screen.getByRole("timer")).toHaveAttribute("data-timer-state", "idle");
     onTimer = () => {
       snapshot = { ...snapshot, timerEndsAt: "2025-10-27T15:01:00.000Z" };
     };

@@ -1,5 +1,6 @@
 import {
   AddItem,
+  BeginVoting,
   CastVote,
   CloseRoom,
   CreateRoom,
@@ -48,6 +49,7 @@ export interface RoomUseCases {
   readonly retractVote: RetractVote;
   readonly revealRound: RevealRound;
   readonly newRound: NewRound;
+  readonly beginVoting: BeginVoting;
   readonly setFinalEstimate: SetFinalEstimate;
 }
 
@@ -85,6 +87,7 @@ export function createRoomUseCases(container: AppContainer): RoomUseCases {
     retractVote: new RetractVote(deps),
     revealRound: new RevealRound(deps),
     newRound: new NewRound(deps),
+    beginVoting: new BeginVoting(deps),
     setFinalEstimate: new SetFinalEstimate(deps),
   };
 }

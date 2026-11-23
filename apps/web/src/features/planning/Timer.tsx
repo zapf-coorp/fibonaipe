@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { useI18n } from "../../client/i18n/index.js";
 import { startRoundTimer } from "./commands.js";
-import { serverTime, timerEndsAt, type RoomView } from "./model.js";
+import { serverTime, timerEndsAt, timerSeconds, type RoomView } from "./model.js";
 
 const bridgeKey = Symbol.for("fibonaipe.timer-bridge");
 
@@ -58,24 +58,27 @@ export function Timer({ code, view, canStart }: { readonly code: string; readonl
   const endsAt = timerEndsAt(view);
   const elapsed = useElapsed(endsAt);
   const remaining = remainingMs(endsAt, serverTime(view), elapsed);
-  const phase = phaseOf(remaining);
+  const running = endsAt !== null && remaining !== null;
+  const phase = running ? phaseOf(remaining) : "idle";
+  const clock = running ? remaining : timerSeconds(view) * 1000;
   const [muted, setMuted] = useState(true);
-  if (phase === "off") return null;
   return (
     <div>
       <div role="timer" aria-live="polite" data-timer-state={phase}>
         <span className="sr-only">{t("planning.timerLabel")}</span>
         {phase === "last10" ? t("planning.last10") : null}
-        <span className="tabular-nums">{formatClock(remaining ?? 0)}</span>
+        <span className="tabular-nums">{formatClock(clock)}</span>
       </div>
       {canStart ? (
         <button type="button" style={touchTargetStyle} onClick={() => startRoundTimer(code)}>
           {t("planning.startTimer")}
         </button>
       ) : null}
-      <button type="button" style={touchTargetStyle} aria-pressed={muted} onClick={() => setMuted((current) => !current)}>
-        {muted ? t("planning.mute") : t("planning.unmute")}
-      </button>
+      {running ? (
+        <button type="button" style={touchTargetStyle} aria-pressed={muted} onClick={() => setMuted((current) => !current)}>
+          {muted ? t("planning.mute") : t("planning.unmute")}
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -111,8 +114,7 @@ function remainingMs(endsAt: string | null, startedAt: string | null, elapsed: n
   return end - start - elapsed;
 }
 
-function phaseOf(remaining: number | null): "off" | "running" | "last10" | "elapsed" {
-  if (remaining === null) return "off";
+function phaseOf(remaining: number): "running" | "last10" | "elapsed" {
   if (remaining <= 0) return "elapsed";
   if (remaining <= 10_000) return "last10";
   return "running";

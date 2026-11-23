@@ -160,6 +160,23 @@ export class SetFinalEstimate {
   }
 }
 
+export class BeginVoting {
+  constructor(private readonly deps: UseCaseDependencies) {}
+
+  async execute(input: NewRoundInput): Promise<Result<CommandResult, AppError>> {
+    return runVote(this.deps, "BeginVoting", input.code, input.actorParticipantId, input.clientOpId, (ctx) => {
+      const seconds = ctx.loaded.room.settings.timerSeconds ?? 60;
+      return ctx.loaded.table.beginVoting({
+        actorParticipantId: input.actorParticipantId,
+        itemId: input.itemId,
+        roundId: this.deps.ids.newId(),
+        endsAt: new Date(ctx.now.getTime() + seconds * 1000),
+        now: ctx.now,
+      });
+    });
+  }
+}
+
 export class StartTimer {
   constructor(private readonly deps: UseCaseDependencies) {}
 

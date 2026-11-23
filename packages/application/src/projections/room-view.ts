@@ -88,9 +88,17 @@ export interface RoomView {
     readonly finalEstimate: Card | null;
     readonly title: string;
     readonly link: string | null;
+    /** Mean of the latest revealed round. Aggregate only, never individual votes. */
+    readonly average: number | null;
   }[];
   readonly currentItem: { readonly id: string; readonly status: ItemStatus; readonly title: string; readonly link: string | null } | null;
-  readonly currentRound: { readonly id: string; readonly itemId: string; readonly number: number; readonly status: string } | null;
+  readonly currentRound: {
+    readonly id: string;
+    readonly itemId: string;
+    readonly number: number;
+    readonly status: string;
+    readonly timerEndsAt: string | null;
+  } | null;
   readonly ownVote: OwnVote | null;
   readonly votes: readonly { readonly participantId: string; readonly card: Card; readonly suit: Suit }[] | null;
   readonly stats: RoundStats | null;
@@ -150,7 +158,12 @@ function deniedPermissions(): Record<PolicyAction, boolean> {
 
 const permissionCache = new WeakMap<Room, Map<string, Record<PolicyAction, boolean>>>();
 const rowCache = new WeakMap<object, Map<string, RoomView["participants"][number]>>();
-const queueCache = new WeakMap<readonly ProjectedItem[], RoomView["queue"]>();
+interface QueueEntry {
+  readonly rounds: readonly ProjectedRound[];
+  readonly votes: readonly ProjectedVote[];
+  readonly queue: RoomView["queue"];
+}
+const queueCache = new WeakMap<readonly ProjectedItem[], QueueEntry>();
 const currentItemCache = new WeakMap<readonly ProjectedItem[], RoomView["currentItem"]>();
 const roundCache = new WeakMap<readonly ProjectedRound[], Map<string, RoomView["currentRound"]>>();
 const settingsCache = new WeakMap<Room, RoomView["settings"]>();
@@ -216,9 +229,14 @@ function participantRow(
   return row;
 }
 
-function queueOf(items: readonly ProjectedItem[]): RoomView["queue"] {
+function queueOf(
+  items: readonly ProjectedItem[],
+  rounds: readonly ProjectedRound[],
+  votes: readonly ProjectedVote[],
+  room: Room,
+): RoomView["queue"] {
   const cached = queueCache.get(items);
-  if (cached) return cached;
+  if (cached && cached.rounds === rounds && cached.votes === votes) return cached.queue;
   const queue = Object.freeze(
     items.map((item) =>
       Object.freeze({
@@ -227,11 +245,29 @@ function queueOf(items: readonly ProjectedItem[]): RoomView["queue"] {
         finalEstimate: item.finalEstimate,
         title: item.title ?? "",
         link: typeof item.externalUrl === "string" ? item.externalUrl : null,
+        average: item.status === "estimated" ? averageOf(room, item.id, rounds, votes) : null,
       }),
     ),
   );
-  queueCache.set(items, queue);
+  queueCache.set(items, { rounds, votes, queue });
   return queue;
+}
+
+function averageOf(
+  room: Room,
+  itemId: string,
+  rounds: readonly ProjectedRound[],
+  votes: readonly ProjectedVote[],
+): number | null {
+  let latest: ProjectedRound | null = null;
+  for (const round of rounds) {
+    if (round.itemId !== itemId || round.status !== "revealed") continue;
+    if (!latest || round.number > latest.number) latest = round;
+  }
+  if (!latest) return null;
+  const roundId = latest.id;
+  const stats = computeRoundStats(room.scale, votes.filter((vote) => vote.roundId === roundId));
+  return typeof stats.mean === "number" ? stats.mean : null;
 }
 
 function estimatedItemOf(items: readonly ProjectedItem[], rounds: readonly ProjectedRound[]): RoomView["currentItem"] {
@@ -279,8 +315,16 @@ function currentRoundOf(rounds: readonly ProjectedRound[], itemId: string): Room
   }
   if (byItem.has(itemId)) return byItem.get(itemId) ?? null;
   const latest = latestRound(rounds, itemId);
+  const endsAt =
+    latest && "timerEndsAt" in latest && latest.timerEndsAt instanceof Date ? latest.timerEndsAt.toISOString() : null;
   const summary = latest
-    ? Object.freeze({ id: latest.id, itemId: latest.itemId, number: latest.number, status: latest.status })
+    ? Object.freeze({
+        id: latest.id,
+        itemId: latest.itemId,
+        number: latest.number,
+        status: latest.status,
+        timerEndsAt: endsAt,
+      })
     : null;
   byItem.set(itemId, summary);
   return summary;
@@ -333,7 +377,7 @@ export function projectRoomForViewer(
     participants: room.participants.map((participant) =>
       participantRow(participant, voted.has(participant.id), now, room.hostParticipantId === participant.id),
     ),
-    queue: queueOf(items),
+    queue: queueOf(items, rounds, votes, room),
     currentItem,
     currentRound,
     ownVote,

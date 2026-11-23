@@ -13,6 +13,7 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "npm run dev --workspace=@fibonaipe/web -- --strictPort",
     "lint": "eslint .",
     "typecheck": "tsc -b",
     "check:boundaries": "node tools/check-boundaries.mjs",

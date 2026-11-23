@@ -4,14 +4,19 @@ import { useI18n } from "../../client/i18n/index.js";
 import { touchTargetStyle } from "../../client/touch-target.js";
 import { loadTeams, useAccount } from "../auth/account.js";
 import { castVote, revealRound, startRoundTimer } from "./commands.js";
-import { Deck } from "./Deck.js";
+import { Deck, useFaultPulse } from "./Deck.js";
 import { EstimateDialog } from "./EstimateDialog.js";
 import {
   activeCards,
   can,
+  canRevealNow,
+  canStartTimerNow,
+  canVoteNow,
   currentItem,
+  roomNotice,
   finalEstimate,
   itemsOf,
+  miniCards,
   ownCard,
   ownComment,
   roundStateOf,
@@ -25,10 +30,11 @@ import {
 import { QueueDrawer } from "./QueueDrawer.js";
 import { ResultBanner } from "./ResultBanner.js";
 import { subscribeRoomMenu, type RoomMenuAction } from "./room-menu.js";
-import { useRoomError } from "./room-store.js";
+import { dismissNotice, useActionFault, useRoomError } from "./room-store.js";
 import { SeatList } from "./SeatList.js";
 import { SettingsSheet } from "./SettingsSheet.js";
 import { SuitToggle } from "./SuitToggle.js";
+import { TaskPicker } from "./TaskPicker.js";
 import styles from "./Table.module.css";
 import { Timer } from "./Timer.js";
 
@@ -61,6 +67,8 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
     setDialog(null);
   };
   const error = useRoomError();
+  const fault = useActionFault();
+  const timerPulse = useFaultPulse(fault.timer ? fault.timerTick : 0);
   const [suit, setSuit] = useState("joker");
   const state = roundStateOf(view);
   const revealed = state === "revealed" || state === "estimated" || roundStatus(view) === "revealed";
@@ -87,9 +95,16 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
 
   return (
     <section role="region" aria-label={t("planning.table")} data-round-state={state} className={styles.table}>
+      {error || roomNotice(view) ? (
+        <button type="button" className={styles.errorBanner} role="alert" onClick={() => dismissNotice(code)}>
+          {error ?? t(roomNotice(view) === "planning.voteError" ? "planning.voteError" : "planning.timerError")}
+          <span>{t("planning.dismissError")}</span>
+        </button>
+      ) : null}
       {ownComment(view) ? <p>{ownComment(view)}</p> : null}
       {item ? <h1>{item.title}</h1> : null}
-      <SeatList seats={seatsOf(view)} selfId={mine} />
+      {can(view, "manageQueue") && itemsOf(view).length > 0 ? <TaskPicker code={code} view={view} /> : null}
+      <SeatList seats={seatsOf(view)} selfId={mine} cards={miniCards(view)} />
       {can(view, "manageQueue") || can(view, "revealRound") || hostTable ? (
         <div className={styles.actions}>
           {can(view, "manageQueue") ? (
@@ -98,12 +113,19 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
             </button>
           ) : null}
           {can(view, "revealRound") ? (
-            <button type="button" style={touchTargetStyle} onClick={() => revealRound(code)}>
+            <button type="button" style={touchTargetStyle} disabled={!canRevealNow(view)} onClick={() => revealRound(code)}>
               {t("planning.reveal")}
             </button>
           ) : null}
           {hostTable && timerEndsAt(view) === null ? (
-            <button type="button" style={touchTargetStyle} onClick={() => startRoundTimer(code)}>
+            <button
+              type="button"
+              className={[fault.timer ? styles.cardError : "", fault.timer && timerPulse ? "errorFlash" : ""].filter(Boolean).join(" ") || undefined}
+              style={touchTargetStyle}
+              disabled={!canStartTimerNow(view)}
+              aria-invalid={fault.timer || undefined}
+              onClick={() => startRoundTimer(code)}
+            >
               {t("planning.startTimer")}
             </button>
           ) : null}
@@ -117,7 +139,10 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
           </button>
         </div>
       ) : null}
-      {showDeck ? <Deck code={code} cards={activeCards(view)} selected={ownCard(view)} suit={suit} /> : null}
+      <Timer code={code} view={view} canStart={false} />
+      {showDeck ? (
+        <Deck code={code} cards={activeCards(view)} selected={ownCard(view)} suit={suit} disabled={!canVoteNow(view)} />
+      ) : null}
       {showDeck && suitAxisOn(view) ? <SuitToggle suit={suit} onChange={setSuit} /> : null}
       {revealed ? <p>{t("planning.revealed")}</p> : null}
       {estimate ? (
@@ -126,8 +151,6 @@ export function Table({ code, view }: { readonly code: string; readonly view: Ro
         </p>
       ) : null}
       {revealed ? <ResultBanner view={view} /> : null}
-      {error ? <p role="alert">{error}</p> : null}
-      <Timer code={code} view={view} canStart={false} />
       {dialog === "queue" ? (
         <QueueDrawer code={code} view={view} items={itemsOf(view)} onClose={closeDialog} />
       ) : null}

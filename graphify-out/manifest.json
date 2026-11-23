@@ -80,9 +80,9 @@
     "ast_empty": true
   },
   "apps/web/src/client/i18n/locales/pt-BR.json": {
-    "mtime": 1794589992.8488708,
-    "seen": 1794592129.2153692,
-    "ast_hash": "7a46f0a60bb29cac9d5066db3bc44d1e",
+    "mtime": 1794626337.9966102,
+    "seen": 1794626624.9956956,
+    "ast_hash": "ec08d03b83cf0fb508a6b2b972d12693",
     "semantic_hash": ""
   },
   "apps/web/src/client/main.tsx": {
@@ -182,10 +182,10 @@
     "semantic_hash": "816c4075aad4d1704627a5e4805c98d9"
   },
   "apps/web/src/features/planning/Deck.tsx": {
-    "mtime": 1794231112.4562106,
-    "seen": 1794444110.1658032,
-    "ast_hash": "7a16376c1abbe08542e6be2d297badbf",
-    "semantic_hash": "7a16376c1abbe08542e6be2d297badbf"
+    "mtime": 1794626335.258343,
+    "seen": 1794626624.9956956,
+    "ast_hash": "9d93f21679f484fa17e63c34a6cda8ab",
+    "semantic_hash": ""
   },
   "apps/web/src/features/planning/EstimateDialog.tsx": {
     "mtime": 1793136302.1068122,
@@ -236,22 +236,22 @@
     "semantic_hash": "a8ae83e745d73fe9ef41f460b5188bbb"
   },
   "apps/web/src/features/planning/Table.tsx": {
-    "mtime": 1794348980.6930404,
-    "seen": 1794444110.1903832,
-    "ast_hash": "f09247e6aa73d233a70a031da015be2c",
-    "semantic_hash": "f09247e6aa73d233a70a031da015be2c"
+    "mtime": 1794626539.2502086,
+    "seen": 1794626624.9956956,
+    "ast_hash": "1f2c5c1f62fe4f4ae9ef114878db2b84",
+    "semantic_hash": ""
   },
   "apps/web/src/features/planning/Timer.tsx": {
-    "mtime": 1794591589.369743,
-    "seen": 1794592129.2153692,
-    "ast_hash": "d81f37875ec835c310636c96188f8a39",
+    "mtime": 1794626359.646024,
+    "seen": 1794626624.9956956,
+    "ast_hash": "5fe6732391662051c62be0bf6b1b7a68",
     "semantic_hash": ""
   },
   "apps/web/src/features/planning/commands.ts": {
-    "mtime": 1794442576.1053948,
-    "seen": 1794444110.1923778,
-    "ast_hash": "ead39436d962c6b23c954cc05dfb12b7",
-    "semantic_hash": "ead39436d962c6b23c954cc05dfb12b7"
+    "mtime": 1794626308.149494,
+    "seen": 1794626624.9956956,
+    "ast_hash": "ee6e5847f716ad059f1da8e5d1e049f2",
+    "semantic_hash": ""
   },
   "apps/web/src/features/planning/model.ts": {
     "mtime": 1794589963.4685156,
@@ -266,10 +266,10 @@
     "semantic_hash": "76857bd5a57a417e2572273171035129"
   },
   "apps/web/src/features/planning/room-store.ts": {
-    "mtime": 1794014380.371552,
-    "seen": 1794018625.9446905,
-    "ast_hash": "0db1594eab1f3d0e0174ffb93d0c5869",
-    "semantic_hash": "0db1594eab1f3d0e0174ffb93d0c5869"
+    "mtime": 1794626267.3938704,
+    "seen": 1794626624.9956956,
+    "ast_hash": "70c606851829ec124af9277eabfeef74",
+    "semantic_hash": ""
   },
   "apps/web/src/features/sprints/CapacityGrid.tsx": {
     "mtime": 1794236782.859202,
@@ -476,10 +476,10 @@
     "semantic_hash": ""
   },
   "apps/web/test/unit/poker-table-and-projector-ui.test.tsx": {
-    "mtime": 1794254319.8943577,
-    "seen": 1794444110.3433597,
-    "ast_hash": "55f97de3e78118a05dbc5f33b0f6c921",
-    "semantic_hash": "55f97de3e78118a05dbc5f33b0f6c921"
+    "mtime": 1794626338.9420469,
+    "seen": 1794626624.996694,
+    "ast_hash": "0a236c081dba90e3d1ee9a2f9c108215",
+    "semantic_hash": ""
   },
   "apps/web/test/unit/pwa-assets.test.ts": {
     "mtime": 1794010533.2175868,
@@ -548,9 +548,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1794591496.0074186,
-    "seen": 1794592129.2153692,
-    "ast_hash": "83bc2e75a80b5c11ea3dcee93abc3575",
+    "mtime": 1794619088.5830264,
+    "seen": 1794626624.996694,
+    "ast_hash": "f6ffafd27586706720a6d3d3ab43dd57",
     "semantic_hash": ""
   },
   "packages/adapter-exporter-csvjson/package.json": {

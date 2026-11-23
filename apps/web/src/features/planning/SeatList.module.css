@@ -38,6 +38,38 @@
   color: var(--title-red);
 }
 
+.mini {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 2.6rem;
+  font-family: var(--font-display);
+  font-size: 13px;
+  line-height: 1;
+  border: var(--stroke-thin);
+  border-radius: 3px;
+}
+
+.mini[data-face="down"] {
+  background: repeating-linear-gradient(45deg, var(--card-dark) 0 4px, var(--title-red) 4px 8px);
+}
+
+.mini[data-face="up"] {
+  color: var(--ink);
+  background: var(--card-face);
+}
+
+.mini[data-face="up"][data-suit="hearts"],
+.mini[data-face="up"][data-suit="diamonds"] {
+  color: var(--title-red);
+}
+
+.mini i {
+  font-style: normal;
+}
+
 .meta {
   display: flex;
   align-items: center;

@@ -414,6 +414,47 @@ export class PlanningTable {
     return this.done(table, [planningEvent(this.room, "item.estimate_finalized", input.now, { itemId: item.id })], audit);
   }
 
+  /**
+   * Opens a voting round for the item when none is open, then starts the countdown.
+   * Team admins, PMs and POs may do this through `hostRoom`, not only the current host seat.
+   */
+  beginVoting(input: {
+    actorParticipantId: string;
+    itemId: string;
+    roundId: string;
+    endsAt: Date;
+    now: Date;
+  }): Result<TableOk, AppError> {
+    const allowed = this.authorize(input.actorParticipantId, "hostRoom");
+    if (!allowed.ok) return allowed;
+    const item = this.itemById(input.itemId);
+    if (!item) return err(createAppError("NOT_FOUND"));
+    const open = this.rounds.find((round) => round.itemId === item.id && round.status === "voting");
+    if (open) {
+      const rounds = this.rounds.map((round) => (round.id === open.id ? round.withTimer(input.endsAt) : round));
+      const table = this.spawn({ rounds });
+      return this.done(table, [planningEvent(this.room, "timer.updated", input.now, { endsAt: input.endsAt.toISOString() })]);
+    }
+    if (this.rounds.some((round) => round.id === input.roundId)) return err(createAppError("VALIDATION"));
+    const started = Round.start({
+      id: input.roundId,
+      roomId: this.room.id,
+      itemId: item.id,
+      number: this.nextNumber(item.id),
+    }).withTimer(input.endsAt);
+    const items = this.items.map((entry) => {
+      if (entry.id === item.id) return entry.withStatus("current");
+      if (entry.status === "current") return entry.withStatus("pending");
+      return entry;
+    });
+    const table = this.spawn({ items, rounds: [...this.rounds, started] });
+    return this.done(table, [
+      table.queueEvent(input.now),
+      planningEvent(this.room, "round.started", input.now, { roundId: started.id, itemId: started.itemId }),
+      planningEvent(this.room, "timer.updated", input.now, { endsAt: input.endsAt.toISOString() }),
+    ]);
+  }
+
   startTimer(input: { actorParticipantId: string; endsAt: Date; now: Date }): Result<TableOk, AppError> {
     return this.setTimer(input.actorParticipantId, input.endsAt, input.now);
   }

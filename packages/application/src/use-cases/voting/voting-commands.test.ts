@@ -5,7 +5,7 @@ import { CreateRoom } from "../rooms/create-room.js";
 import { Heartbeat } from "../rooms/heartbeat.js";
 import { JoinRoom } from "../rooms/join-room.js";
 import { GetRoomSnapshot, UpdateRoomSettings } from "../rooms/room-commands.js";
-import { CastVote, NewRound, RetractVote, RevealRound, SetFinalEstimate, StartTimer, StopTimer } from "./voting-commands.js";
+import { BeginVoting, CastVote, NewRound, RetractVote, RevealRound, SetFinalEstimate, StartTimer, StopTimer } from "./voting-commands.js";
 import { asOk, asView, createPorts, readRoomByCode, type Harness } from "../__tests__/harness.js";
 
 describe("voting commands", () => {
@@ -335,6 +335,76 @@ describe("voting commands", () => {
     expect(ports.published).toContainEqual(
       expect.objectContaining({ type: "round.started", payload: { roundId: again.currentRound?.id, itemId: room.itemId } }),
     );
+  });
+
+  it("opens a pending item for voting so every voter can cast a card", async () => {
+    const ports = createPorts();
+    const created = asOk(
+      await new CreateRoom(ports.deps).execute({ name: "Sprint", ip: "203.0.113.40", hostNickname: "Ada" }),
+    );
+    const added = await new AddItem(ports.deps).execute({
+      code: created.code,
+      actorParticipantId: created.participantId,
+      title: "Bridge work",
+      clientOpId: "add-bridge",
+    });
+    if (!added.ok) throw new Error(added.error.code);
+    const queued = asView(
+      asOk(
+        await new GetRoomSnapshot(ports.deps).execute({
+          code: created.code,
+          since: 0,
+          viewer: { kind: "participant", participantId: created.participantId },
+        }),
+      ),
+    );
+    const itemId = queued.queue[0]?.id;
+    if (itemId === undefined) throw new Error("expected an item");
+    const other = asOk(
+      await new JoinRoom(ports.deps).execute({
+        code: created.code,
+        nickname: "Bea",
+        ip: "203.0.113.41",
+        mode: "voter",
+        role: "dev",
+        clientOpId: "join-bea",
+      }),
+    );
+    const denied = await new BeginVoting(ports.deps).execute({
+      code: created.code,
+      actorParticipantId: other.participantId,
+      itemId,
+      clientOpId: "voting-bea",
+    });
+    if (denied.ok) throw new Error("expected FORBIDDEN");
+    expect(denied.error.code).toBe("FORBIDDEN");
+
+    const started = await new BeginVoting(ports.deps).execute({
+      code: created.code,
+      actorParticipantId: created.participantId,
+      itemId,
+      clientOpId: "voting-ada",
+    });
+    expect(started.ok).toBe(true);
+    const view = asView(
+      asOk(
+        await new GetRoomSnapshot(ports.deps).execute({
+          code: created.code,
+          since: 0,
+          viewer: { kind: "participant", participantId: other.participantId },
+        }),
+      ),
+    );
+    expect(view.currentRound?.status).toBe("voting");
+    expect(view.currentRound?.timerEndsAt).toEqual(expect.any(String));
+    const voted = await new CastVote(ports.deps).execute({
+      code: created.code,
+      participantId: other.participantId,
+      card: "2",
+      suit: "joker",
+      clientOpId: "vote-bea",
+    });
+    expect(voted.ok).toBe(true);
   });
 });
 

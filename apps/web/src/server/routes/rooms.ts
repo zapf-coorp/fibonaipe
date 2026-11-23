@@ -24,6 +24,7 @@ import { errorResponse } from "../error-map.js";
 import { jsonResponse } from "../http-error.js";
 import { accountUser } from "../account-user.js";
 import { guestSessionCookie, readSessionToken, secretsMatch } from "../session-cookie.js";
+import { roomNotice, setRoomNotice } from "../room-notice.js";
 import { createRoomUseCases, type RoomUseCases } from "../use-cases.js";
 
 const ROOM_NAME_MAX = 80;
@@ -182,8 +183,9 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
       viewer: { kind: "participant", participantId: actor.value },
     });
     if (!snapshot.ok) return fail(container, snapshot.error);
-    if (snapshot.value.unchanged) return ok(container, { unchanged: true, version: snapshot.value.version });
-    return ok(container, snapshot.value.view);
+    const notice = roomNotice(c.req.param("code"));
+    if (snapshot.value.unchanged) return ok(container, { unchanged: true, version: snapshot.value.version, notice });
+    return ok(container, { ...snapshot.value.view, notice });
   });
 
   app.post("/api/rooms/:code/heartbeat", (c) =>
@@ -197,15 +199,21 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
   );
 
   app.post("/api/rooms/:code/votes", (c) =>
-    runActor(c, container, useCases, voteSchema, (actor, body) =>
-      useCases.castVote.execute({
-        code: c.req.param("code"),
-        participantId: actor,
-        card: body.card,
-        suit: body.suit,
-        comment: body.comment,
-        clientOpId: body.clientOpId,
-      }),
+    runActor(
+      c,
+      container,
+      useCases,
+      voteSchema,
+      (actor, body) =>
+        useCases.castVote.execute({
+          code: c.req.param("code"),
+          participantId: actor,
+          card: body.card,
+          suit: body.suit,
+          comment: body.comment,
+          clientOpId: body.clientOpId,
+        }),
+      "planning.voteError",
     ),
   );
 
@@ -226,6 +234,23 @@ export function registerRoomRoutes(app: Hono, container: AppContainer): void {
         actorParticipantId: actor,
         clientOpId: body.clientOpId,
       }),
+    ),
+  );
+
+  app.post("/api/rooms/:code/voting", (c) =>
+    runActor(
+      c,
+      container,
+      useCases,
+      newRoundSchema,
+      (actor, body) =>
+        useCases.beginVoting.execute({
+          code: c.req.param("code"),
+          actorParticipantId: actor,
+          itemId: body.itemId,
+          clientOpId: body.clientOpId,
+        }),
+      "planning.timerError",
     ),
   );
 
@@ -380,13 +405,19 @@ async function runActor<T>(
   useCases: RoomUseCases,
   schema: z.ZodType<T>,
   work: (actorParticipantId: string, body: T) => Promise<Result<{ readonly realtimePending: boolean }, AppError>>,
+  noticeKey?: string,
 ): Promise<Response> {
   const parsed = await parseBody(c, schema);
   if (!parsed.ok) return fail(container, parsed.error);
   const actor = await actorId(c, useCases);
   if (!actor.ok) return fail(container, actor.error);
+  const code = c.req.param("code");
   const result = await work(actor.value, parsed.value);
-  if (!result.ok) return fail(container, result.error);
+  if (!result.ok) {
+    if (noticeKey && code) setRoomNotice(code, noticeKey);
+    return fail(container, result.error);
+  }
+  if (noticeKey && code) setRoomNotice(code, null);
   return ok(container, { ok: true, realtimePending: result.value.realtimePending });
 }
 

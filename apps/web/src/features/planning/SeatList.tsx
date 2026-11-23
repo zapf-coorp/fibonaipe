@@ -1,8 +1,17 @@
-import type { Seat } from "./model.js";
+import type { MiniCard, Seat } from "./model.js";
 import { useI18n } from "../../client/i18n/index.js";
+import { SUIT_GLYPH } from "./Deck.js";
 import styles from "./SeatList.module.css";
 
-export function SeatList({ seats, selfId }: { readonly seats: readonly Seat[]; readonly selfId: string | null }) {
+export function SeatList({
+  seats,
+  selfId,
+  cards = {},
+}: {
+  readonly seats: readonly Seat[];
+  readonly selfId: string | null;
+  readonly cards?: Readonly<Record<string, MiniCard>>;
+}) {
   const { t } = useI18n();
   return (
     <ul className={styles.list}>
@@ -18,6 +27,23 @@ export function SeatList({ seats, selfId }: { readonly seats: readonly Seat[]; r
           >
             <span className={styles.name}>{seat.nickname}</span>
             <span className={styles.role}>{role}</span>
+            {cards[seat.id] ? (
+              <span
+                className={styles.mini}
+                data-face={cards[seat.id]?.faceUp ? "up" : "down"}
+                data-suit={cards[seat.id]?.suit}
+                role={cards[seat.id]?.faceUp ? "img" : undefined}
+                aria-label={cards[seat.id]?.faceUp ? `${cards[seat.id]?.card}` : undefined}
+                aria-hidden={cards[seat.id]?.faceUp ? undefined : true}
+              >
+                {cards[seat.id]?.faceUp ? (
+                  <>
+                    <b>{cards[seat.id]?.card}</b>
+                    <i aria-hidden="true">{SUIT_GLYPH[cards[seat.id]?.suit ?? "joker"] ?? SUIT_GLYPH.joker}</i>
+                  </>
+                ) : null}
+              </span>
+            ) : null}
             <span className={styles.meta}>
               <span
                 className={styles.light}

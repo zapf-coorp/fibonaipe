@@ -12,7 +12,17 @@ import {
   timerSeconds,
   type RoomView,
 } from "./model.js";
-import { commitRoomView, mergeRoomView, readRoomView, refreshRoom, setRoomError } from "./room-store.js";
+import {
+  clearTimerFault,
+  clearVoteFault,
+  commitRoomView,
+  markTimerFailed,
+  markVoteFailed,
+  mergeRoomView,
+  readRoomView,
+  refreshRoom,
+  setRoomError,
+} from "./room-store.js";
 
 export function castVote(code: string, card: string, suit: string, effect: "select" | "return"): void {
   const current = readRoomView(code) ?? {};
@@ -40,7 +50,7 @@ export function castVote(code: string, card: string, suit: string, effect: "sele
     ownVote,
     roundState,
   });
-  void send(code, `/api/rooms/${code}/votes`, { card, suit, clientOpId: nextClientOpId() }, true);
+  void send(code, `/api/rooms/${code}/votes`, { card, suit, clientOpId: nextClientOpId() }, true, "POST", "vote", card);
 }
 
 export function retractOwnVote(code: string): void {
@@ -155,15 +165,44 @@ export function reorderQueue(code: string, queue: readonly Record<string, unknow
   }, false);
 }
 
-export function startRoundTimer(code: string): void {
+/** Opens an unvoted item for voting. Any other open item goes back to pending. */
+export function selectItem(code: string, itemId: string): void {
   const current = readRoomView(code) ?? {};
-  const start = Date.parse(serverTime(current) ?? "") || Date.now();
-  const endsAt = new Date(start + timerSeconds(current) * 1000).toISOString();
-  commitRoomView(code, { ...current, timer: { endsAt } });
-  void send(code, `/api/rooms/${code}/timer`, { clientOpId: nextClientOpId() }, false);
+  const queue = queueSnapshot(current).map((row) => {
+    if (row.id === itemId) return { ...row, status: "current" };
+    return row.status === "current" ? { ...row, status: "pending" } : row;
+  });
+  commitRoomView(code, { ...current, queue });
+  void send(code, `/api/rooms/${code}/items/${itemId}/current`, { clientOpId: nextClientOpId() }, false);
 }
 
-async function send(code: string, path: string, body: unknown, queueOffline: boolean, method = "POST"): Promise<void> {
+/** Starts a new round on an item that was already voted. */
+export function reopenItem(code: string, itemId: string): void {
+  void send(code, `/api/rooms/${code}/rounds`, { itemId, clientOpId: nextClientOpId() }, false);
+}
+
+export function startRoundTimer(code: string): void {
+  const current = readRoomView(code) ?? {};
+  const item = currentItem(current);
+  if (!item) {
+    markTimerFailed();
+    setRoomError(t("planning.needRound"));
+    return;
+  }
+  void send(code, `/api/rooms/${code}/voting`, { itemId: item.id, clientOpId: nextClientOpId() }, false, "POST", "timer");
+}
+
+type CommandFault = "vote" | "timer" | null;
+
+async function send(
+  code: string,
+  path: string,
+  body: unknown,
+  queueOffline: boolean,
+  method = "POST",
+  fault: CommandFault = null,
+  voteCard?: string,
+): Promise<void> {
   const flash = beginErrorFlash();
   if (queueOffline && navigator.onLine === false) {
     enqueueVote(code, body);
@@ -180,18 +219,47 @@ async function send(code: string, path: string, body: unknown, queueOffline: boo
       const json: unknown = await response.json().catch(() => null);
       const error = json && typeof json === "object" && "error" in json ? json.error : null;
       const codeName = error && typeof error === "object" && "code" in error ? error.code : null;
-      setRoomError(t(messageKeyFor(typeof codeName === "string" ? codeName : "VALIDATION")));
+      noteFault(fault, voteCard);
+      setRoomError(faultText(fault, typeof codeName === "string" ? codeName : "VALIDATION"));
       showErrorFlash(flash);
       return;
     }
     const json: unknown = await response.json();
     if (isRoomView(json)) mergeRoomView(code, json);
     else await refreshRoom(code);
+    if (fault === "timer") stampTimer(code);
+    clearFault(fault);
     setRoomError(null);
   } catch {
-    setRoomError(t("errors.SERVICE_UNAVAILABLE"));
+    noteFault(fault, voteCard);
+    setRoomError(faultText(fault, "SERVICE_UNAVAILABLE"));
     showErrorFlash(flash);
   }
+}
+
+function faultText(fault: CommandFault, codeName: string): string {
+  if (fault === "vote") return t("planning.voteError");
+  if (fault === "timer") return t("planning.timerError");
+  return t(messageKeyFor(codeName));
+}
+
+function noteFault(fault: CommandFault, voteCard: string | undefined): void {
+  if (fault === "vote" && voteCard) markVoteFailed(voteCard);
+  if (fault === "timer") markTimerFailed();
+}
+
+function clearFault(fault: CommandFault): void {
+  if (fault === "vote") clearVoteFault();
+  if (fault === "timer") clearTimerFault();
+}
+
+/** The round endpoint does not return a clock, so a successful start paints one locally. */
+function stampTimer(code: string): void {
+  const current = readRoomView(code) ?? {};
+  if (typeof current.timer === "object" && current.timer && "endsAt" in current.timer) return;
+  const start = Date.parse(serverTime(current) ?? "") || Date.now();
+  const endsAt = new Date(start + timerSeconds(current) * 1000).toISOString();
+  commitRoomView(code, { ...current, timer: { endsAt } });
 }
 
 export function queueSnapshot(view: RoomView): Record<string, unknown>[] {

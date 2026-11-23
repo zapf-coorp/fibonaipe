@@ -12,8 +12,8 @@ Thumbs.db
 .env.local
 .env.*.local
 
-data/*.sqlite
-data/*.sqlite-*
+**/data/*.sqlite
+**/data/*.sqlite-*
 
 graphify-out/cache/
 .cursor/mcp.json

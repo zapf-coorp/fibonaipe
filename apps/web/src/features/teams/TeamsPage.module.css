@@ -148,3 +148,17 @@
   list-style: none;
 }
 
+
+.createRoom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-3);
+  color: var(--ink);
+  background: var(--ribbon);
+  border: var(--stroke);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-display);
+  text-decoration: none;
+}

@@ -23,7 +23,8 @@ type Phase = "landing" | "create" | "share";
 export function HomePage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<Phase>("landing");
+  const requestedTeam = new URLSearchParams(window.location.search).get("team") ?? "";
+  const [phase, setPhase] = useState<Phase>(requestedTeam ? "create" : "landing");
   const [roomCode, setRoomCode] = useState("");
   const [name, setName] = useState("");
   const [hostName, setHostName] = useState("");
@@ -34,7 +35,7 @@ export function HomePage() {
   const [average, setAverage] = useState(true);
   const [createdCode, setCreatedCode] = useState("");
   const [teamName, setTeamName] = useState("");
-  const [teamId, setTeamId] = useState("");
+  const [teamId, setTeamId] = useState(requestedTeam);
   const [teams, setTeams] = useState<readonly AccountTeam[]>([]);
   const { user, ready } = useAccount();
 
@@ -47,7 +48,9 @@ export function HomePage() {
     void loadTeams().then((rows) => {
       setTeams(rows);
       const first = rows[0];
-      if (rows.length === 1 && first) setTeamId(first.teamId);
+      if (requestedTeam && rows.some((row) => row.teamId === requestedTeam)) setTeamId(requestedTeam);
+      else if (rows.length === 1 && first) setTeamId(first.teamId);
+      else setTeamId("");
     });
   }, [user]);
 
